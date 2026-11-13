@@ -1,0 +1,2 @@
+# sany-barcode-scanner
+Public
