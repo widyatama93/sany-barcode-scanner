@@ -1,519 +1,1390 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#d71920">
-<title>SANY Barcode Scanner</title>
+<title>SANY SHIPPING RECAPr</title>
+
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
 <style>
-:root{--red:#d71920;--dark:#222;--muted:#6b7280;--line:#e5e7eb;--bg:#f4f5f7}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--dark);font-family:Arial,Helvetica,sans-serif}
-.wrap{width:min(760px,100%);margin:0 auto;padding:18px 14px 32px}
-.header{background:#fff;border-radius:16px;padding:18px;box-shadow:0 3px 14px #0000000b;text-align:center}
-.brand{color:var(--red);font-size:36px;line-height:1;font-weight:1000;letter-spacing:-2px;font-style:italic}
-.brand-line{width:92px;height:5px;border-radius:5px;background:var(--red);margin:8px auto 12px}
-h1{font-size:19px;margin:0;letter-spacing:.4px}.subtitle{color:var(--muted);font-size:12px;margin-top:6px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0}
-.stat{background:#fff;padding:12px 8px;border-radius:12px;text-align:center;border:1px solid var(--line)}
-.stat strong{display:block;color:var(--red);font-size:22px}.stat span{color:var(--muted);font-size:11px}
-.panel{background:#fff;border-radius:15px;padding:16px;margin-top:13px;box-shadow:0 3px 14px #00000008}
-.section-title{font-size:14px;font-weight:800;margin:0 0 12px}
-#reader{width:100%;min-height:210px;overflow:hidden;border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc}
-#reader video{border-radius:10px}.button-row{display:flex;gap:9px;margin-top:11px}
-button,.file-label{border:0;border-radius:10px;padding:12px 14px;font-size:13px;font-weight:700;cursor:pointer;text-align:center}
-button:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--red);color:#fff;flex:1}
-.secondary{background:#252525;color:#fff;flex:1}.light{background:#f1f2f4;color:#333;flex:1}
-label.field-label{display:block;font-size:12px;font-weight:700;margin:0 0 7px}
-input[type=text],textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:13px;font-size:16px;outline:none}
-input:focus,textarea:focus{border-color:var(--red);box-shadow:0 0 0 3px #d7192014}
-.hint{color:var(--muted);font-size:11px;line-height:1.5;margin-top:7px}
-.file-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.file-label{display:block;background:#f1f2f4;color:#333}
-.file-label input{display:none}#photoCount{font-size:12px;color:var(--muted);margin:12px 0 8px}
-#preview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.photo-card{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fafafa}
-.photo-card img{display:block;width:100%;height:150px;object-fit:cover}
-.photo-name{font-size:10px;padding:7px;overflow-wrap:anywhere;color:#555}
-.remove-photo{position:absolute;top:6px;right:6px;padding:3px 9px;background:#b91c1c;color:#fff;font-size:20px;line-height:1.2}
-.status{display:none;padding:12px;border-radius:10px;margin-top:12px;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
-.status.info{display:block;background:#eff6ff;color:#1d4ed8}.status.ok{display:block;background:#ecfdf5;color:#047857}
-.status.error{display:block;background:#fef2f2;color:#b91c1c}
-.save{width:100%;margin-top:14px;padding:15px;font-size:15px}
-footer{text-align:center;color:#8b8b8b;font-size:11px;margin:18px 0 4px}footer b{color:var(--red)}
-@media(max-width:420px){.wrap{padding:12px 10px 25px}.panel{padding:13px}.brand{font-size:32px}}
+:root{
+ --red:#d71920;
+ --dark:#222;
+ --muted:#6b7280;
+ --line:#e5e7eb;
+ --bg:#f4f5f7;
+}
+
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--dark);
+ font-family:Arial,Helvetica,sans-serif;
+}
+
+.wrap{
+ width:min(760px,100%);
+ margin:0 auto;
+ padding:18px 14px 32px;
+}
+
+.header{
+ background:#fff;
+ border-radius:16px;
+ padding:18px;
+ box-shadow:0 3px 14px #0000000b;
+ text-align:center;
+}
+
+.brand{
+ color:var(--red);
+ font-size:36px;
+ line-height:1;
+ font-weight:1000;
+ letter-spacing:-2px;
+ font-style:italic;
+}
+
+.brand-line{
+ width:92px;
+ height:5px;
+ border-radius:5px;
+ background:var(--red);
+ margin:8px auto 12px;
+}
+
+h1{
+ font-size:19px;
+ margin:0;
+ letter-spacing:.4px;
+}
+
+.subtitle{
+ color:var(--muted);
+ font-size:12px;
+ margin-top:6px;
+}
+
+.stats{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:9px;
+ margin:13px 0;
+}
+
+.stat{
+ background:#fff;
+ padding:12px 8px;
+ border-radius:12px;
+ text-align:center;
+ border:1px solid var(--line);
+}
+
+.stat strong{
+ display:block;
+ color:var(--red);
+ font-size:22px;
+}
+
+.stat span{
+ color:var(--muted);
+ font-size:11px;
+}
+
+.stats-control{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+ margin-top:8px;
+}
+
+.stats-info{
+ color:var(--muted);
+ font-size:10px;
+}
+
+.refresh-button{
+ border:1px solid var(--line);
+ background:#fff;
+ color:#333;
+ border-radius:8px;
+ padding:8px 12px;
+ font-size:11px;
+ font-weight:700;
+ cursor:pointer;
+}
+
+.refresh-button:disabled{
+ opacity:.5;
+ cursor:not-allowed;
+}
+
+.panel{
+ background:#fff;
+ border-radius:15px;
+ padding:16px;
+ margin-top:13px;
+ box-shadow:0 3px 14px #00000008;
+}
+
+.section-title{
+ font-size:14px;
+ font-weight:800;
+ margin:0 0 12px;
+}
+
+#reader{
+ width:100%;
+ min-height:210px;
+ overflow:hidden;
+ border:1px dashed #cbd5e1;
+ border-radius:12px;
+ background:#f8fafc;
+}
+
+#reader video{
+ border-radius:10px;
+}
+
+.button-row{
+ display:flex;
+ gap:9px;
+ margin-top:11px;
+}
+
+button,.file-label{
+ border:0;
+ border-radius:10px;
+ padding:12px 14px;
+ font-size:13px;
+ font-weight:700;
+ cursor:pointer;
+ text-align:center;
+}
+
+button:disabled{
+ opacity:.45;
+ cursor:not-allowed;
+}
+
+.primary{
+ background:var(--red);
+ color:#fff;
+ flex:1;
+}
+
+.secondary{
+ background:#252525;
+ color:#fff;
+ flex:1;
+}
+
+.light{
+ background:#f1f2f4;
+ color:#333;
+ flex:1;
+}
+
+label.field-label{
+ display:block;
+ font-size:12px;
+ font-weight:700;
+ margin:0 0 7px;
+}
+
+input[type=text],textarea{
+ width:100%;
+ border:1px solid #d1d5db;
+ border-radius:10px;
+ padding:13px;
+ font-size:16px;
+ outline:none;
+}
+
+input:focus,textarea:focus{
+ border-color:var(--red);
+ box-shadow:0 0 0 3px #d7192014;
+}
+
+.hint{
+ color:var(--muted);
+ font-size:11px;
+ line-height:1.5;
+ margin-top:7px;
+}
+
+.file-row{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:9px;
+}
+
+.file-label{
+ display:block;
+ background:#f1f2f4;
+ color:#333;
+}
+
+.file-label input{
+ display:none;
+}
+
+#photoCount{
+ font-size:12px;
+ color:var(--muted);
+ margin:12px 0 8px;
+}
+
+#preview{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:9px;
+}
+
+.photo-card{
+ position:relative;
+ border:1px solid var(--line);
+ border-radius:10px;
+ overflow:hidden;
+ background:#fafafa;
+}
+
+.photo-card img{
+ display:block;
+ width:100%;
+ height:150px;
+ object-fit:cover;
+}
+
+.photo-name{
+ font-size:10px;
+ padding:7px;
+ overflow-wrap:anywhere;
+ color:#555;
+}
+
+.remove-photo{
+ position:absolute;
+ top:6px;
+ right:6px;
+ padding:3px 9px;
+ background:#b91c1c;
+ color:#fff;
+ font-size:20px;
+ line-height:1.2;
+}
+
+.status{
+ display:none;
+ padding:12px;
+ border-radius:10px;
+ margin-top:12px;
+ font-size:12px;
+ line-height:1.5;
+ overflow-wrap:anywhere;
+}
+
+.status.info{
+ display:block;
+ background:#eff6ff;
+ color:#1d4ed8;
+}
+
+.status.ok{
+ display:block;
+ background:#ecfdf5;
+ color:#047857;
+}
+
+.status.error{
+ display:block;
+ background:#fef2f2;
+ color:#b91c1c;
+}
+
+.save{
+ width:100%;
+ margin-top:14px;
+ padding:15px;
+ font-size:15px;
+}
+
+footer{
+ text-align:center;
+ color:#8b8b8b;
+ font-size:11px;
+ margin:18px 0 4px;
+}
+
+footer b{
+ color:var(--red);
+}
+
+@media(max-width:420px){
+ .wrap{padding:12px 10px 25px}
+ .panel{padding:13px}
+ .brand{font-size:32px}
+}
 </style>
 </head>
+
 <body>
+
 <main class="wrap">
+
 <header class="header">
-  <div class="brand">SANY</div>
-  <div class="brand-line"></div>
-  <h1>BARCODE SCANNER</h1>
-  <div class="subtitle">REKAP SURAT JALAN TERKIRIM &amp; BY OUTBOUND</div>
+ <div class="brand">SANY</div>
+ <div class="brand-line"></div>
+ <h1>BARCODE SCANNER</h1>
+ <div class="subtitle">REKAP SURAT JALAN TERKIRIM &amp; BY OUTBOUND</div>
 </header>
 
-<section class="stats">
-  <div class="stat"><strong id="statTotal">—</strong><span>Total Terkirim</span></div>
-  <div class="stat"><strong id="statToday">—</strong><span>Hari Ini</span></div>
-  <div class="stat"><strong id="statPhotos">—</strong><span>Total Foto</span></div>
-</section>
-
+<!-- STATISTIK -->
 <section class="panel">
-  <h2 class="section-title">1. SCAN BARCODE SURAT JALAN</h2>
-  <div id="reader"></div>
-  <div class="button-row">
-    <button id="startButton" class="primary" type="button" onclick="startScanner()">BUKA KAMERA</button>
-    <button id="stopButton" class="secondary" type="button" onclick="stopScanner()" disabled>STOP</button>
+
+ <h2 class="section-title">STATISTIK PENGIRIMAN</h2>
+
+ <div class="stats">
+  <div class="stat">
+   <strong id="statTotal">—</strong>
+   <span>Total Terkirim</span>
   </div>
-  <div class="hint">Izinkan akses kamera saat diminta browser. Gunakan kamera belakang dan arahkan barcode ke area pemindaian.</div>
-</section>
 
-<section class="panel">
-  <h2 class="section-title">2. NOMOR SURAT JALAN</h2>
-  <label class="field-label" for="doNumber">Nomor Surat Jalan / DO Number</label>
-  <input id="doNumber" type="text" placeholder="Hasil scan akan muncul di sini" autocomplete="off">
-  <div class="hint">Nomor dapat diperiksa atau dikoreksi sebelum disimpan.</div>
-</section>
-
-<section class="panel">
-  <h2 class="section-title">3. FOTO BUKTI PENGIRIMAN</h2>
-  <div class="file-row">
-    <label class="file-label">AMBIL FOTO<input id="cameraInput" type="file" accept="image/*" capture="environment"></label>
-    <label class="file-label">PILIH GALERI<input id="galleryInput" type="file" accept="image/*" multiple></label>
+  <div class="stat">
+   <strong id="statToday">—</strong>
+   <span>Hari Ini</span>
   </div>
-  <div class="hint">Foto opsional. Maksimal 10 foto; otomatis dikompres maksimal sekitar 350 KB per foto.</div>
-  <div id="photoCount">Foto dipilih: 0 / 10</div>
-  <div id="preview"></div>
+
+  <div class="stat">
+   <strong id="statPhotos">—</strong>
+   <span>Total Foto</span>
+  </div>
+ </div>
+
+ <div class="stats-control">
+  <span class="stats-info" id="statsInfo">Memuat statistik...</span>
+  <button
+   type="button"
+   class="refresh-button"
+   id="refreshButton"
+   onclick="manualRefreshStats()">
+   ↻ REFRESH
+  </button>
+ </div>
+
 </section>
 
+<!-- SCANNER -->
 <section class="panel">
-  <h2 class="section-title">4. KETERANGAN (OPSIONAL)</h2>
-  <textarea id="keterangan" rows="2" placeholder="Tambahkan catatan jika diperlukan"></textarea>
-  <button id="saveButton" class="primary save" type="button" onclick="saveScan()">SIMPAN DATA SURAT JALAN</button>
-  <div id="status" class="status" role="status" aria-live="polite"></div>
+
+ <h2 class="section-title">1. SCAN BARCODE SURAT JALAN</h2>
+
+ <div id="reader"></div>
+
+ <div class="button-row">
+  <button id="startButton" class="primary" type="button" onclick="startScanner()">
+   BUKA KAMERA
+  </button>
+
+  <button id="stopButton" class="secondary" type="button" onclick="stopScanner()" disabled>
+   STOP
+  </button>
+ </div>
+
+ <div class="hint">
+  Izinkan akses kamera saat diminta browser.
+  Gunakan kamera belakang dan arahkan barcode ke area pemindaian.
+ </div>
+
+</section>
+
+<!-- NOMOR DO -->
+<section class="panel">
+
+ <h2 class="section-title">2. NOMOR SURAT JALAN</h2>
+
+ <label class="field-label" for="doNumber">
+  Nomor Surat Jalan / DO Number
+ </label>
+
+ <input
+  id="doNumber"
+  type="text"
+  placeholder="Hasil scan akan muncul di sini"
+  autocomplete="off">
+
+ <div class="hint">
+  Nomor dapat diperiksa atau dikoreksi sebelum disimpan.
+ </div>
+
+</section>
+
+<!-- FOTO -->
+<section class="panel">
+
+ <h2 class="section-title">3. FOTO BUKTI PENGIRIMAN</h2>
+
+ <div class="file-row">
+
+  <label class="file-label">
+   AMBIL FOTO
+   <input id="cameraInput" type="file" accept="image/*" capture="environment">
+  </label>
+
+  <label class="file-label">
+   PILIH GALERI
+   <input id="galleryInput" type="file" accept="image/*" multiple>
+  </label>
+
+ </div>
+
+ <div class="hint">
+  Foto opsional. Maksimal 10 foto; otomatis dikompres maksimal sekitar 350 KB per foto.
+ </div>
+
+ <div id="photoCount">Foto dipilih: 0 / 10</div>
+ <div id="preview"></div>
+
+</section>
+
+<!-- KETERANGAN DAN SIMPAN -->
+<section class="panel">
+
+ <h2 class="section-title">4. KETERANGAN (OPSIONAL)</h2>
+
+ <textarea
+  id="keterangan"
+  rows="2"
+  placeholder="Tambahkan catatan jika diperlukan"></textarea>
+
+ <button
+  id="saveButton"
+  class="primary save"
+  type="button"
+  onclick="saveScan()">
+  SIMPAN DATA SURAT JALAN
+ </button>
+
+ <div id="status" class="status" role="status" aria-live="polite"></div>
+
 </section>
 
 <footer>Powered by <b>Tamma</b></footer>
+
 </main>
 
-<iframe name="backendFrame" id="backendFrame" title="Backend response" style="display:none"></iframe>
+<!-- FRAME KOMUNIKASI SERVER -->
+<iframe
+ name="backendFrame"
+ id="backendFrame"
+ title="Backend response"
+ style="display:none">
+</iframe>
+
 <form id="backendForm" method="POST" target="backendFrame">
-  <input type="hidden" name="payload" id="payload">
+ <input type="hidden" name="payload" id="payload">
 </form>
 
 <script>
-"use strict";
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJEqMN9vj2BDUbQ1Vgh90nLJzadN0CGICfuhGnXgwXszjoW1UbxSH5xK1xFe_aha8_/exec";
+/* =====================================================
+   KONFIGURASI
+===================================================== */
+
+const SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbxJEqMN9vj2BDUbQ1Vgh90nLJzadN0CGICfuhGnXgwXszjoW1UbxSH5xK1xFe_aha8_/exec";
+
 const MAX_PHOTOS = 10;
 const MAX_PHOTO_BYTES = 350 * 1024;
+
+const STATS_INTERVAL = 30000;
+const STATS_TIMEOUT = 15000;
+const STATS_MAX_RETRY = 3;
 
 let photos = [];
 let scanner = null;
 let scannerRunning = false;
 let saving = false;
-let saveTimeout = null;
+
+let requestTimeout = null;
+let statsTimer = null;
 let statsTimeout = null;
-let statsPending = false;
-let statsRequestId = null;
-let activeSaveRequestId = null;
+
+let statsInFlight = false;
+let statsRetryCount = 0;
+let statsRequestPending = false;
+let pageLoaded = false;
+
+
+/* =====================================================
+   HELPER
+===================================================== */
 
 const $ = id => document.getElementById(id);
 
-function makeRequestId() {
-  return "sany-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
+function showStatus(message,type){
+ const el = $("status");
+ el.textContent = message;
+ el.className = "status " + type;
 }
 
-function showStatus(message, type) {
-  const el = $("status");
-  el.textContent = message;
-  el.className = "status " + type;
+function setStatsInfo(message){
+ $("statsInfo").textContent = message;
 }
 
-function validateEndpoint() {
-  if (!SCRIPT_URL.startsWith("https://script.google.com/macros/s/") ||
-      SCRIPT_URL.includes("PASTE_URL")) {
-    showStatus("URL Web App belum diatur.", "error");
-    return false;
+function validateEndpoint(){
+
+ if(
+  !SCRIPT_URL.startsWith("https://script.google.com/macros/s/") ||
+  SCRIPT_URL.includes("PASTE_URL")
+ ){
+  showStatus("URL Web App belum diatur.","error");
+  return false;
+ }
+
+ $("backendForm").action = SCRIPT_URL;
+ return true;
+}
+
+
+/* =====================================================
+   SCANNER BARCODE
+===================================================== */
+
+async function startScanner(){
+
+ if(scannerRunning) return;
+
+ if(typeof Html5Qrcode === "undefined"){
+  showStatus("Library scanner gagal dimuat. Periksa koneksi internet.","error");
+  return;
+ }
+
+ try{
+
+  if(!scanner){
+   scanner = new Html5Qrcode("reader");
   }
-  $("backendForm").action = SCRIPT_URL;
-  return true;
-}
 
-async function startScanner() {
-  if (scannerRunning) return;
+  const formats = [
+   Html5QrcodeSupportedFormats.QR_CODE,
+   Html5QrcodeSupportedFormats.CODE_128,
+   Html5QrcodeSupportedFormats.CODE_39,
+   Html5QrcodeSupportedFormats.CODE_93,
+   Html5QrcodeSupportedFormats.EAN_13,
+   Html5QrcodeSupportedFormats.EAN_8,
+   Html5QrcodeSupportedFormats.UPC_A,
+   Html5QrcodeSupportedFormats.UPC_E,
+   Html5QrcodeSupportedFormats.ITF
+  ];
 
-  if (typeof Html5Qrcode === "undefined") {
-    showStatus("Library scanner gagal dimuat. Periksa koneksi internet.", "error");
-    return;
-  }
+  await scanner.start(
+   {facingMode:"environment"},
+   {
+    fps:10,
+    qrbox:{width:280,height:140},
+    formatsToSupport:formats
+   },
+   async decodedText => {
 
-  try {
-    if (!scanner) scanner = new Html5Qrcode("reader");
+    $("doNumber").value = String(decodedText || "").trim();
 
-    const formats = [
-      Html5QrcodeSupportedFormats.QR_CODE,
-      Html5QrcodeSupportedFormats.CODE_128,
-      Html5QrcodeSupportedFormats.CODE_39,
-      Html5QrcodeSupportedFormats.CODE_93,
-      Html5QrcodeSupportedFormats.EAN_13,
-      Html5QrcodeSupportedFormats.EAN_8,
-      Html5QrcodeSupportedFormats.UPC_A,
-      Html5QrcodeSupportedFormats.UPC_E,
-      Html5QrcodeSupportedFormats.ITF
-    ];
-
-    await scanner.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 280, height: 140 }, formatsToSupport: formats },
-      async decodedText => {
-        $("doNumber").value = String(decodedText || "").trim();
-        showStatus("Barcode berhasil dibaca: " + decodedText, "ok");
-        await stopScanner();
-      },
-      () => {}
+    showStatus(
+     "Barcode berhasil dibaca: " + decodedText,
+     "ok"
     );
 
-    scannerRunning = true;
-    $("startButton").disabled = true;
-    $("stopButton").disabled = false;
-    showStatus("Kamera aktif. Arahkan ke barcode Surat Jalan.", "info");
+    await stopScanner();
 
-  } catch (err) {
-    scannerRunning = false;
-    $("startButton").disabled = false;
-    $("stopButton").disabled = true;
-    showStatus("Kamera tidak dapat dibuka: " + (err.message || err), "error");
-  }
-}
+   },
+   ()=>{}
+  );
 
-async function stopScanner() {
-  if (!scanner || !scannerRunning) return;
+  scannerRunning = true;
+  $("startButton").disabled = true;
+  $("stopButton").disabled = false;
 
-  try {
-    await scanner.stop();
-    scanner.clear();
-  } catch (err) {
-    console.log("Scanner stop:", err);
-  }
+  showStatus(
+   "Kamera aktif. Arahkan ke barcode Surat Jalan.",
+   "info"
+  );
+
+ }catch(err){
 
   scannerRunning = false;
+
   $("startButton").disabled = false;
   $("stopButton").disabled = true;
+
+  showStatus(
+   "Kamera tidak dapat dibuka: " + (err.message || err),
+   "error"
+  );
+
+ }
 }
 
-function compressPhoto(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
 
-    reader.onload = ev => {
-      const img = new Image();
+async function stopScanner(){
 
-      img.onload = () => {
-        const max = 1280;
-        let width = img.width;
-        let height = img.height;
+ if(!scanner || !scannerRunning) return;
 
-        if (width > max || height > max) {
-          const ratio = Math.min(max / width, max / height);
-          width = Math.round(width * ratio);
-          height = Math.round(height * ratio);
-        }
+ try{
+  await scanner.stop();
+  scanner.clear();
+ }catch(err){
+  console.log("Scanner stop:",err);
+ }
 
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+ scannerRunning = false;
 
-        let quality = 0.72;
-
-        function makeBlob() {
-          canvas.toBlob(blob => {
-            if (!blob) {
-              reject(new Error("Foto gagal dikompres."));
-              return;
-            }
-
-            if (blob.size > MAX_PHOTO_BYTES && quality > 0.35) {
-              quality -= 0.08;
-              makeBlob();
-              return;
-            }
-
-            if (blob.size > MAX_PHOTO_BYTES) {
-              reject(new Error("Ukuran foto masih terlalu besar. Coba foto ulang."));
-              return;
-            }
-
-            const resultReader = new FileReader();
-            resultReader.onload = () => resolve(resultReader.result);
-            resultReader.onerror = () => reject(new Error("Foto gagal diproses."));
-            resultReader.readAsDataURL(blob);
-          }, "image/jpeg", quality);
-        }
-
-        makeBlob();
-      };
-
-      img.onerror = () => reject(new Error("File foto tidak dapat dibaca."));
-      img.src = ev.target.result;
-    };
-
-    reader.onerror = () => reject(new Error("File foto gagal dibuka."));
-    reader.readAsDataURL(file);
-  });
+ $("startButton").disabled = false;
+ $("stopButton").disabled = true;
 }
 
-async function addFiles(fileList) {
-  const files = Array.from(fileList || []);
-  if (!files.length) return;
 
-  const remaining = MAX_PHOTOS - photos.length;
-  if (remaining <= 0) {
-    showStatus("Maksimal 10 foto per Surat Jalan.", "error");
-    return;
-  }
+/* =====================================================
+   KOMPRES FOTO
+===================================================== */
 
-  try {
-    showStatus("Sedang memproses foto...", "info");
+function compressPhoto(file){
 
-    for (const file of files.slice(0, remaining)) {
-      if (!file.type.startsWith("image/")) continue;
-      const data = await compressPhoto(file);
-      photos.push({ name: file.name, data: data, preview: data });
+ return new Promise((resolve,reject)=>{
+
+  const reader = new FileReader();
+
+  reader.onload = ev => {
+
+   const img = new Image();
+
+   img.onload = ()=>{
+
+    const max = 1280;
+
+    let w = img.width;
+    let h = img.height;
+
+    if(w > max || h > max){
+
+     const r = Math.min(max/w,max/h);
+
+     w = Math.round(w*r);
+     h = Math.round(h*r);
+
     }
 
-    renderPhotos();
-    showStatus(
-      photos.length ? "Foto siap disimpan." : "Tidak ada foto yang dapat diproses.",
-      photos.length ? "ok" : "error"
-    );
+    const canvas = document.createElement("canvas");
 
-  } catch (err) {
-    showStatus(err.message || "Gagal memproses foto.", "error");
+    canvas.width = w;
+    canvas.height = h;
+
+    canvas.getContext("2d").drawImage(img,0,0,w,h);
+
+    let quality = .72;
+
+    function make(){
+
+     canvas.toBlob(blob=>{
+
+      if(!blob){
+       return reject(new Error("Foto gagal dikompres."));
+      }
+
+      if(blob.size > MAX_PHOTO_BYTES && quality > .35){
+
+       quality -= .08;
+       make();
+       return;
+
+      }
+
+      if(blob.size > MAX_PHOTO_BYTES){
+
+       return reject(
+        new Error("Ukuran foto masih terlalu besar. Coba foto ulang.")
+       );
+
+      }
+
+      const r = new FileReader();
+
+      r.onload = ()=>resolve(r.result);
+
+      r.onerror = ()=>reject(
+       new Error("Foto gagal diproses.")
+      );
+
+      r.readAsDataURL(blob);
+
+     },"image/jpeg",quality);
+
+    }
+
+    make();
+
+   };
+
+   img.onerror = ()=>reject(
+    new Error("File foto tidak dapat dibaca.")
+   );
+
+   img.src = ev.target.result;
+
+  };
+
+  reader.onerror = ()=>reject(
+   new Error("File foto gagal dibuka.")
+  );
+
+  reader.readAsDataURL(file);
+
+ });
+
+}
+
+
+/* =====================================================
+   TAMBAH FOTO
+===================================================== */
+
+async function addFiles(fileList){
+
+ const files = Array.from(fileList || []);
+
+ if(!files.length) return;
+
+ const remaining = MAX_PHOTOS - photos.length;
+
+ if(remaining <= 0){
+
+  showStatus("Maksimal 10 foto per Surat Jalan.","error");
+  return;
+
+ }
+
+ try{
+
+  showStatus("Sedang memproses foto...","info");
+
+  for(const file of files.slice(0,remaining)){
+
+   if(!file.type.startsWith("image/")) continue;
+
+   const data = await compressPhoto(file);
+
+   photos.push({
+    name:file.name,
+    data,
+    preview:data
+   });
+
   }
+
+  renderPhotos();
+
+  showStatus(
+   photos.length
+    ? "Foto siap disimpan."
+    : "Tidak ada foto yang dapat diproses.",
+   photos.length ? "ok" : "error"
+  );
+
+ }catch(err){
+
+  showStatus(
+   err.message || "Gagal memproses foto.",
+   "error"
+  );
+
+ }
+
 }
 
-function renderPhotos() {
-  const preview = $("preview");
-  preview.innerHTML = "";
-  $("photoCount").textContent = "Foto dipilih: " + photos.length + " / " + MAX_PHOTOS;
 
-  photos.forEach((photo, index) => {
-    const card = document.createElement("div");
-    card.className = "photo-card";
+function renderPhotos(){
 
-    const img = document.createElement("img");
-    img.src = photo.preview;
-    img.alt = "Foto " + (index + 1);
+ const preview = $("preview");
 
-    const name = document.createElement("div");
-    name.className = "photo-name";
-    name.textContent = "FOTO " + (index + 1) + " - " + photo.name;
+ preview.innerHTML = "";
 
-    const remove = document.createElement("button");
-    remove.className = "remove-photo";
-    remove.type = "button";
-    remove.textContent = "×";
-    remove.title = "Hapus foto";
-    remove.onclick = () => {
-      photos.splice(index, 1);
-      renderPhotos();
-    };
+ $("photoCount").textContent =
+  "Foto dipilih: " + photos.length + " / " + MAX_PHOTOS;
 
-    card.append(img, remove, name);
-    preview.appendChild(card);
-  });
+ photos.forEach((photo,index)=>{
+
+  const card = document.createElement("div");
+  card.className = "photo-card";
+
+  const img = document.createElement("img");
+  img.src = photo.preview;
+  img.alt = "Foto " + (index+1);
+
+  const name = document.createElement("div");
+  name.className = "photo-name";
+  name.textContent =
+   "FOTO " + (index+1) + " - " + photo.name;
+
+  const remove = document.createElement("button");
+
+  remove.className = "remove-photo";
+  remove.type = "button";
+  remove.textContent = "×";
+  remove.title = "Hapus foto";
+
+  remove.onclick = ()=>{
+
+   photos.splice(index,1);
+   renderPhotos();
+
+  };
+
+  card.append(img,remove,name);
+
+  preview.appendChild(card);
+
+ });
+
 }
 
-$("cameraInput").addEventListener("change", async event => {
-  await addFiles(event.target.files);
-  event.target.value = "";
+
+$("cameraInput").addEventListener("change",async e=>{
+
+ await addFiles(e.target.files);
+ e.target.value = "";
+
 });
 
-$("galleryInput").addEventListener("change", async event => {
-  await addFiles(event.target.files);
-  event.target.value = "";
+
+$("galleryInput").addEventListener("change",async e=>{
+
+ await addFiles(e.target.files);
+ e.target.value = "";
+
 });
 
-/**
- * Kirim data melalui form POST ke iframe tersembunyi.
- * Setiap permintaan memiliki requestId agar balasan tidak tertukar.
- */
-function postPayload(data) {
-  if (!validateEndpoint()) return null;
 
-  const requestId = makeRequestId();
-  const payload = Object.assign({}, data, { requestId: requestId });
+/* =====================================================
+   PENGIRIMAN PAYLOAD KE APPS SCRIPT
+===================================================== */
 
-  $("payload").value = JSON.stringify(payload);
+function postPayload(data){
+
+ if(!validateEndpoint()) return false;
+
+ try{
+
+  $("payload").value = JSON.stringify(data);
+
   $("backendForm").submit();
 
-  return requestId;
+  return true;
+
+ }catch(err){
+
+  console.error("Gagal mengirim payload:",err);
+
+  return false;
+
+ }
+
 }
 
-function requestStats() {
-  if (statsPending) return;
-  if (!validateEndpoint()) {
-    setStatsError();
-    return;
-  }
 
-  const requestId = postPayload({ action: "getStats" });
-  if (!requestId) {
-    setStatsError();
-    return;
-  }
+/* =====================================================
+   STATISTIK
+===================================================== */
 
-  statsPending = true;
-  statsRequestId = requestId;
+function displayStats(stats){
+
+ $("statTotal").textContent =
+  Number(stats.total) || 0;
+
+ $("statToday").textContent =
+  Number(stats.today) || 0;
+
+ $("statPhotos").textContent =
+  Number(stats.photos) || 0;
+
+ const now = new Date();
+
+ setStatsInfo(
+  "Terakhir diperbarui: " +
+  now.toLocaleTimeString("id-ID")
+ );
+
+}
+
+
+function clearStatsTimeout(){
+
+ if(statsTimeout){
 
   clearTimeout(statsTimeout);
-  statsTimeout = setTimeout(() => {
-    if (statsRequestId === requestId) {
-      statsPending = false;
-      statsRequestId = null;
-      setStatsError();
-      console.warn("Permintaan statistik timeout.");
-    }
-  }, 30000);
+  statsTimeout = null;
+
+ }
+
 }
 
-function setStatsError() {
-  $("statTotal").textContent = "!";
-  $("statToday").textContent = "!";
-  $("statPhotos").textContent = "!";
-}
 
-function finishSaving() {
-  clearTimeout(saveTimeout);
-  saving = false;
-  activeSaveRequestId = null;
-  $("saveButton").disabled = false;
-}
+function requestStats(manual = false){
 
-function sendRequest(data) {
-  if (saving) return;
+ if(!validateEndpoint()) return;
 
-  const requestId = postPayload(data);
-  if (!requestId) return;
+ // Jangan menumpuk permintaan statistik.
+ if(statsInFlight){
 
-  saving = true;
-  activeSaveRequestId = requestId;
-  $("saveButton").disabled = true;
-  showStatus("Mengirim data ke Google. Mohon tunggu...", "info");
-
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => {
-    if (activeSaveRequestId === requestId) {
-      finishSaving();
-      showStatus(
-        "Server belum memberikan respons. Periksa Spreadsheet sebelum mencoba ulang agar tidak terjadi pengiriman ganda.",
-        "error"
-      );
-    }
-  }, 90000);
-}
-
-/**
- * Terima hanya pesan yang memiliki penanda backend dan requestId yang dikenal.
- * Tidak bergantung pada event.source karena respons HtmlService dapat memakai frame internal.
- */
-window.addEventListener("message", event => {
-  const message = event.data;
-
-  if (!message || message.__sanyScanner !== true || !message.requestId || !message.result) {
-    return;
+  if(manual){
+   setStatsInfo("Permintaan statistik sedang diproses...");
   }
 
-  const result = message.result;
-  if (typeof result.success !== "boolean") return;
+  return;
 
-  // Balasan statistik
-  if (message.requestId === statsRequestId) {
-    clearTimeout(statsTimeout);
-    statsPending = false;
-    statsRequestId = null;
+ }
 
-    if (result.action === "getStats" && result.success && result.stats) {
-      $("statTotal").textContent = Number(result.stats.total) || 0;
-      $("statToday").textContent = Number(result.stats.today) || 0;
-      $("statPhotos").textContent = Number(result.stats.photos) || 0;
-    } else {
-      setStatsError();
-      console.error("Statistik gagal:", result.message || "Respons statistik tidak valid.");
-    }
-    return;
+ // Jangan mengganggu proses penyimpanan.
+ if(saving){
+
+  if(manual){
+   setStatsInfo("Menunggu proses penyimpanan selesai...");
   }
 
-  // Balasan penyimpanan
-  if (message.requestId !== activeSaveRequestId) return;
+  return;
 
-  if (result.action === "submitScan" || result.action === "error") {
+ }
+
+ statsInFlight = true;
+ statsRequestPending = true;
+ statsRetryCount = 0;
+
+ $("refreshButton").disabled = true;
+
+ if(manual){
+
+  setStatsInfo("Memperbarui statistik...");
+
+ }else{
+
+  setStatsInfo("Memuat statistik...");
+
+ }
+
+ sendStatsRequest();
+
+}
+
+
+function sendStatsRequest(){
+
+ if(!statsRequestPending) return;
+
+ if(!postPayload({action:"getStats"})){
+
+  statsFailed("Gagal mengirim permintaan statistik.");
+  return;
+
+ }
+
+ clearStatsTimeout();
+
+ statsTimeout = setTimeout(()=>{
+
+  statsFailed("Server belum merespons permintaan statistik.");
+
+ },STATS_TIMEOUT);
+
+}
+
+
+function statsFailed(message){
+
+ clearStatsTimeout();
+
+ if(statsRetryCount < STATS_MAX_RETRY){
+
+  statsRetryCount++;
+
+  setStatsInfo(
+   "Statistik belum tersedia. Mencoba kembali (" +
+   statsRetryCount + "/" + STATS_MAX_RETRY + ")..."
+  );
+
+  setTimeout(()=>{
+
+   if(!statsRequestPending) return;
+
+   if(saving){
+
+    statsFailed(message);
+    return;
+
+   }
+
+   sendStatsRequest();
+
+  },2000 * statsRetryCount);
+
+  return;
+
+ }
+
+ statsInFlight = false;
+ statsRequestPending = false;
+
+ $("refreshButton").disabled = false;
+
+ setStatsInfo(
+  "Gagal memuat statistik. Tekan REFRESH untuk mencoba lagi."
+ );
+
+ console.error("Statistik gagal:",message);
+
+}
+
+
+function statsSuccess(stats){
+
+ clearStatsTimeout();
+
+ statsInFlight = false;
+ statsRequestPending = false;
+
+ $("refreshButton").disabled = false;
+
+ displayStats(stats);
+
+}
+
+
+function manualRefreshStats(){
+
+ if(statsInFlight){
+
+  setStatsInfo("Statistik sedang diperbarui...");
+  return;
+
+ }
+
+ requestStats(true);
+
+}
+
+
+/* =====================================================
+   AUTO REFRESH STATISTIK
+===================================================== */
+
+function startStatsAutoRefresh(){
+
+ // Muat statistik setelah halaman siap.
+ setTimeout(()=>{
+
+  requestStats();
+
+ },1200);
+
+ // Refresh otomatis setiap 30 detik.
+ if(statsTimer){
+  clearInterval(statsTimer);
+ }
+
+ statsTimer = setInterval(()=>{
+
+  if(!statsInFlight && !saving){
+
+   requestStats();
+
+  }
+
+ },STATS_INTERVAL);
+
+}
+
+
+/* =====================================================
+   PROSES SIMPAN DATA
+===================================================== */
+
+function finishSaving(){
+
+ clearTimeout(requestTimeout);
+
+ saving = false;
+
+ $("saveButton").disabled = false;
+
+}
+
+
+function sendRequest(data){
+
+ if(saving) return;
+
+ if(statsInFlight){
+
+  showStatus(
+   "Statistik sedang diperbarui. Tunggu sebentar lalu simpan kembali.",
+   "info"
+  );
+
+  return;
+
+ }
+
+ if(!postPayload(data)){
+
+  showStatus(
+   "Gagal mengirim data ke server. Periksa koneksi.",
+   "error"
+  );
+
+  return;
+
+ }
+
+ saving = true;
+
+ $("saveButton").disabled = true;
+
+ showStatus(
+  "Mengirim data ke Google. Mohon tunggu...",
+  "info"
+ );
+
+ clearTimeout(requestTimeout);
+
+ requestTimeout = setTimeout(()=>{
+
+  finishSaving();
+
+  showStatus(
+   "Server belum memberikan respons. Periksa Spreadsheet sebelum mencoba ulang agar tidak terjadi pengiriman ganda.",
+   "error"
+  );
+
+ },90000);
+
+}
+
+
+/* =====================================================
+   MENERIMA BALASAN SERVER
+===================================================== */
+
+window.addEventListener("message",event=>{
+
+ let result = event.data;
+
+ if(typeof result === "string"){
+
+  try{
+
+   result = JSON.parse(result);
+
+  }catch(err){
+
+   console.error("Respons server tidak dapat dibaca:",result);
+
+   if(saving){
+
     finishSaving();
 
-    if (result.success) {
-      showStatus(
-        "BERHASIL! " + (result.message || "Data tersimpan.") +
-        " Total foto: " + (Number(result.totalPhotos) || 0) + ".",
-        "ok"
-      );
+    showStatus(
+     "Respons server tidak dapat dibaca. Periksa deployment Apps Script.",
+     "error"
+    );
 
-      $("doNumber").value = "";
-      $("keterangan").value = "";
-      photos = [];
-      renderPhotos();
+   }
 
-      // Perbarui statistik setelah data berhasil tersimpan.
-      setTimeout(requestStats, 500);
+   return;
 
-    } else if (result.duplicate) {
-      showStatus(
-        "DUPLIKAT! Nomor DO " + (result.doNumber || "") +
-        " sudah pernah direkam. Data tidak disimpan. Silakan periksa nomor DO.",
-        "error"
-      );
-      $("doNumber").focus();
-
-    } else {
-      showStatus(result.message || "Data gagal disimpan.", "error");
-    }
   }
+
+ }
+
+ if(!result || typeof result.success !== "boolean") return;
+
+
+ // BALASAN STATISTIK
+ if(result.action === "getStats"){
+
+  if(result.success && result.stats){
+
+   statsSuccess(result.stats);
+
+  }else{
+
+   statsFailed(result.message || "Statistik gagal dimuat.");
+
+  }
+
+  return;
+
+ }
+
+
+ // BALASAN PENYIMPANAN
+ if(result.action === "submitScan" || result.action === "error"){
+
+  finishSaving();
+
+  if(result.success){
+
+   showStatus(
+    "BERHASIL! " +
+    (result.message || "Data tersimpan.") +
+    " Total foto: " +
+    (Number(result.totalPhotos) || 0) + ".",
+    "ok"
+   );
+
+   $("doNumber").value = "";
+   $("keterangan").value = "";
+
+   photos = [];
+
+   renderPhotos();
+
+   // Perbarui statistik setelah upload berhasil.
+   setStatsInfo("Data tersimpan. Memperbarui statistik...");
+
+   setTimeout(()=>{
+
+    requestStats();
+
+   },700);
+
+  }else if(result.duplicate){
+
+   showStatus(
+    "DUPLIKAT! Nomor DO " +
+    (result.doNumber || "") +
+    " sudah pernah direkam. Data tidak disimpan. Silakan periksa nomor DO.",
+    "error"
+   );
+
+   $("doNumber").focus();
+
+  }else{
+
+   showStatus(
+    result.message || "Data gagal disimpan.",
+    "error"
+   );
+
+  }
+
+ }
+
 });
 
-function saveScan() {
-  if (saving) return;
 
-  const doNumber = $("doNumber").value.trim();
+/* =====================================================
+   SIMPAN SURAT JALAN
+===================================================== */
 
-  if (!doNumber) {
-    showStatus("Nomor Surat Jalan wajib diisi atau scan barcode terlebih dahulu.", "error");
-    return;
-  }
+function saveScan(){
 
-  if (photos.length > MAX_PHOTOS) {
-    showStatus("Maksimal 10 foto per Surat Jalan.", "error");
-    return;
-  }
+ if(saving) return;
 
-  if (!confirm("Simpan Surat Jalan " + doNumber + " dengan " + photos.length + " foto?")) {
-    return;
-  }
+ const doNumber = $("doNumber").value.trim();
 
-  sendRequest({
-    action: "submitScan",
-    doNumber: doNumber,
-    photos: photos.map(photo => photo.data),
-    keterangan: $("keterangan").value.trim()
-  });
+ if(!doNumber){
+
+  showStatus(
+   "Nomor Surat Jalan wajib diisi atau scan barcode terlebih dahulu.",
+   "error"
+  );
+
+  return;
+
+ }
+
+ if(photos.length > MAX_PHOTOS){
+
+  showStatus(
+   "Maksimal 10 foto per Surat Jalan.",
+   "error"
+  );
+
+  return;
+
+ }
+
+ if(statsInFlight){
+
+  showStatus(
+   "Sedang memuat statistik. Tunggu sebentar sebelum menyimpan.",
+   "info"
+  );
+
+  return;
+
+ }
+
+ if(!confirm(
+  "Simpan Surat Jalan " +
+  doNumber +
+  " dengan " +
+  photos.length +
+  " foto?"
+ )) return;
+
+ sendRequest({
+
+  action:"submitScan",
+  doNumber:doNumber,
+  photos:photos.map(p=>p.data),
+  keterangan:$("keterangan").value.trim()
+
+ });
+
 }
 
-window.addEventListener("load", () => {
-  if (validateEndpoint()) {
-    requestStats();
-    setInterval(requestStats, 30000);
-  }
+
+/* =====================================================
+   PENANGANAN SAAT HALAMAN DIBUKA
+===================================================== */
+
+window.addEventListener("load",()=>{
+
+ pageLoaded = true;
+
+ if(validateEndpoint()){
+
+  startStatsAutoRefresh();
+
+ }
+
 });
+
+
+/* =====================================================
+   KETIKA KEMBALI KE TAB APLIKASI
+===================================================== */
+
+document.addEventListener("visibilitychange",()=>{
+
+ if(
+  document.visibilityState === "visible" &&
+  pageLoaded &&
+  !statsInFlight &&
+  !saving
+ ){
+
+  requestStats();
+
+ }
+
+});
+
 </script>
+
 </body>
 </html>
