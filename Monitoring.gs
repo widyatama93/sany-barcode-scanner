@@ -5,9 +5,9 @@
  * 1. Add this file to the Apps Script project behind the existing scanner URL.
  * 2. In the existing doPost(e), after parsing payload, dispatch:
  *      if (["getMonitoring", "saveMonitoring"].includes(payload.action)) {
- *        return jsonOutput_(handleMonitoringRequest_(payload));
+ *        return monitoringResponseOutput_(handleMonitoringRequest_(payload));
  *      }
- *    Replace jsonOutput_ with the existing JSON response helper used by getStats/submitBatch.
+ *    This helper uses the same postMessage envelope as the existing scanner form iframe.
  * 3. Configure Script Property SANY_MONITORING_EDITORS with comma-separated editor emails.
  *    Reads are available to users of the existing web app. Writes require an email in that list.
  * 4. Create the tab "Monitoring" or call setupMonitoringSheet_() once in the editor.
