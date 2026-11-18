@@ -236,86 +236,22 @@ function clearDOList(){
  if(!confirm("Hapus seluruh "+doNumbers.length+" DO dari daftar?"))return;
  doNumbers=[];renderDOList();showStatus("Daftar DO dikosongkan.","info");
 }
-
 async function startScanner(){
  if(scannerRunning)return;
-
- if(typeof Html5Qrcode==="undefined"){
-  showStatus("Library scanner gagal dimuat. Periksa koneksi internet.","error");
-  return;
- }
-
+ if(typeof Html5Qrcode==="undefined"){showStatus("Library scanner gagal dimuat. Periksa koneksi internet.","error");return}
  try{
-  const formats=[
-   Html5QrcodeSupportedFormats.QR_CODE,
-   Html5QrcodeSupportedFormats.CODE_128,
-   Html5QrcodeSupportedFormats.CODE_39,
-   Html5QrcodeSupportedFormats.CODE_93,
-   Html5QrcodeSupportedFormats.EAN_13,
-   Html5QrcodeSupportedFormats.EAN_8,
-   Html5QrcodeSupportedFormats.UPC_A,
-   Html5QrcodeSupportedFormats.UPC_E,
-   Html5QrcodeSupportedFormats.ITF,
-   Html5QrcodeSupportedFormats.CODABAR
-  ];
-
-  // Format barcode wajib diatur saat inisialisasi
-  if(!scanner){
-   scanner=new Html5Qrcode("reader",{
-    formatsToSupport:formats,
-    verbose:false
-   });
-  }
-
-  await scanner.start(
-   {facingMode:"environment"},
-   {
-    fps:15,
-    qrbox:(width,height)=>{
-     return {
-      width:Math.min(width*0.90,450),
-      height:Math.min(height*0.40,180)
-     };
-    },
-    aspectRatio:1.777,
-    disableFlip:false
-   },
-   (decodedText)=>{
-    const code=normalizeDO(decodedText);
-    const now=Date.now();
-
-    if(!code)return;
-
-    if(code===lastScannedCode&&now-lastScannedAt<2500)return;
-
-    lastScannedCode=code;
-    lastScannedAt=now;
-
-    addDONumber(code,"scan");
-   },
-   ()=>{}
-  );
-
-  scannerRunning=true;
-
-  $("startButton").disabled=true;
-  $("stopButton").disabled=false;
-
-  showStatus(
-   "Kamera aktif. QR Code dan barcode batang siap dipindai.",
-   "info"
-  );
-
- }catch(err){
-  scannerRunning=false;
-  $("startButton").disabled=false;
-  $("stopButton").disabled=true;
-
-  showStatus(
-   "Kamera tidak dapat dibuka: "+(err.message||err),
-   "error"
-  );
- }
+  if(!scanner)scanner=new Html5Qrcode("reader");
+  const formats=[Html5QrcodeSupportedFormats.QR_CODE,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.CODE_93,Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.UPC_A,Html5QrcodeSupportedFormats.UPC_E,Html5QrcodeSupportedFormats.ITF];
+  await scanner.start({facingMode:"environment"},{fps:10,qrbox:{width:280,height:140},formatsToSupport:formats},decodedText=>{
+   const code=normalizeDO(decodedText),now=Date.now();
+   if(!code)return;
+   if(code===lastScannedCode&&now-lastScannedAt<2500)return;
+   lastScannedCode=code;lastScannedAt=now;
+   addDONumber(code,"scan");
+  },()=>{});
+  scannerRunning=true;$("readerEmpty").style.display="none";$("startButton").disabled=true;$("stopButton").disabled=false;
+  showStatus("Kamera aktif. Scan barcode DO satu per satu; hasil masuk ke daftar hingga 100 DO.","info");
+ }catch(err){scannerRunning=false;$("startButton").disabled=false;$("stopButton").disabled=true;showStatus("Kamera tidak dapat dibuka: "+(err.message||err),"error")}
 }
 async function stopScanner(){
  if(!scanner||!scannerRunning)return;
