@@ -224,7 +224,7 @@ $("doNumber").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefaul
 function renderDOList(){
  const list=$("doList");list.innerHTML="";
  $("doCount").textContent=doNumbers.length+" / "+MAX_DOS+" DO";
- $("scanLiveCount").textContent=doNumbers.length;
+ const liveCount=$("scanLiveCount");if(liveCount)liveCount.textContent=doNumbers.length;
  if(!doNumbers.length){list.innerHTML='<div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div>';return}
  doNumbers.forEach((code,index)=>{
   const item=document.createElement("div");item.className="do-item";
