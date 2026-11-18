@@ -252,6 +252,12 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
  <div class="do-summary"><span>Daftar DO yang akan disimpan</span><span class="do-counter" id="doCount">0 / 100 DO</span></div>
  <div id="doList" class="do-list"><div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div></div>
  <div class="batch-actions"><button type="button" onclick="clearDOList()">HAPUS SEMUA DO</button></div>
+
+ <div class="autosave-note" id="autosaveNote">✓ Draft DO tersimpan otomatis di perangkat ini.</div>
+ <details class="history-box">
+  <summary>RIWAYAT DO TERSIMPAN <span id="historyCount">(0)</span></summary>
+  <div class="history-list" id="historyList"><div class="history-empty">Belum ada riwayat batch tersimpan.</div></div>
+ </details>
  <div class="hint">Nomor yang sama tidak akan ditambahkan dua kali. Periksa daftar sebelum menekan tombol simpan.</div>
 </section>
 
@@ -284,6 +290,104 @@ let photos=[],doNumbers=[],scanner=null,scannerRunning=false,saving=false,reques
 let statsInFlight=false,statsRetryCount=0,statsRequestPending=false,lastScannedCode="",lastScannedAt=0;
 const $=id=>document.getElementById(id);
 
+const DRAFT_STORAGE_KEY="sany_do_scanner_draft_v1";
+const HISTORY_STORAGE_KEY="sany_do_scanner_history_v1";
+const MAX_HISTORY_ITEMS=500;
+let doHistory=[];
+
+let scanAudioContext=null,lastDuplicateNoticeAt=0;
+function prepareScanAudio(){
+ try{
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)return;
+  if(!scanAudioContext)scanAudioContext=new AudioCtx();
+  if(scanAudioContext.state==="suspended")scanAudioContext.resume();
+ }catch(err){console.warn("Audio not available:",err)}
+}
+function playScanTone(kind="success"){
+ try{
+  prepareScanAudio();
+  if(!scanAudioContext||scanAudioContext.state!=="running")return;
+  const ctx=scanAudioContext;
+  const now=ctx.currentTime;
+  const tones=kind==="duplicate"?[{f:330,t:0,d:.13},{f:220,t:.16,d:.18}]:[{f:880,t:0,d:.11},{f:1175,t:.12,d:.13}];
+  tones.forEach(tone=>{
+   const osc=ctx.createOscillator(),gain=ctx.createGain();
+   osc.type="sine";osc.frequency.setValueAtTime(tone.f,now+tone.t);
+   gain.gain.setValueAtTime(.0001,now+tone.t);
+   gain.gain.exponentialRampToValueAtTime(.16,now+tone.t+.012);
+   gain.gain.exponentialRampToValueAtTime(.0001,now+tone.t+tone.d);
+   osc.connect(gain);gain.connect(ctx.destination);
+   osc.start(now+tone.t);osc.stop(now+tone.t+tone.d+.02);
+  });
+ }catch(err){console.warn("Tidak dapat memutar notifikasi:",err)}
+}
+function notifyDuplicateDO(code){
+ const now=Date.now();
+ if(now-lastDuplicateNoticeAt<1400)return;
+ lastDuplicateNoticeAt=now;
+ playScanTone("duplicate");
+ showStatus("⚠ DO DUPLIKAT: "+code+" sudah ada dalam daftar. Tidak ditambahkan lagi.","error");
+}
+
+
+function safeReadStorage(key,fallback){
+ try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):fallback}
+ catch(err){console.warn("Tidak dapat membaca penyimpanan lokal:",err);return fallback}
+}
+function safeWriteStorage(key,value){
+ try{localStorage.setItem(key,JSON.stringify(value));return true}
+ catch(err){console.warn("Tidak dapat menyimpan data lokal:",err);const note=$("autosaveNote");if(note)note.textContent="⚠ Penyimpanan otomatis tidak tersedia di browser ini.";return false}
+}
+function persistDraft(){
+ const ok=safeWriteStorage(DRAFT_STORAGE_KEY,{
+  dos:doNumbers,
+  keterangan:$("keterangan")?$("keterangan").value:"",
+  updatedAt:new Date().toISOString()
+ });
+ const note=$("autosaveNote");
+ if(note&&ok)note.textContent="✓ Draft DO tersimpan otomatis di perangkat ini.";
+}
+function restoreDraft(){
+ const draft=safeReadStorage(DRAFT_STORAGE_KEY,null);
+ if(!draft||!Array.isArray(draft.dos))return;
+ const restored=[...new Set(draft.dos.map(normalizeDO).filter(Boolean))].slice(0,MAX_DOS);
+ if(restored.length){
+  doNumbers=restored;
+  if($("keterangan"))$("keterangan").value=String(draft.keterangan||"");
+  renderDOList();
+  showStatus("Draft dipulihkan: "+doNumbers.length+" DO dari penyimpanan otomatis perangkat ini.","info");
+ }
+}
+function loadDOHistory(){
+ const data=safeReadStorage(HISTORY_STORAGE_KEY,[]);
+ doHistory=Array.isArray(data)?data:[];
+ renderDOHistory();
+}
+function recordSavedBatch(codes){
+ const now=new Date().toISOString();
+ const entries=codes.map(code=>({code, savedAt:now}));
+ doHistory=[...entries,...doHistory].slice(0,MAX_HISTORY_ITEMS);
+ safeWriteStorage(HISTORY_STORAGE_KEY,doHistory);
+ renderDOHistory();
+}
+function renderDOHistory(){
+ const list=$("historyList"),count=$("historyCount");
+ if(!list)return;
+ if(count)count.textContent="("+doHistory.length+")";
+ if(!doHistory.length){list.innerHTML='<div class="history-empty">Belum ada riwayat batch tersimpan.</div>';return}
+ list.innerHTML="";
+ doHistory.slice(0,100).forEach(entry=>{
+  const row=document.createElement("div");row.className="history-item";
+  const code=document.createElement("span");code.className="history-code";code.textContent=entry.code||"";
+  const time=document.createElement("span");time.className="history-time";
+  const date=new Date(entry.savedAt);
+  time.textContent=isNaN(date.getTime())?"":date.toLocaleString("id-ID");
+  row.append(code,time);list.appendChild(row);
+ });
+}
+
+
 function showStatus(message,type){const el=$("status");el.textContent=message;el.className="status "+type}
 function setStatsInfo(message){$("statsInfo").textContent=message}
 function normalizeDO(value){return String(value||"").trim().replace(/\s+/g,"").toUpperCase()}
@@ -294,9 +398,10 @@ function validateEndpoint(){
 function addDONumber(value,source="manual"){
  const code=normalizeDO(value);
  if(!code){if(source==="manual")showStatus("Masukkan nomor DO terlebih dahulu.","error");return false}
- if(doNumbers.includes(code)){showStatus("DO "+code+" sudah ada di daftar, tidak ditambahkan lagi.","info");return false}
+ if(doNumbers.includes(code)){notifyDuplicateDO(code);return false}
  if(doNumbers.length>=MAX_DOS){showStatus("Batas 100 DO sudah tercapai. Simpan batch ini terlebih dahulu.","error");return false}
  doNumbers.push(code);renderDOList();
+ if(source==="scan")playScanTone("success");
  if(source==="scan")showStatus("Barcode masuk: "+code+" ("+doNumbers.length+"/"+MAX_DOS+" DO). Kamera tetap aktif untuk scan berikutnya.","ok");
  else showStatus("DO "+code+" ditambahkan ke daftar.","ok");
  return true;
@@ -306,10 +411,12 @@ function addManualDO(){
  if(addDONumber(input.value,"manual")){input.value="";input.focus()}
 }
 $("doNumber").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addManualDO()}});
+$("keterangan").addEventListener("input",persistDraft);
 function renderDOList(){
  const list=$("doList");list.innerHTML="";
  $("doCount").textContent=doNumbers.length+" / "+MAX_DOS+" DO";
  const liveCount=$("scanLiveCount");if(liveCount)liveCount.textContent=doNumbers.length;
+ persistDraft();
  if(!doNumbers.length){list.innerHTML='<div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div>';return}
  doNumbers.forEach((code,index)=>{
   const item=document.createElement("div");item.className="do-item";
@@ -326,6 +433,7 @@ function clearDOList(){
  doNumbers=[];renderDOList();showStatus("Daftar DO dikosongkan.","info");
 }
 async function startScanner(){
+ prepareScanAudio();
  if(scannerRunning)return;
  if(typeof Html5Qrcode==="undefined"){
   showStatus("Library scanner gagal dimuat. Periksa koneksi internet.","error");
@@ -382,8 +490,11 @@ async function startScanner(){
    const now=Date.now();
    if(!code)return;
 
-   // Cegah barcode yang sama masuk berulang selama 2,5 detik.
-   if(code===lastScannedCode&&now-lastScannedAt<2500)return;
+   // Cegah penambahan berulang, tetapi beri bunyi/peringatan jika DO sudah ada.
+   if(code===lastScannedCode&&now-lastScannedAt<2500){
+    if(doNumbers.includes(code))notifyDuplicateDO(code);
+    return;
+   }
    lastScannedCode=code;
    lastScannedAt=now;
    addDONumber(code,"scan");
@@ -585,7 +696,9 @@ window.addEventListener("message",event=>{
    if(duplicates.length)messageText+=" DO duplikat: "+duplicates.join(", ");
    if(saved>0){
     showStatus("BERHASIL! "+messageText+" Foto batch: "+(Number(result.totalPhotos)||0)+".","ok");
+    recordSavedBatch(doNumbers.slice());
     doNumbers=[];$("doNumber").value="";$("keterangan").value="";photos=[];renderDOList();renderPhotos();
+    safeWriteStorage(DRAFT_STORAGE_KEY,{dos:[],keterangan:"",updatedAt:new Date().toISOString()});
     setStatsInfo("Batch tersimpan. Memperbarui statistik...");setTimeout(()=>requestStats(),800);
    }else showStatus("TIDAK ADA DATA BARU. "+messageText,"info");
   }else if(result.duplicate)showStatus("DUPLIKAT! "+(result.message||"Nomor DO sudah pernah direkam."),"error");
@@ -602,7 +715,13 @@ function saveBatch(){
  if(!confirm(message))return;
  sendRequest({action:"submitBatch",dos:doNumbers.slice(),photos:photos.map(p=>p.data),keterangan:$("keterangan").value.trim()});
 }
-window.addEventListener("load",()=>{renderDOList();renderPhotos();if(validateEndpoint())startStatsAutoRefresh()});
+window.addEventListener("load",()=>{
+ loadDOHistory();
+ restoreDraft();
+ renderDOList();
+ renderPhotos();
+ if(validateEndpoint())startStatsAutoRefresh();
+});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&!statsInFlight&&!saving)requestStats()});
 </script>
 </body>
