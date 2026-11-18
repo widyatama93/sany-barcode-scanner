@@ -128,6 +128,89 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 @media(max-width:760px){.page{width:calc(100% - 20px);margin:10px auto 22px}.hero{min-height:265px;padding:24px 20px;border-radius:17px}.hero-art{width:100%;opacity:.42;background-position:78% center!important}.hero-copy{max-width:92%}.brand{font-size:39px}.hero h1{font-size:29px}.stats-grid{gap:9px}.stat-card{padding:14px 13px}.stat-value{font-size:27px}.panel{padding:19px 15px;border-radius:15px}.panel-head{margin:-19px -15px 17px;padding:13px 15px;min-height:49px}.section-title{font-size:12px}.step{font-size:9px;padding:5px 7px}.reader-wrap,#reader{min-height:250px}.scanner-side{padding:5px 0}.stats-bar{flex-wrap:wrap}.do-entry{flex-direction:row}.add-do{padding:0 13px}.do-list{grid-template-columns:1fr}}
 @media(max-width:390px){.hero{padding:20px 16px}.hero h1{font-size:25px}.brand{font-size:34px}.brand-sub{font-size:8px}.panel-head{gap:6px}.section-title{font-size:11px}.step{font-size:8px}.do-entry{flex-direction:column}.add-do{padding:12px}}
 
+
+/* Hero refinement: separate the copy and artwork so they no longer compete */
+.hero{
+  min-height:310px;
+  padding:34px clamp(26px,5.2vw,54px);
+  isolation:isolate;
+}
+.hero-copy{
+  width:58%;
+  max-width:610px;
+  flex:0 0 58%;
+  padding:8px 0;
+}
+.hero-art{
+  width:59%;
+  clip-path:polygon(19% 0,100% 0,100% 100%,0 100%);
+  background-position:82% 52%!important;
+}
+.hero-copy .brandline{margin-bottom:19px}
+.hero-copy .eyebrow{margin-bottom:10px}
+.hero h1{
+  max-width:100%;
+  font-size:clamp(27px,3.9vw,43px);
+  line-height:1.08;
+  letter-spacing:-1px;
+  text-wrap:balance;
+}
+.hero p{max-width:440px;font-size:14px;line-height:1.65}
+.hero:after{z-index:0;right:17%;top:-260px}
+.hero:before{z-index:3;width:46%}
+@media(max-width:760px){
+  .hero{min-height:285px;padding:24px 20px}
+  .hero-copy{width:100%;max-width:92%;flex:0 0 100%;padding:0}
+  .hero-art{width:100%;clip-path:none;opacity:.30;background-position:78% center!important}
+  .hero h1{font-size:29px;max-width:100%}
+  .hero p{max-width:440px}
+}
+@media(max-width:390px){
+  .hero{min-height:290px;padding:20px 16px}
+  .hero-copy{max-width:100%}
+  .hero h1{font-size:25px}
+}
+
+
+
+/* Desktop hero layout: protect headline from the background artwork */
+@media (min-width:761px){
+  .hero{
+    min-height:330px;
+    padding:34px clamp(28px,4.5vw,54px);
+    align-items:center;
+    isolation:isolate;
+  }
+  .hero-copy{
+    width:60%;
+    max-width:640px;
+    flex:0 0 60%;
+    z-index:4;
+    padding:8px 24px 8px 0;
+  }
+  .hero-art{
+    width:54%;
+    right:0;
+    clip-path:polygon(25% 0,100% 0,100% 100%,0 100%);
+    background-position:82% center!important;
+  }
+  .hero h1{
+    max-width:560px;
+    font-size:clamp(26px,3.35vw,42px);
+    line-height:1.08;
+    letter-spacing:-.8px;
+    text-wrap:balance;
+  }
+  .hero p{max-width:460px}
+  .hero:before{z-index:3;width:56%;pointer-events:none}
+}
+@media (min-width:761px) and (max-width:900px){
+  .hero{min-height:320px;padding-left:28px;padding-right:24px}
+  .hero-copy{width:64%;flex-basis:64%;padding-right:18px}
+  .hero-art{width:49%;clip-path:polygon(28% 0,100% 0,100% 100%,0 100%)}
+  .hero h1{font-size:clamp(25px,3.35vw,31px);max-width:420px}
+  .hero p{max-width:390px;font-size:13px}
+}
 </style>
 </head>
 <body>
