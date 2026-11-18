@@ -50,7 +50,10 @@ button,input,textarea{font:inherit}button{cursor:pointer}
 .scanner-side{display:flex;flex-direction:column;justify-content:center;gap:12px}
 .scanner-side h3{font-size:17px;margin:0}
 .scanner-side p{font-size:12px;line-height:1.6;color:var(--muted);margin:0}
-.action-row{display:flex;gap:9px;flex-wrap:wrap}
+.action-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.scan-live-count{display:inline-flex;align-items:center;gap:7px;padding:10px 13px;border:1px solid #f0c8ca;border-radius:9px;background:#fff5f5;color:#9f1118;font-size:11px;font-weight:850;letter-spacing:.35px;white-space:nowrap}
+.scan-live-count strong{font-size:17px;line-height:1;font-variant-numeric:tabular-nums}
+.scan-live-count small{font-size:10px;font-weight:750;color:#777;letter-spacing:0}
 .btn{border:0;border-radius:9px;padding:12px 16px;font-size:11px;font-weight:850;letter-spacing:.65px;transition:.15s}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn-red{background:var(--red);color:#fff;box-shadow:0 5px 12px rgba(215,25,32,.18)}
@@ -153,7 +156,7 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
  <div class="panel-head"><h2 class="section-title">1. SCAN BARCODE SURAT JALAN</h2><span class="step">SCAN / CAPTURE</span></div>
  <div class="scanner-layout">
   <div class="reader-wrap"><div id="reader"></div><div class="reader-empty" id="readerEmpty"><div class="camera-symbol">▣</div><strong>Kamera scanner siap digunakan</strong><span class="reader-caption">Tekan MULAI SCAN untuk mengaktifkan kamera</span></div></div>
-  <div class="scanner-side"><h3>Scan beberapa DO sekaligus</h3><p>Arahkan kamera ke barcode pada surat jalan. Setiap nomor DO akan otomatis masuk ke daftar. Maksimal 100 DO dalam satu batch.</p><div class="action-row"><button class="btn btn-red" id="startButton" type="button" onclick="startScanner()">▶ MULAI SCAN</button><button class="btn btn-dark" id="stopButton" type="button" onclick="stopScanner()" disabled>■ STOP SCAN</button></div><div class="hint">Pastikan browser mendapat izin akses kamera. Gunakan koneksi HTTPS saat membuka aplikasi.</div></div>
+  <div class="scanner-side"><h3>Scan beberapa DO sekaligus</h3><p>Arahkan kamera ke barcode pada surat jalan. Setiap nomor DO akan otomatis masuk ke daftar. Maksimal 100 DO dalam satu batch.</p><div class="action-row"><button class="btn btn-red" id="startButton" type="button" onclick="startScanner()">▶ MULAI SCAN</button><button class="btn btn-dark" id="stopButton" type="button" onclick="stopScanner()" disabled>■ STOP SCAN</button><div class="scan-live-count" aria-live="polite" aria-atomic="true"><strong id="scanLiveCount">0</strong><span>DO TERKUMPUL</span><small>/ 100</small></div></div><div class="hint">Pastikan browser mendapat izin akses kamera. Gunakan koneksi HTTPS saat membuka aplikasi.</div></div>
  </div>
 </section>
 
@@ -221,6 +224,7 @@ $("doNumber").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefaul
 function renderDOList(){
  const list=$("doList");list.innerHTML="";
  $("doCount").textContent=doNumbers.length+" / "+MAX_DOS+" DO";
+ $("scanLiveCount").textContent=doNumbers.length;
  if(!doNumbers.length){list.innerHTML='<div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div>';return}
  doNumbers.forEach((code,index)=>{
   const item=document.createElement("div");item.className="do-item";
