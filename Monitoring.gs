@@ -32,6 +32,14 @@ function setupMonitoringSheet_() {
   return sheet;
 }
 
+function monitoringResponseOutput_(result) {
+  // Match the existing scanner iframe protocol: post the result to the parent window.
+  const safeJson = JSON.stringify({ __sanyScanner: true, result: result }).replace(/</g, "\\u003c");
+  const html = '<!doctype html><meta charset="utf-8"><script>window.parent.postMessage(' +
+    safeJson + ', "*");<\\/script>';
+  return ContentService.createTextOutput(html).setMimeType(ContentService.MimeType.HTML);
+}
+
 function handleMonitoringRequest_(payload) {
   const action = String(payload && payload.action || "");
   if (action === "getMonitoring") return getMonitoringRecords_();
