@@ -21,9 +21,7 @@ The Apps Script project behind the existing `SCRIPT_URL` is not included in this
 
    ```javascript
    if (["getMonitoring", "saveMonitoring"].includes(payload.action)) {
-     return ContentService
-       .createTextOutput(JSON.stringify(handleMonitoringRequest_(payload)))
-       .setMimeType(ContentService.MimeType.JSON);
+     return monitoringResponseOutput_(handleMonitoringRequest_(payload));
    }
    ```
 
