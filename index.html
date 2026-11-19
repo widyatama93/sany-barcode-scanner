@@ -247,15 +247,15 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
  <div class="panel-head"><h2 class="section-title">1. SCAN BARCODE SURAT JALAN</h2><span class="step">SCAN / CAPTURE</span></div>
  <div class="scanner-layout">
   <div class="reader-wrap"><div id="reader"></div><div class="reader-empty" id="readerEmpty"><div class="camera-symbol">▣</div><strong>Kamera scanner siap digunakan</strong><span class="reader-caption">Tekan MULAI SCAN untuk mengaktifkan kamera</span></div><div id="scanFeedback" class="scan-feedback" role="status" aria-live="polite" aria-atomic="true"></div></div>
-  <div class="scanner-side"><h3>Scan beberapa DO sekaligus</h3><p>Arahkan kamera ke barcode pada surat jalan. Setiap nomor DO akan otomatis masuk ke daftar. Maksimal 100 DO dalam satu batch.</p><div class="action-row"><button class="btn btn-red" id="startButton" type="button" onclick="startScanner()">▶ MULAI SCAN</button><button class="btn btn-dark" id="stopButton" type="button" onclick="stopScanner()" disabled>■ STOP SCAN</button><div class="scan-live-count" aria-live="polite" aria-atomic="true"><strong id="scanLiveCount">0</strong><span>DO TERKUMPUL</span><small>/ 100</small></div></div><div class="hint">Pastikan browser mendapat izin akses kamera. Gunakan koneksi HTTPS saat membuka aplikasi.</div></div>
+  <div class="scanner-side"><h3>Scan beberapa DO sekaligus</h3><p>Arahkan kamera ke barcode pada surat jalan. Setiap nomor DO akan otomatis masuk ke daftar. Maksimal 200 DO dalam satu batch.</p><div class="action-row"><button class="btn btn-red" id="startButton" type="button" onclick="startScanner()">▶ MULAI SCAN</button><button class="btn btn-dark" id="stopButton" type="button" onclick="stopScanner()" disabled>■ STOP SCAN</button><div class="scan-live-count" aria-live="polite" aria-atomic="true"><strong id="scanLiveCount">0</strong><span>DO TERKUMPUL</span><small>/ 200</small></div></div><div class="hint">Pastikan browser mendapat izin akses kamera. Gunakan koneksi HTTPS saat membuka aplikasi.</div></div>
  </div>
 </section>
 
 <section class="panel">
- <div class="panel-head"><h2 class="section-title">2. DAFTAR NOMOR SURAT JALAN / DO</h2><span class="step">MAX. 100 DO</span></div>
+ <div class="panel-head"><h2 class="section-title">2. DAFTAR NOMOR SURAT JALAN / DO</h2><span class="step">MAX. 200 DO</span></div>
  <label class="field-label" for="doNumber">Tambah nomor DO secara manual (jika diperlukan)</label>
  <div class="do-entry"><input id="doNumber" type="text" placeholder="Ketik / tempel nomor DO" autocomplete="off"><button class="add-do" type="button" onclick="addManualDO()">TAMBAH DO</button></div>
- <div class="do-summary"><span>Daftar DO yang akan disimpan</span><span class="do-counter" id="doCount">0 / 100 DO</span></div>
+ <div class="do-summary"><span>Daftar DO yang akan disimpan</span><span class="do-counter" id="doCount">0 / 200 DO</span></div>
  <div id="doList" class="do-list"><div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div></div>
  <div class="batch-actions"><button type="button" onclick="clearDOList()">HAPUS SEMUA DO</button></div>
 
@@ -291,7 +291,7 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 
 <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxJEqMN9vj2BDUbQ1Vgh90nLJzadN0CGICfuhGnXgwXszjoW1UbxSH5xK1xFe_aha8_/exec";
-const MAX_DOS=100,MAX_PHOTOS=15,MAX_PHOTO_BYTES=350*1024,STATS_INTERVAL=30000,STATS_TIMEOUT=15000,STATS_MAX_RETRY=3;
+const MAX_DOS=200,MAX_PHOTOS=15,MAX_PHOTO_BYTES=350*1024,STATS_INTERVAL=30000,STATS_TIMEOUT=15000,STATS_MAX_RETRY=3;
 let photos=[],doNumbers=[],scanner=null,scannerRunning=false,saving=false,requestTimeout=null,statsTimer=null,statsTimeout=null;
 let statsInFlight=false,statsRetryCount=0,statsRequestPending=false,lastScannedCode="",lastScannedAt=0;
 const $=id=>document.getElementById(id);
@@ -411,7 +411,7 @@ function addDONumber(value,source="manual"){
  const code=normalizeDO(value);
  if(!code){if(source==="manual")showStatus("Masukkan nomor DO terlebih dahulu.","error");return false}
  if(doNumbers.includes(code)){notifyDuplicateDO(code);return false}
- if(doNumbers.length>=MAX_DOS){showStatus("Batas 100 DO sudah tercapai. Simpan batch ini terlebih dahulu.","error");return false}
+ if(doNumbers.length>=MAX_DOS){showStatus("Batas 200 DO sudah tercapai. Simpan batch ini terlebih dahulu.","error");return false}
  doNumbers.push(code);renderDOList();
  if(source==="scan")playScanTone("success");
  if(source==="scan")showScanFeedback("✓ SCAN BERHASIL: "+code+" ditambahkan ("+doNumbers.length+"/"+MAX_DOS+" DO). Siap scan berikutnya.","ok");
@@ -720,7 +720,7 @@ window.addEventListener("message",event=>{
 function saveBatch(){
  if(saving)return;
  if(!doNumbers.length){showStatus("Belum ada DO. Scan barcode atau tambahkan nomor DO terlebih dahulu.","error");return}
- if(doNumbers.length>MAX_DOS){showStatus("Maksimal 100 DO dalam satu batch.","error");return}
+ if(doNumbers.length>MAX_DOS){showStatus("Maksimal 200 DO dalam satu batch.","error");return}
  if(photos.length>MAX_PHOTOS){showStatus("Maksimal 15 foto untuk satu batch.","error");return}
  if(statsInFlight){showStatus("Sedang memuat statistik. Tunggu sebentar sebelum menyimpan.","info");return}
  const message="Simpan "+doNumbers.length+" DO sekaligus dengan "+photos.length+" foto untuk seluruh batch?";
