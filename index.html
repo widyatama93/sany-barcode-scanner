@@ -308,9 +308,10 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 
 <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxJEqMN9vj2BDUbQ1Vgh90nLJzadN0CGICfuhGnXgwXszjoW1UbxSH5xK1xFe_aha8_/exec";
-const MAX_DOS=200,MAX_PHOTOS=15,MAX_PHOTO_BYTES=350*1024,STATS_INTERVAL=30000,STATS_TIMEOUT=15000,STATS_MAX_RETRY=3;
+const MAX_DOS=200,MAX_PHOTOS=15,MAX_PHOTO_BYTES=350*1024,STATS_INTERVAL=30000,STATS_TIMEOUT=35000,STATS_MAX_RETRY=3;
 let photos=[],doNumbers=[],scanner=null,scannerRunning=false,saving=false,requestTimeout=null,statsTimer=null,statsTimeout=null;
 let statsInFlight=false,statsRetryCount=0,statsRequestPending=false,lastScannedCode="",lastScannedAt=0;
+let backendQueue=[],backendActive=null,backendQueueTimer=null;
 const $=id=>document.getElementById(id);
 
 const DRAFT_STORAGE_KEY="sany_do_scanner_draft_v1";
@@ -675,12 +676,73 @@ function renderPhotos(){
 }
 $("cameraInput").addEventListener("change",async e=>{await addFiles(e.target.files);e.target.value=""});
 $("galleryInput").addEventListener("change",async e=>{await addFiles(e.target.files);e.target.value=""});
+function backendTimeoutFor(action){
+ if(action==="checkDO")return 20000;
+ if(action==="getStats")return 40000;
+ return 180000;
+}
+function backendRequestTimedOut(item){
+ if(item.action==="checkDO"){
+  const pending=pendingDOByRequest[item.requestId];
+  if(pending){
+   delete pendingDOByRequest[item.requestId];
+   delete pendingDOChecks[pending.code];
+   const message="Server tidak merespons pemeriksaan DO dalam 20 detik. Periksa deployment Web App Apps Script.";
+   if(pending.source==="scan")showScanFeedback("GAGAL MEMERIKSA DO: "+message,"error");
+   else showStatus(message,"error");
+   playScanTone("duplicate");
+  }
+ }else if(item.action==="getStats"){
+  statsFailed("Server tidak merespons permintaan statistik.");
+ }else{
+  finishSaving();
+  showStatus("Server belum memberikan respons. Periksa Spreadsheet sebelum mencoba ulang agar tidak terjadi pengiriman ganda.","error");
+ }
+}
+function startNextBackendRequest(){
+ if(backendActive||!backendQueue.length)return;
+ const item=backendQueue.shift();
+ backendActive=item;
+ try{
+  $("payload").value=item.payload;
+  $("backendForm").submit();
+  backendQueueTimer=setTimeout(()=>{
+   if(backendActive!==item)return;
+   backendActive=null;
+   backendQueueTimer=null;
+   backendRequestTimedOut(item);
+   startNextBackendRequest();
+  },item.timeoutMs);
+ }catch(err){
+  console.error("Gagal mengirim payload:",err);
+  backendActive=null;
+  backendRequestTimedOut(item);
+  setTimeout(startNextBackendRequest,0);
+ }
+}
+function completeBackendRequest(requestId){
+ if(!backendActive||backendActive.requestId!==String(requestId||""))return false;
+ clearTimeout(backendQueueTimer);
+ backendQueueTimer=null;
+ backendActive=null;
+ setTimeout(startNextBackendRequest,0);
+ return true;
+}
 function postPayload(data){
  if(!validateEndpoint())return false;
  try{
-  data.requestId="sany-"+Date.now()+"-"+Math.random().toString(36).slice(2,8);
-  $("payload").value=JSON.stringify(data);$("backendForm").submit();return true;
- }catch(err){console.error("Gagal mengirim payload:",err);return false}
+  // Jangan menimpa requestId yang sudah dicatat oleh pendingDOByRequest.
+  if(!data.requestId)data.requestId="sany-"+Date.now()+"-"+Math.random().toString(36).slice(2,8);
+  const item={
+   requestId:String(data.requestId),
+   action:String(data.action||""),
+   payload:JSON.stringify(data),
+   timeoutMs:backendTimeoutFor(data.action)
+  };
+  backendQueue.push(item);
+  startNextBackendRequest();
+  return true;
+ }catch(err){console.error("Gagal menyiapkan payload:",err);return false}
 }
 function displayStats(stats){
  $("statTotal").textContent=Number(stats.total)||0;
@@ -736,6 +798,7 @@ function sendRequest(data){
 window.addEventListener("message",event=>{
  let message=event.data;
  if(typeof message==="string"){try{message=JSON.parse(message)}catch(err){return}}
+ if(message&&message.__sanyScanner)completeBackendRequest(message.requestId);
  const result=message&&message.__sanyScanner?message.result:message;
  if(!result||typeof result.success!=="boolean")return;
  if(result.action==="checkDO"){
