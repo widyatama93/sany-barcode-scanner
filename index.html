@@ -429,9 +429,9 @@ function validateEndpoint(){
  if(!SCRIPT_URL.startsWith("https://script.google.com/macros/s/")||SCRIPT_URL.includes("PASTE_URL")){showStatus("URL Web App belum diatur.","error");return false}
  $("backendForm").action=SCRIPT_URL;return true;
 }
-function addDONumber(value,source="manual"){
- const code=normalizeDO(value);
- if(!code){if(source==="manual")showStatus("Masukkan nomor DO terlebih dahulu.","error");return false}
+const pendingDOChecks={};
+const pendingDOByRequest={};
+function addDONumberLocal(code,source){
  if(doNumbers.includes(code)){notifyDuplicateDO(code);return false}
  if(doNumbers.length>=MAX_DOS){showStatus("Batas 200 DO sudah tercapai. Simpan batch ini terlebih dahulu.","error");return false}
  doNumbers.push(code);renderDOList();
@@ -440,9 +440,30 @@ function addDONumber(value,source="manual"){
  else showStatus("DO "+code+" ditambahkan ke daftar.","ok");
  return true;
 }
+function addDONumber(value,source="manual"){
+ const code=normalizeDO(value);
+ if(!code){if(source==="manual")showStatus("Masukkan nomor DO terlebih dahulu.","error");return false}
+ if(doNumbers.includes(code)){notifyDuplicateDO(code);return false}
+ if(pendingDOChecks[code])return false;
+ if(doNumbers.length>=MAX_DOS){showStatus("Batas 200 DO sudah tercapai. Simpan batch ini terlebih dahulu.","error");return false}
+ if(!validateEndpoint())return false;
+ pendingDOChecks[code]=true;
+ const request={action:"checkDO",doNumber:code};
+ request.requestId="sany-check-"+Date.now()+"-"+Math.random().toString(36).slice(2,8);
+ pendingDOByRequest[request.requestId]={code:code,source:source};
+ if(!postPayload(request)){
+  delete pendingDOChecks[code];delete pendingDOByRequest[request.requestId];
+  showStatus("Gagal memeriksa DO ke Spreadsheet. Nomor tidak ditambahkan.","error");
+  return false;
+ }
+ if(source==="scan")showScanFeedback("MEMERIKSA DO "+code+" KE SPREADSHEET...","info");
+ else showStatus("Memeriksa nomor DO "+code+" ke Spreadsheet...","info");
+ return true;
+}
 function addManualDO(){
  const input=$("doNumber");
- if(addDONumber(input.value,"manual")){input.value="";input.focus()}
+ const code=normalizeDO(input.value);
+ if(addDONumber(code,"manual")){input.value="";input.focus()}
 }
 $("doNumber").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addManualDO()}});
 $("keterangan").addEventListener("input",persistDraft);
@@ -717,6 +738,28 @@ window.addEventListener("message",event=>{
  if(typeof message==="string"){try{message=JSON.parse(message)}catch(err){return}}
  const result=message&&message.__sanyScanner?message.result:message;
  if(!result||typeof result.success!=="boolean")return;
+ if(result.action==="checkDO"){
+  const requestId=message&&message.requestId?String(message.requestId):"";
+  const pending=pendingDOByRequest[requestId];
+  if(!pending)return;
+  delete pendingDOByRequest[requestId];
+  delete pendingDOChecks[pending.code];
+  if(!result.success){
+   const msg=result.message||"Pengecekan DO gagal.";
+   if(pending.source==="scan")showScanFeedback("GAGAL MEMERIKSA DO: "+msg+" Scan tidak ditambahkan.","error");
+   else showStatus("Gagal memeriksa DO ke Spreadsheet: "+msg,"error");
+   playScanTone("duplicate");
+   return;
+  }
+  if(result.duplicate){
+   playScanTone("duplicate");
+   showScanFeedback("⚠ DO SUDAH TERSIMPAN DI SPREADSHEET: "+pending.code+" (baris "+(result.row||"?")+"). Tidak ditambahkan.","error");
+   lastDuplicateNoticeAt=Date.now();
+   return;
+  }
+  addDONumberLocal(pending.code,pending.source);
+  return;
+ }
  if(result.action==="getStats"){
   if(result.success&&result.stats)statsSuccess(result.stats);else statsFailed(result.message||"Statistik gagal dimuat.");
   return;
