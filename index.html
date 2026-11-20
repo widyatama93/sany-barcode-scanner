@@ -539,18 +539,25 @@ async function startScanner(){
   }
 
   const scanConfig={
-   fps:10,
+   // iPhone membutuhkan detail gambar lebih tinggi untuk garis barcode 1D yang rapat.
+   fps:15,
    qrbox:(viewfinderWidth,viewfinderHeight)=>{
-    // Area scan lebar agar barcode 1D pada surat jalan mudah tertangkap.
-    const boxWidth=Math.floor(Math.min(viewfinderWidth*0.92,500));
-    const boxHeight=Math.floor(Math.min(viewfinderHeight*0.55,220));
+    // Gunakan hampir seluruh lebar kamera agar barcode panjang tetap masuk area deteksi.
+    // Area vertikal lebih tinggi membantu saat posisi ponsel/barcode sedikit miring.
     return {
-     width:Math.max(220,Math.min(boxWidth,viewfinderWidth)),
-     height:Math.max(90,Math.min(boxHeight,viewfinderHeight))
+     width:Math.max(1,Math.min(Math.floor(viewfinderWidth*0.98),900)),
+     height:Math.max(1,Math.min(Math.floor(viewfinderHeight*0.62),360))
     };
    },
-   aspectRatio:1.777,
-   disableFlip:false
+   // Jangan paksa rasio 16:9; biarkan Safari/iPhone memakai rasio kamera terbaik.
+   disableFlip:false,
+   videoConstraints:{
+    facingMode:{ideal:"environment"},
+    width:{ideal:1920},
+    height:{ideal:1080},
+    frameRate:{ideal:30,max:30},
+    advanced:[{focusMode:"continuous"}]
+   }
   };
 
   const onScanSuccess=(decodedText)=>{
