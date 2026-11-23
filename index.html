@@ -221,7 +221,7 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 /* Branding restored from the iPhone optimized version */
 .powered-footer{display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:96px;padding:10px;margin:14px 0 0;background:#fff;border:1px solid #e5e7eb;border-radius:13px}
 .powered-footer .powered-logo{display:block;width:165px;max-width:52vw;max-height:76px;height:auto;object-fit:contain;background:transparent;padding:0;border-radius:0;box-shadow:none}
-.reader-robot{position:absolute;z-index:8;right:8px;bottom:4px;width:clamp(104px,17vw,148px);height:auto;display:block;pointer-events:none;transform-origin:50% 85%;animation:botFloat 3.2s ease-in-out infinite;filter:drop-shadow(0 5px 9px rgba(0,0,0,.34))}
+.reader-robot{position:absolute;z-index:8;right:8px;top:6px;bottom:auto;width:clamp(104px,17vw,148px);height:auto;display:block;pointer-events:none;transform-origin:50% 85%;animation:botFloat 3.2s ease-in-out infinite;filter:drop-shadow(0 5px 9px rgba(0,0,0,.34))}
 .reader-robot img{display:block;width:100%;height:auto;object-fit:contain}
 .reader-robot.mood-scan{animation:botScan 1.15s ease-in-out infinite;filter:drop-shadow(0 0 11px rgba(30,177,255,.62))}
 .reader-robot.mood-ok{animation:botCelebrate .48s ease-in-out 3;filter:drop-shadow(0 0 13px rgba(37,211,125,.82))}
@@ -230,7 +230,7 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 @keyframes botScan{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.025)}}
 @keyframes botCelebrate{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.07)}}
 @keyframes botNo{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-@media(max-width:760px){.reader-robot{width:clamp(88px,29vw,116px);right:4px;bottom:3px}.powered-footer{min-height:90px}.powered-footer .powered-logo{width:155px;max-width:70vw}}
+@media(max-width:760px){.reader-robot{width:clamp(88px,29vw,116px);right:4px;top:4px;bottom:auto}.powered-footer{min-height:90px}.powered-footer .powered-logo{width:155px;max-width:70vw}}
 @media(prefers-reduced-motion:reduce){.reader-robot{animation:none!important}}
 
 
