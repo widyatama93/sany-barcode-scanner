@@ -233,6 +233,59 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 @media(max-width:760px){.reader-robot{width:clamp(88px,29vw,116px);right:4px;bottom:3px}.powered-footer{min-height:90px}.powered-footer .powered-logo{width:155px;max-width:70vw}}
 @media(prefers-reduced-motion:reduce){.reader-robot{animation:none!important}}
 
+
+/* SANY Monitoring Card: on-screen and print layout */
+.card-actions{display:flex;justify-content:flex-end;gap:10px;max-width:900px;margin:12px auto}
+.card-actions .btn{padding:11px 18px}
+.monitor-print-card{position:relative;overflow:hidden;max-width:900px;margin:10px auto 22px;background:#fff;border:1px solid #d9dde3;border-radius:18px;box-shadow:0 14px 36px rgba(15,23,42,.12)}
+.monitor-print-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:96px;padding:22px 30px;color:#fff;background:linear-gradient(112deg,#d71920 0%,#c90012 68%,#17191d 68%,#25282e 100%)}
+.monitor-print-brand{font-size:35px;line-height:1;font-weight:950;letter-spacing:1.6px}
+.monitor-print-brand small{display:block;margin-top:6px;color:#ffe3e4;font-size:9px;letter-spacing:2px;font-weight:700}
+.monitor-print-kicker{font-size:10px;font-weight:800;letter-spacing:2px;text-align:right;color:#fff}
+.monitor-print-title{margin:0;padding:23px 30px 5px;font-size:25px;line-height:1.1;font-weight:900;letter-spacing:.3px;color:#17191d}
+.monitor-print-rule{width:76px;height:5px;margin:0 30px 20px;background:#f4c400;border-radius:99px}
+.monitor-print-body{display:grid;grid-template-columns:minmax(0,1fr) 225px;gap:24px;padding:0 30px 28px}
+.monitor-print-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.monitor-print-field{min-width:0;padding:13px 15px;border:1px solid #e3e6eb;border-radius:10px;background:#fff}
+.monitor-print-field span,.monitor-print-reason span{display:block;margin-bottom:6px;color:#68707b;font-size:9px;font-weight:850;letter-spacing:1.15px;text-transform:uppercase}
+.monitor-print-field strong{display:block;overflow-wrap:anywhere;font-size:15px;line-height:1.35;color:#17191d}
+.monitor-print-reason{grid-column:1/-1;min-height:80px;padding:14px 16px;border-left:5px solid #d71920;border-radius:9px;background:#f5f6f8;white-space:pre-wrap;overflow-wrap:anywhere}
+.monitor-print-reason p{margin:0;color:#25282e;font-size:13px;line-height:1.55}
+.monitor-print-qr{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:16px 12px;border:1px solid #e3e6eb;border-radius:13px;background:#fafafa;text-align:center}
+.monitor-print-qr img{display:block;width:172px;height:172px;max-width:100%;object-fit:contain;background:#fff}
+.monitor-print-qr strong{margin-top:10px;font-size:11px;letter-spacing:.7px;color:#17191d}
+.monitor-print-qr small{margin-top:5px;color:#68707b;font-size:9px;overflow-wrap:anywhere}
+.monitor-print-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 30px;border-top:1px solid #e3e6eb;background:#fafafa;color:#68707b;font-size:9px;font-weight:750;letter-spacing:.8px}
+.monitor-print-foot b{color:#d71920}
+@media(max-width:650px){.monitor-print-head{min-height:76px;padding:17px 19px}.monitor-print-brand{font-size:29px}.monitor-print-title{padding:20px 19px 5px;font-size:22px}.monitor-print-rule{margin-left:19px}.monitor-print-body{grid-template-columns:minmax(0,1fr) 145px;gap:12px;padding:0 19px 20px}.monitor-print-fields{gap:8px}.monitor-print-field{padding:10px}.monitor-print-field strong{font-size:13px}.monitor-print-qr{padding:10px 8px}.monitor-print-qr img{width:120px;height:120px}.monitor-print-foot{padding:10px 19px}}
+@page{size:A5 landscape;margin:8mm}
+@media print{
+ html,body{width:100%;min-height:0;background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .topbar,.app-nav,.hero,.stats-grid,.stats-bar,#dashboardExtra,.powered-footer,.card-actions{display:none!important}
+ main.page{width:100%;max-width:none;margin:0;padding:0}
+ body.page-card #cardPanel{display:block!important;margin:0;padding:0;border:0;border-radius:0;background:#fff;box-shadow:none}
+ body.page-card #monitorCard{padding:0}
+ .monitor-print-card{width:100%;max-width:none;min-height:120mm;margin:0;border:1px solid #d3d6dc;border-radius:5mm;box-shadow:none;break-inside:avoid}
+ .monitor-print-head{min-height:25mm;padding:5mm 8mm}
+ .monitor-print-brand{font-size:25pt}
+ .monitor-print-brand small{font-size:6.5pt}
+ .monitor-print-kicker{font-size:7pt}
+ .monitor-print-title{padding:6mm 8mm 1mm;font-size:20pt}
+ .monitor-print-rule{width:18mm;height:1.2mm;margin:0 8mm 5mm}
+ .monitor-print-body{grid-template-columns:minmax(0,1fr) 48mm;gap:5mm;padding:0 8mm 6mm}
+ .monitor-print-fields{gap:3mm}
+ .monitor-print-field{padding:3mm 4mm;border-radius:2mm}
+ .monitor-print-field span,.monitor-print-reason span{font-size:6.5pt;margin-bottom:1.5mm}
+ .monitor-print-field strong{font-size:10pt}
+ .monitor-print-reason{min-height:27mm;padding:3mm 4mm;border-left-width:1.2mm;border-radius:2mm}
+ .monitor-print-reason p{font-size:9pt;line-height:1.4}
+ .monitor-print-qr{padding:3mm;border-radius:2mm}
+ .monitor-print-qr img{width:39mm;height:39mm}
+ .monitor-print-qr strong{margin-top:2mm;font-size:7.5pt}
+ .monitor-print-qr small{font-size:6pt}
+ .monitor-print-foot{padding:3mm 8mm;font-size:6.5pt}
+}
+
 </style>
 </head>
 <body>
@@ -799,7 +852,44 @@ function openMonitorForm(r={}){$("monitorEditor").open=true;$("mId").value=r.mon
 async function saveMonitoring(e){e.preventDefault();const payload={action:"saveMonitoring",record:{monitoringId:$("mId").value,so:$("mSO").value.trim(),do:$("mDO").value.trim(),company:$("mCompany").value.trim(),reasonDelay:$("mReason").value.trim(),pic:$("mPIC").value.trim(),status:$("mStatus").value}};try{const r=await monitoringRequest(payload);if(!r.success)throw new Error(r.message||"Simpan gagal");monitorNotice("Monitoring tersimpan.");$("monitorForm").reset();$("mId").value="";await loadMonitoring(true)}catch(err){monitorNotice(err.message)}}
 function renderDashboardMonitoring(){const counts={"Pending":0,"Ready to Ship":0,"Shipped":0};let late=0;for(const r of monitoringRows){if(counts[r.status]!==undefined)counts[r.status]++;if(r.status!=="Shipped"&&Number(r.agingDays)>7)late++}const total=monitoringRows.length,max=Math.max(1,...Object.values(counts));$("monTotal").textContent=total;$("monPending").textContent=counts.Pending;$("monReady").textContent=counts["Ready to Ship"];$("monShipped").textContent=counts.Shipped;$("monLate").textContent=late;$("statusBars").innerHTML="";Object.entries(counts).forEach(([k,v])=>{$("statusBars").insertAdjacentHTML("beforeend",'<div class="status-line"><span>'+k+'</span><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(v/max*100)+'%"></div></div><b>'+v+'</b></div>')});$("dashboardUpdated").textContent="Terakhir diperbarui: "+new Date().toLocaleTimeString("id-ID");const recent=monitoringRows.slice().sort((a,b)=>String(b.lastUpdated).localeCompare(String(a.lastUpdated))).slice(0,5);$("recentActivity").innerHTML=recent.length?recent.map(r=>'<div class="activity-item"><b>'+escapeHtml(r.do||"DO")+'</b> · '+escapeHtml(r.status||"")+'<br><small>'+escapeHtml(r.company||"")+' · '+escapeHtml(r.lastUpdated||"")+'</small></div>').join(""):"Belum ada aktivitas monitoring."}
 function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-async function openMonitoringCard(id){setPage("card");$("monitorCard").textContent="Memuat kartu…";try{if(!monitoringRows.length)await loadMonitoring(true);const r=monitoringRows.find(x=>x.monitoringId===id);if(!r)throw new Error("Monitoring ID tidak ditemukan");$("monitorCard").innerHTML='<article class="card-content"><div class="brand">SANY</div><h3>Monitoring Card</h3><dl><dt>Monitoring ID</dt><dd>'+escapeHtml(r.monitoringId)+'</dd><dt>Sales Order</dt><dd>'+escapeHtml(r.so)+'</dd><dt>Delivery Order</dt><dd>'+escapeHtml(r.do)+'</dd><dt>Company</dt><dd>'+escapeHtml(r.company)+'</dd><dt>Reason Delay</dt><dd>'+escapeHtml(r.reasonDelay)+'</dd><dt>PIC</dt><dd>'+escapeHtml(r.pic)+'</dd><dt>Aging</dt><dd>'+escapeHtml(r.agingDays)+' hari</dd><dt>Status</dt><dd><span class="status-pill">'+escapeHtml(r.status)+'</span></dd><dt>Last Updated</dt><dd>'+escapeHtml(r.lastUpdated)+'</dd></dl></article>'}catch(e){$("monitorCard").textContent=e.message}}
+async function openMonitoringCard(id){
+ setPage("card");
+ $("monitorCard").textContent="Memuat kartu…";
+ try{
+  if(!monitoringRows.length)await loadMonitoring(true);
+  const r=monitoringRows.find(x=>x.monitoringId===id);
+  if(!r)throw new Error("Monitoring ID tidak ditemukan");
+  const cardUrl=location.href.split("#")[0]+"#card="+encodeURIComponent(r.monitoringId);
+  const qrUrl="https://api.qrserver.com/v1/create-qr-code/?size=480x480&data="+encodeURIComponent(cardUrl);
+  $("monitorCard").innerHTML=
+   '<div class="card-actions no-print">'+
+    '<button class="btn btn-red" type="button" onclick="window.print()">Cetak Kartu</button>'+
+    '<button class="btn btn-dark" type="button" onclick="setPage(\'monitoring\')">Kembali</button>'+
+   '</div>'+
+   '<article class="monitor-print-card">'+
+    '<header class="monitor-print-head">'+
+     '<div class="monitor-print-brand">SANY<small>QUALITY CHANGES THE WORLD</small></div>'+
+     '<div class="monitor-print-kicker">WAREHOUSE<br>&amp; DISTRIBUTION</div>'+
+    '</header>'+
+    '<h3 class="monitor-print-title">QR MONITORING CARD</h3>'+
+    '<div class="monitor-print-rule"></div>'+
+    '<div class="monitor-print-body">'+
+     '<section class="monitor-print-fields">'+
+      '<div class="monitor-print-field"><span>Nomor SO</span><strong>'+escapeHtml(r.so)+'</strong></div>'+
+      '<div class="monitor-print-field"><span>Nomor DO</span><strong>'+escapeHtml(r.do)+'</strong></div>'+
+      '<div class="monitor-print-field"><span>Nama Company</span><strong>'+escapeHtml(r.company)+'</strong></div>'+
+      '<div class="monitor-print-reason"><span>Reason Delay</span><p>'+escapeHtml(r.reasonDelay)+'</p></div>'+
+     '</section>'+
+     '<aside class="monitor-print-qr">'+
+      '<img id="monitorQr" src="'+qrUrl+'" alt="QR Monitoring Card">'+
+      '<strong>SCAN UNTUK BUKA KARTU</strong>'+
+      '<small>ID: '+escapeHtml(r.monitoringId)+'</small>'+
+     '</aside>'+
+    '</div>'+
+    '<footer class="monitor-print-foot"><span>SANY <b>WAREHOUSE &amp; DISTRIBUTION</b></span><span>MONITORING CARD</span></footer>'+
+   '</article>';
+ }catch(e){$("monitorCard").textContent=e.message}
+}
 window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]))});window.addEventListener("load",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]));else loadMonitoring(true);setInterval(()=>{if(document.body.classList.contains("page-dashboard")&&!monitoringWaiter)loadMonitoring(true)},30000);});
 
 </script>
