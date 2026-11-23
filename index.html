@@ -286,6 +286,10 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
  .monitor-print-foot{padding:3mm 8mm;font-size:6.5pt}
 }
 
+
+.monitor-form-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+@media(max-width:560px){.monitor-form-actions .btn{width:100%}}
+
 </style>
 </head>
 <body>
@@ -318,7 +322,7 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 <details class="monitor-editor" id="monitorEditor"><summary>Form data monitoring</summary><form id="monitorForm" onsubmit="saveMonitoring(event)">
 <input type="hidden" id="mId"><div class="monitor-fields">
 <label>Sales Order<input id="mSO" required></label><label>Delivery Order<input id="mDO" required></label><label>Company<input id="mCompany" required></label><label>Reason Delay<input id="mReason" required></label><label>PIC<input id="mPIC" required></label><label>Status<select id="mStatus"><option>Pending</option><option>Ready to Ship</option><option>Shipped</option></select></label>
-</div><button class="btn btn-red" type="submit">Simpan Monitoring</button></form></details>
+</div><div class="monitor-form-actions"><button class="btn btn-red" type="submit">Simpan Monitoring</button><button class="btn btn-dark" type="button" onclick="saveMonitoring(null,true)">▣ Simpan &amp; Cetak Kartu</button></div></form></details>
 </section>
 <section id="cardPanel" class="panel card-panel"><div class="panel-head"><h2 class="section-title">QR MONITORING CARD</h2><span class="step">ID tetap · Data live</span></div><div id="monitorCard"><label for="cardIdInput">Masukkan Monitoring ID</label> <input id="cardIdInput" placeholder="Monitoring ID"><button class="btn btn-dark" type="button" onclick="openMonitoringCard(document.getElementById('cardIdInput').value.trim())">Buka kartu</button><p>Pindai QR pada tabel monitoring atau masukkan ID untuk melihat kartu terkini.</p></div></section>
 
@@ -880,8 +884,8 @@ async function loadMonitoring(silent=false){
 function renderMonitoring(){const q=($("monitorSearch").value||"").toLowerCase(),s=$("monitorStatus").value;const rows=monitoringRows.filter(r=>(!s||r.status===s)&&JSON.stringify(r).toLowerCase().includes(q));$("monitorRows").innerHTML="";if(!rows.length){$("monitorRows").innerHTML='<tr><td colspan="10">Tidak ada data sesuai pencarian.</td></tr>';return}for(const r of rows){const tr=document.createElement("tr");const cells=[r.monitoringId,r.so,r.do,r.company,r.reasonDelay,r.pic,(r.agingDays??"—")+" hari",r.lastUpdated,r.status];cells.forEach(v=>{const td=document.createElement("td");td.textContent=v??"";tr.appendChild(td)});const qr=document.createElement("td"),link=document.createElement("a"),img=document.createElement("img");const cardUrl=location.href.split("#")[0]+"#card="+encodeURIComponent(r.monitoringId);link.href=cardUrl;link.title="Buka Monitoring Card";link.textContent="Buka kartu";img.width=72;img.height=72;img.alt="QR "+r.monitoringId;img.loading="lazy";img.src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(cardUrl);link.prepend(img);qr.append(link);tr.append(qr);$("monitorRows").appendChild(tr)}}
 $("monitorSearch").addEventListener("input",renderMonitoring);$("monitorStatus").addEventListener("change",renderMonitoring);
 function openMonitorForm(r={}){$("monitorEditor").open=true;$("mId").value=r.monitoringId||"";$("mSO").value=r.so||"";$("mDO").value=r.do||"";$("mCompany").value=r.company||"";$("mReason").value=r.reasonDelay||"";$("mPIC").value=r.pic||"";$("mStatus").value=r.status||"Pending";$("monitorEditor").scrollIntoView({behavior:"smooth",block:"start"})}
-async function saveMonitoring(e){
- e.preventDefault();
+async function saveMonitoring(e,printAfter=false){
+ if(e&&typeof e.preventDefault==="function")e.preventDefault();
  if(monitoringWaiter||statsInFlight||saving){
   monitorNotice("Permintaan lain sedang berjalan. Tunggu sebentar lalu simpan kembali.");
   return;
@@ -890,15 +894,39 @@ async function saveMonitoring(e){
  try{
   const r=await monitoringRequest(payload);
   if(!r.success)throw new Error(r.message||"Simpan gagal");
-  monitorNotice("Monitoring tersimpan.");
+  const savedId=r.monitoringId||(r.record&&r.record.monitoringId)||payload.record.monitoringId;
+  const savedRecord=r.record||null;
+  monitorNotice(printAfter?"Monitoring tersimpan. Menyiapkan kartu cetak…":"Monitoring tersimpan.");
   $("monitorForm").reset();
   $("mId").value="";
   await loadMonitoring(true);
+  if(printAfter){
+   if(savedRecord&&savedId){
+    const record={...savedRecord,monitoringId:savedId};
+    const index=monitoringRows.findIndex(item=>item.monitoringId===savedId);
+    if(index>=0)monitoringRows[index]=record;
+    else monitoringRows.unshift(record);
+   }
+   if(!savedId)throw new Error("Monitoring tersimpan, tetapi ID kartu tidak ditemukan.");
+   await openMonitoringCard(savedId,true);
+  }
  }catch(err){monitorNotice(err.message)}
 }
 function renderDashboardMonitoring(){const counts={"Pending":0,"Ready to Ship":0,"Shipped":0};let late=0;for(const r of monitoringRows){if(counts[r.status]!==undefined)counts[r.status]++;if(r.status!=="Shipped"&&Number(r.agingDays)>7)late++}const total=monitoringRows.length,max=Math.max(1,...Object.values(counts));$("monTotal").textContent=total;$("monPending").textContent=counts.Pending;$("monReady").textContent=counts["Ready to Ship"];$("monShipped").textContent=counts.Shipped;$("monLate").textContent=late;$("statusBars").innerHTML="";Object.entries(counts).forEach(([k,v])=>{$("statusBars").insertAdjacentHTML("beforeend",'<div class="status-line"><span>'+k+'</span><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(v/max*100)+'%"></div></div><b>'+v+'</b></div>')});$("dashboardUpdated").textContent="Terakhir diperbarui: "+new Date().toLocaleTimeString("id-ID");const recent=monitoringRows.slice().sort((a,b)=>String(b.lastUpdated).localeCompare(String(a.lastUpdated))).slice(0,5);$("recentActivity").innerHTML=recent.length?recent.map(r=>'<div class="activity-item"><b>'+escapeHtml(r.do||"DO")+'</b> · '+escapeHtml(r.status||"")+'<br><small>'+escapeHtml(r.company||"")+' · '+escapeHtml(r.lastUpdated||"")+'</small></div>').join(""):"Belum ada aktivitas monitoring."}
 function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-async function openMonitoringCard(id){
+function printMonitoringCardWhenReady(){
+ const qr=$("monitorQr");
+ if(!qr){monitorNotice("QR kartu belum tersedia.");return}
+ const print=()=>setTimeout(()=>window.print(),250);
+ if(qr.complete){
+  if(qr.naturalWidth>0)print();
+  else monitorNotice("QR belum berhasil dimuat. Periksa koneksi lalu coba cetak lagi.");
+  return;
+ }
+ qr.addEventListener("load",print,{once:true});
+ qr.addEventListener("error",()=>monitorNotice("QR gagal dimuat. Periksa koneksi internet lalu coba cetak lagi."),{once:true});
+}
+async function openMonitoringCard(id,printAfter=false){
  setPage("card");
  $("monitorCard").textContent="Memuat kartu…";
  try{
@@ -909,7 +937,7 @@ async function openMonitoringCard(id){
   const qrUrl="https://api.qrserver.com/v1/create-qr-code/?size=480x480&data="+encodeURIComponent(cardUrl);
   $("monitorCard").innerHTML=
    '<div class="card-actions no-print">'+
-    '<button class="btn btn-red" type="button" onclick="window.print()">Cetak Kartu</button>'+
+    '<button class="btn btn-red" type="button" onclick="printMonitoringCardWhenReady()">Cetak Kartu</button>'+
     '<button class="btn btn-dark" type="button" onclick="setPage(\'monitoring\')">Kembali</button>'+
    '</div>'+
    '<article class="monitor-print-card">'+
@@ -934,6 +962,7 @@ async function openMonitoringCard(id){
     '</div>'+
     '<footer class="monitor-print-foot"><span>SANY <b>WAREHOUSE &amp; DISTRIBUTION</b></span><span>MONITORING CARD</span></footer>'+
    '</article>';
+  if(printAfter)printMonitoringCardWhenReady();
  }catch(e){$("monitorCard").textContent=e.message}
 }
 window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]))});window.addEventListener("load",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]));else loadMonitoring(true);setInterval(()=>{if(document.body.classList.contains("page-dashboard")&&!monitoringWaiter)loadMonitoring(true)},30000);});
