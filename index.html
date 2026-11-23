@@ -319,7 +319,7 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxJEqMN9vj2BDUbQ1Vgh90nLJzadN0CGICfuhGnXgwXszjoW1UbxSH5xK1xFe_aha8_/exec";
 const MAX_DOS=100,MAX_PHOTOS=15,MAX_PHOTO_BYTES=350*1024,STATS_INTERVAL=30000,STATS_TIMEOUT=15000,STATS_MAX_RETRY=3;
-let photos=[],doNumbers=[],scanner=null,scannerRunning=false,saving=false,requestTimeout=null,statsTimer=null,statsTimeout=null;
+let photos=[],doNumbers=[],scanner=null,scannerRunning=false,scannerStarting=false,saving=false,requestTimeout=null,statsTimer=null,statsTimeout=null;
 let statsInFlight=false,statsRetryCount=0,statsRequestPending=false,lastScannedCode="",lastScannedAt=0;
 const $=id=>document.getElementById(id);
 
@@ -478,11 +478,14 @@ function clearDOList(){
 }
 async function startScanner(){
  prepareScanAudio();
- if(scannerRunning)return;
+ if(scannerRunning||scannerStarting)return;
  if(typeof Html5Qrcode==="undefined"){
   showStatus("Library scanner gagal dimuat. Periksa koneksi internet.","error");
   return;
  }
+ // Kunci sebelum operasi kamera pertama agar ketukan ganda tidak memicu
+ // dua Html5Qrcode.start() yang bertabrakan.
+ scannerStarting=true;
 
  const startButton=$("startButton");
  const stopButton=$("stopButton");
@@ -561,6 +564,10 @@ async function startScanner(){
     ()=>{}
    );
   }catch(firstError){
+   const firstMessage=String(firstError&&firstError.message?firstError.message:firstError);
+   if(/already under transition|cannot transition|notallowederror|permission denied|notreadableerror/i.test(firstMessage)){
+    throw firstError;
+   }
    let cameras=[];
    try{
     cameras=await Html5Qrcode.getCameras();
@@ -596,7 +603,13 @@ async function startScanner(){
   stopButton.disabled=true;
 
   const detail=err&&err.message?err.message:String(err);
-  showScanFeedback("KAMERA GAGAL: "+detail+". Periksa izin kamera dan koneksi HTTPS.","error");
+  if(/already under transition|cannot transition/i.test(detail)){
+   showScanFeedback("Permintaan kamera sebelumnya masih diproses. Tunggu sebentar lalu tekan MULAI SCAN kembali.","error");
+  }else{
+   showScanFeedback("KAMERA GAGAL: "+detail+". Periksa izin kamera Safari dan pastikan halaman dibuka melalui HTTPS.","error");
+  }
+ }finally{
+  scannerStarting=false;
  }
 }
 async function stopScanner(){
