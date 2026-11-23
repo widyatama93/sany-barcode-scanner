@@ -518,25 +518,22 @@ async function startScanner(){
   }
 
   const scanConfig={
-   // Kembali ke setelan yang dipakai versi iPhone optimized.
+   // Setelan yang dipakai file iPhone optimized dan sebelumnya berhasil.
    fps:15,
    qrbox:(viewfinderWidth,viewfinderHeight)=>{
-    // Area lebar membantu barcode DO yang panjang; video memakai rasio asli kamera.
     return {
      width:Math.max(1,Math.min(Math.floor(viewfinderWidth*0.98),900)),
      height:Math.max(1,Math.min(Math.floor(viewfinderHeight*0.62),360))
     };
    },
-   disableFlip:false
-  };
-
-  // Ideal values meminta detail gambar lebih tinggi tanpa mewajibkan perangkat
-  // memenuhinya. Diletakkan di argumen start agar fallback camera ID tetap berlaku.
-  const preferredCameraConstraints={
-   facingMode:{ideal:"environment"},
-   width:{ideal:1920},
-   height:{ideal:1080},
-   frameRate:{ideal:30,max:30}
+   disableFlip:false,
+   videoConstraints:{
+    facingMode:{ideal:"environment"},
+    width:{ideal:1920},
+    height:{ideal:1080},
+    frameRate:{ideal:30,max:30},
+    advanced:[{focusMode:"continuous"}]
+   }
   };
 
   const onScanSuccess=(decodedText)=>{
@@ -558,7 +555,7 @@ async function startScanner(){
   // pilih kamera belakang dari daftar perangkat sebagai fallback.
   try{
    await scanner.start(
-    preferredCameraConstraints,
+    {facingMode:"environment"},
     scanConfig,
     onScanSuccess,
     ()=>{}
