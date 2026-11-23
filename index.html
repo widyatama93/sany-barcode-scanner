@@ -290,6 +290,37 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 .monitor-form-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 @media(max-width:560px){.monitor-form-actions .btn{width:100%}}
 
+
+/* Clear, branded expanded state for the monitoring entry form */
+.monitor-editor{margin-top:18px;overflow:hidden;border:1px solid #e2e5eb;border-radius:15px;background:#fff;box-shadow:0 5px 18px rgba(22,28,38,.06)}
+.monitor-editor>summary{display:flex;align-items:center;gap:13px;min-height:76px;padding:15px 18px;list-style:none;cursor:pointer;background:linear-gradient(100deg,#fff 0%,#fff 68%,#fff5f5 100%);transition:background .2s ease}
+.monitor-editor>summary::-webkit-details-marker{display:none}
+.monitor-editor>summary:hover{background:linear-gradient(100deg,#fff 0%,#fff 55%,#ffe9e9 100%)}
+.monitor-form-mark{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;background:#d71920;color:#fff;font-size:25px;font-weight:500;box-shadow:0 4px 10px rgba(215,25,32,.2)}
+.monitor-form-heading{display:grid;gap:4px;flex:1;min-width:0}
+.monitor-form-heading strong{color:#17191d;font-size:15px;font-weight:850;letter-spacing:.15px}
+.monitor-form-heading small{color:#68707b;font-size:11px;line-height:1.4}
+.monitor-form-state{padding:6px 9px;border:1px solid #f0c6c8;border-radius:99px;color:#b10f17;background:#fff;font-size:9px;font-weight:850;letter-spacing:.8px}
+.monitor-form-chevron{color:#747b86;font-size:22px;line-height:1;transition:transform .2s ease}
+.monitor-editor[open]{border-color:#e8b7ba;box-shadow:0 9px 24px rgba(22,28,38,.09)}
+.monitor-editor[open]>summary{border-bottom:1px solid #f0d3d4;background:#fff7f7}
+.monitor-editor[open] .monitor-form-mark{background:#17191d}
+.monitor-editor[open] .monitor-form-state{color:#16834a;border-color:#b8e3c9;background:#f1fbf5}
+.monitor-editor[open] .monitor-form-state::after{content:"AKTIF"}
+.monitor-editor:not([open]) .monitor-form-state::after{content:"BUKA FORM"}
+.monitor-editor[open] .monitor-form-state{font-size:0}
+.monitor-editor[open] .monitor-form-state::after{font-size:9px}
+.monitor-editor[open] .monitor-form-chevron{transform:rotate(180deg)}
+.monitor-editor form{padding:18px 20px 20px;animation:monitorFormReveal .22s ease-out}
+.monitor-fields{gap:14px;margin:0 0 18px}
+.monitor-fields label{gap:7px;color:#424852;font-size:11px;font-weight:800;letter-spacing:.2px}
+.monitor-fields input,.monitor-fields select{min-height:44px;padding:10px 12px;border:1px solid #d8dde5;border-radius:9px;background:#fff;color:#17191d;font-size:13px;transition:border-color .18s ease,box-shadow .18s ease}
+.monitor-fields input:focus,.monitor-fields select:focus{outline:none;border-color:#d71920;box-shadow:0 0 0 3px rgba(215,25,32,.12)}
+.monitor-form-actions{padding-top:15px;border-top:1px solid #edf0f3}
+.monitor-form-actions .btn{min-height:43px;border-radius:9px;padding:11px 16px;font-size:11px;font-weight:850;letter-spacing:.3px}
+@keyframes monitorFormReveal{from{opacity:.6;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:560px){.monitor-editor>summary{min-height:70px;padding:12px}.monitor-form-mark{flex-basis:38px;width:38px;height:38px}.monitor-form-heading strong{font-size:13px}.monitor-form-heading small{font-size:10px}.monitor-form-state{padding:5px 7px;font-size:8px}.monitor-editor form{padding:15px 13px 16px}}
+
 </style>
 </head>
 <body>
@@ -319,7 +350,7 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 <div class="monitor-toolbar"><input id="monitorSearch" type="search" placeholder="Cari SO, DO, Company, PIC..." aria-label="Cari monitoring"><select id="monitorStatus"><option value="">Semua status</option><option>Pending</option><option>Ready to Ship</option><option>Shipped</option></select><button class="btn btn-red" type="button" onclick="openMonitorForm()">+ Tambah Monitoring</button></div>
 <div id="monitorNotice" class="monitor-notice" role="status"></div>
 <div class="table-wrap"><table><thead><tr><th>Monitoring ID</th><th>Sales Order</th><th>Delivery Order</th><th>Company</th><th>Reason Delay</th><th>PIC</th><th>Aging</th><th>Last Updated</th><th>Status</th><th>QR</th></tr></thead><tbody id="monitorRows"><tr><td colspan="10">Memuat data monitoring dari Google Sheets…</td></tr></tbody></table></div>
-<details class="monitor-editor" id="monitorEditor"><summary>Form data monitoring</summary><form id="monitorForm" onsubmit="saveMonitoring(event)">
+<details class="monitor-editor" id="monitorEditor"><summary><span class="monitor-form-mark" aria-hidden="true">+</span><span class="monitor-form-heading"><strong>Form Data Monitoring</strong><small>Isi detail pengiriman dan simpan atau cetak kartu QR.</small></span><span class="monitor-form-state">BUKA FORM</span><span class="monitor-form-chevron" aria-hidden="true">⌄</span></summary><form id="monitorForm" onsubmit="saveMonitoring(event)">
 <input type="hidden" id="mId"><div class="monitor-fields">
 <label>Sales Order<input id="mSO" required></label><label>Delivery Order<input id="mDO" required></label><label>Company<input id="mCompany" required></label><label>Reason Delay<input id="mReason" required></label><label>PIC<input id="mPIC" required></label><label>Status<select id="mStatus"><option>Pending</option><option>Ready to Ship</option><option>Shipped</option></select></label>
 </div><div class="monitor-form-actions"><button class="btn btn-red" type="submit">Simpan Monitoring</button><button class="btn btn-dark" type="button" onclick="saveMonitoring(null,true)">▣ Simpan &amp; Cetak Kartu</button></div></form></details>
@@ -883,7 +914,18 @@ async function loadMonitoring(silent=false){
 }
 function renderMonitoring(){const q=($("monitorSearch").value||"").toLowerCase(),s=$("monitorStatus").value;const rows=monitoringRows.filter(r=>(!s||r.status===s)&&JSON.stringify(r).toLowerCase().includes(q));$("monitorRows").innerHTML="";if(!rows.length){$("monitorRows").innerHTML='<tr><td colspan="10">Tidak ada data sesuai pencarian.</td></tr>';return}for(const r of rows){const tr=document.createElement("tr");const cells=[r.monitoringId,r.so,r.do,r.company,r.reasonDelay,r.pic,(r.agingDays??"—")+" hari",r.lastUpdated,r.status];cells.forEach(v=>{const td=document.createElement("td");td.textContent=v??"";tr.appendChild(td)});const qr=document.createElement("td"),link=document.createElement("a"),img=document.createElement("img");const cardUrl=location.href.split("#")[0]+"#card="+encodeURIComponent(r.monitoringId);link.href=cardUrl;link.title="Buka Monitoring Card";link.textContent="Buka kartu";img.width=72;img.height=72;img.alt="QR "+r.monitoringId;img.loading="lazy";img.src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(cardUrl);link.prepend(img);qr.append(link);tr.append(qr);$("monitorRows").appendChild(tr)}}
 $("monitorSearch").addEventListener("input",renderMonitoring);$("monitorStatus").addEventListener("change",renderMonitoring);
-function openMonitorForm(r={}){$("monitorEditor").open=true;$("mId").value=r.monitoringId||"";$("mSO").value=r.so||"";$("mDO").value=r.do||"";$("mCompany").value=r.company||"";$("mReason").value=r.reasonDelay||"";$("mPIC").value=r.pic||"";$("mStatus").value=r.status||"Pending";$("monitorEditor").scrollIntoView({behavior:"smooth",block:"start"})}
+function openMonitorForm(r={}){
+ $("monitorEditor").open=true;
+ $("mId").value=r.monitoringId||"";
+ $("mSO").value=r.so||"";
+ $("mDO").value=r.do||"";
+ $("mCompany").value=r.company||"";
+ $("mReason").value=r.reasonDelay||"";
+ $("mPIC").value=r.pic||"";
+ $("mStatus").value=r.status||"Pending";
+ $("monitorEditor").scrollIntoView({behavior:"smooth",block:"start"});
+ setTimeout(()=> $("mSO").focus({preventScroll:true}),250);
+}
 async function saveMonitoring(e,printAfter=false){
  if(e&&typeof e.preventDefault==="function")e.preventDefault();
  if(monitoringWaiter||statsInFlight||saving){
