@@ -1007,7 +1007,22 @@ async function openMonitoringCard(id,printAfter=false){
   if(printAfter)printMonitoringCardWhenReady();
  }catch(e){$("monitorCard").textContent=e.message}
 }
-window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]))});window.addEventListener("load",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]));else loadMonitoring(true);setInterval(()=>{if(document.body.classList.contains("page-dashboard")&&!monitoringWaiter)loadMonitoring(true)},30000);});
+window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]))});window.addEventListener("load",()=>{
+ const navigation=performance.getEntriesByType?performance.getEntriesByType("navigation")[0]:null;
+ const isReload=navigation?navigation.type==="reload":!!(performance.navigation&&performance.navigation.type===1);
+ const m=location.hash.match(/^#card=(.+)$/);
+ if(isReload){
+  if(m)history.replaceState(null,"",location.pathname+location.search);
+  setPage("dashboard");
+  loadMonitoring(true);
+ }else if(m){
+  openMonitoringCard(decodeURIComponent(m[1]));
+ }else{
+  setPage("dashboard");
+  loadMonitoring(true);
+ }
+ setInterval(()=>{if(document.body.classList.contains("page-dashboard")&&!monitoringWaiter)loadMonitoring(true)},30000);
+});
 
 </script>
 </body>
