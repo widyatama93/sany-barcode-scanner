@@ -751,6 +751,14 @@ function displayStats(stats){
 function clearStatsTimeout(){if(statsTimeout){clearTimeout(statsTimeout);statsTimeout=null}}
 function requestStats(manual=false){
  if(!validateEndpoint())return;
+ if(monitoringWaiter){
+  if(manual)setStatsInfo("Menunggu data Monitoring selesai dimuat...");
+  if(!statsDeferredTimer)statsDeferredTimer=setTimeout(()=>{
+   statsDeferredTimer=null;
+   if(!monitoringWaiter&&!statsInFlight&&!saving)requestStats(manual);
+  },1200);
+  return;
+ }
  if(statsInFlight){if(manual)setStatsInfo("Permintaan statistik sedang diproses...");return}
  if(saving){if(manual)setStatsInfo("Menunggu proses penyimpanan selesai...");return}
  statsInFlight=true;statsRequestPending=true;statsRetryCount=0;$("refreshButton").disabled=true;
@@ -783,6 +791,7 @@ function startStatsAutoRefresh(){
 function finishSaving(){clearTimeout(requestTimeout);saving=false;$("saveButton").disabled=false}
 function sendRequest(data){
  if(saving)return;
+ if(monitoringWaiter){showStatus("Data Monitoring sedang dimuat. Tunggu sebentar lalu simpan kembali.","info");return}
  if(statsInFlight){showStatus("Statistik sedang diperbarui. Tunggu sebentar lalu simpan kembali.","info");return}
  if(!postPayload(data)){showStatus("Gagal mengirim data ke server. Periksa koneksi.","error");return}
  saving=true;$("saveButton").disabled=true;showStatus("Mengirim "+doNumbers.length+" DO dalam satu permintaan. Mohon tunggu hingga proses selesai...","info");
@@ -839,17 +848,54 @@ window.addEventListener("load",()=>{
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&!statsInFlight&&!saving)requestStats()});
 
 // Monitoring API contract: the Apps Script deployment must support getMonitoring and saveMonitoring.
-let monitoringRows=[];let monitoringWaiter=null;document.body.classList.add("page-dashboard");
+let monitoringRows=[];let monitoringWaiter=null,monitoringRetryTimer=null,statsDeferredTimer=null;document.body.classList.add("page-dashboard");
 function setPage(name){document.body.classList.remove("page-dashboard","page-scanner","page-monitoring","page-card");document.body.classList.add("page-"+name);document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===name));if(name==="monitoring")loadMonitoring();if(name==="dashboard")loadMonitoring(true);}
 document.querySelectorAll(".nav-item").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
 function monitoringRequest(payload){return new Promise((resolve,reject)=>{if(monitoringWaiter){reject(new Error("Permintaan monitoring sedang berjalan."));return}if(!postPayload(payload)){reject(new Error("Gagal mengirim permintaan ke Apps Script."));return}const timer=setTimeout(()=>{monitoringWaiter=null;reject(new Error("Apps Script belum merespons. Pastikan endpoint monitoring sudah dipasang."))},20000);monitoringWaiter={resolve,reject,timer}})}
 window.addEventListener("message",event=>{let m=event.data;if(typeof m==="string"){try{m=JSON.parse(m)}catch(e){return}}const r=m&&m.__sanyScanner?m.result:m;if(!r||!["getMonitoring","saveMonitoring"].includes(r.action))return;if(!monitoringWaiter)return;clearTimeout(monitoringWaiter.timer);const w=monitoringWaiter;monitoringWaiter=null;w.resolve(r)});
 function monitorNotice(msg){$("monitorNotice").textContent=msg||""}
-async function loadMonitoring(silent=false){if(statsInFlight||saving){setTimeout(()=>loadMonitoring(silent),1500);return}try{const r=await monitoringRequest({action:"getMonitoring"});if(!r.success)throw new Error(r.message||"Data monitoring gagal dimuat");monitoringRows=Array.isArray(r.records)?r.records:[];renderMonitoring();renderDashboardMonitoring();if(!silent)monitorNotice("Data diperbarui: "+new Date().toLocaleString("id-ID"));}catch(e){if(!silent){monitorNotice(e.message);$("monitorRows").innerHTML='<tr><td colspan="10">Tidak dapat mengambil data. Periksa deployment Apps Script.</td></tr>'}}}
+async function loadMonitoring(silent=false){
+ if(statsInFlight||saving||monitoringWaiter){
+  if(!monitoringRetryTimer)monitoringRetryTimer=setTimeout(()=>{
+   monitoringRetryTimer=null;
+   loadMonitoring(silent);
+  },1200);
+  return;
+ }
+ try{
+  const r=await monitoringRequest({action:"getMonitoring"});
+  if(!r.success)throw new Error(r.message||"Data monitoring gagal dimuat");
+  monitoringRows=Array.isArray(r.records)?r.records:[];
+  renderMonitoring();
+  renderDashboardMonitoring();
+  if(!silent)monitorNotice("Data diperbarui: "+new Date().toLocaleString("id-ID"));
+ }catch(e){
+  if(!silent){
+   const detail=escapeHtml(e&&e.message?e.message:String(e));
+   monitorNotice(e&&e.message?e.message:String(e));
+   $("monitorRows").innerHTML='<tr><td colspan="10">Tidak dapat mengambil data. '+detail+'</td></tr>';
+  }
+ }
+}
 function renderMonitoring(){const q=($("monitorSearch").value||"").toLowerCase(),s=$("monitorStatus").value;const rows=monitoringRows.filter(r=>(!s||r.status===s)&&JSON.stringify(r).toLowerCase().includes(q));$("monitorRows").innerHTML="";if(!rows.length){$("monitorRows").innerHTML='<tr><td colspan="10">Tidak ada data sesuai pencarian.</td></tr>';return}for(const r of rows){const tr=document.createElement("tr");const cells=[r.monitoringId,r.so,r.do,r.company,r.reasonDelay,r.pic,(r.agingDays??"—")+" hari",r.lastUpdated,r.status];cells.forEach(v=>{const td=document.createElement("td");td.textContent=v??"";tr.appendChild(td)});const qr=document.createElement("td"),link=document.createElement("a"),img=document.createElement("img");const cardUrl=location.href.split("#")[0]+"#card="+encodeURIComponent(r.monitoringId);link.href=cardUrl;link.title="Buka Monitoring Card";link.textContent="Buka kartu";img.width=72;img.height=72;img.alt="QR "+r.monitoringId;img.loading="lazy";img.src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(cardUrl);link.prepend(img);qr.append(link);tr.append(qr);$("monitorRows").appendChild(tr)}}
 $("monitorSearch").addEventListener("input",renderMonitoring);$("monitorStatus").addEventListener("change",renderMonitoring);
 function openMonitorForm(r={}){$("monitorEditor").open=true;$("mId").value=r.monitoringId||"";$("mSO").value=r.so||"";$("mDO").value=r.do||"";$("mCompany").value=r.company||"";$("mReason").value=r.reasonDelay||"";$("mPIC").value=r.pic||"";$("mStatus").value=r.status||"Pending";$("monitorEditor").scrollIntoView({behavior:"smooth",block:"start"})}
-async function saveMonitoring(e){e.preventDefault();const payload={action:"saveMonitoring",record:{monitoringId:$("mId").value,so:$("mSO").value.trim(),do:$("mDO").value.trim(),company:$("mCompany").value.trim(),reasonDelay:$("mReason").value.trim(),pic:$("mPIC").value.trim(),status:$("mStatus").value}};try{const r=await monitoringRequest(payload);if(!r.success)throw new Error(r.message||"Simpan gagal");monitorNotice("Monitoring tersimpan.");$("monitorForm").reset();$("mId").value="";await loadMonitoring(true)}catch(err){monitorNotice(err.message)}}
+async function saveMonitoring(e){
+ e.preventDefault();
+ if(monitoringWaiter||statsInFlight||saving){
+  monitorNotice("Permintaan lain sedang berjalan. Tunggu sebentar lalu simpan kembali.");
+  return;
+ }
+ const payload={action:"saveMonitoring",record:{monitoringId:$("mId").value,so:$("mSO").value.trim(),do:$("mDO").value.trim(),company:$("mCompany").value.trim(),reasonDelay:$("mReason").value.trim(),pic:$("mPIC").value.trim(),status:$("mStatus").value}};
+ try{
+  const r=await monitoringRequest(payload);
+  if(!r.success)throw new Error(r.message||"Simpan gagal");
+  monitorNotice("Monitoring tersimpan.");
+  $("monitorForm").reset();
+  $("mId").value="";
+  await loadMonitoring(true);
+ }catch(err){monitorNotice(err.message)}
+}
 function renderDashboardMonitoring(){const counts={"Pending":0,"Ready to Ship":0,"Shipped":0};let late=0;for(const r of monitoringRows){if(counts[r.status]!==undefined)counts[r.status]++;if(r.status!=="Shipped"&&Number(r.agingDays)>7)late++}const total=monitoringRows.length,max=Math.max(1,...Object.values(counts));$("monTotal").textContent=total;$("monPending").textContent=counts.Pending;$("monReady").textContent=counts["Ready to Ship"];$("monShipped").textContent=counts.Shipped;$("monLate").textContent=late;$("statusBars").innerHTML="";Object.entries(counts).forEach(([k,v])=>{$("statusBars").insertAdjacentHTML("beforeend",'<div class="status-line"><span>'+k+'</span><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(v/max*100)+'%"></div></div><b>'+v+'</b></div>')});$("dashboardUpdated").textContent="Terakhir diperbarui: "+new Date().toLocaleTimeString("id-ID");const recent=monitoringRows.slice().sort((a,b)=>String(b.lastUpdated).localeCompare(String(a.lastUpdated))).slice(0,5);$("recentActivity").innerHTML=recent.length?recent.map(r=>'<div class="activity-item"><b>'+escapeHtml(r.do||"DO")+'</b> · '+escapeHtml(r.status||"")+'<br><small>'+escapeHtml(r.company||"")+' · '+escapeHtml(r.lastUpdated||"")+'</small></div>').join(""):"Belum ada aktivitas monitoring."}
 function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 async function openMonitoringCard(id){
