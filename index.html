@@ -392,6 +392,8 @@ body.card-only .monitor-print-reason{display:block!important}
 .monitor-print-body .monitor-print-field{grid-column:1!important;width:100%;}
 
 .language-picker{display:flex;align-items:center;gap:8px;margin-left:auto;color:#fff;font-size:12px;font-weight:700;white-space:nowrap}.language-picker select{border:1px solid #5b6068;border-radius:8px;background:#25292f;color:#fff;padding:9px 11px;font-weight:700}.language-picker select option{color:#17191d;background:#fff}@media(max-width:700px){.language-picker{margin-left:0}.app-nav{flex-wrap:wrap}}
+
+body.card-only .card-panel>.panel-head{display:none!important}body.card-only .monitor-print-qr{display:none!important}body.card-only .monitor-print-body{grid-template-columns:1fr!important}body.card-only .monitor-print-fields{grid-template-columns:1fr!important}body.card-only .monitor-print-side{display:block!important}body.card-only .monitor-print-reason{display:block!important}
 </style>
 </head>
 <body>
@@ -1039,7 +1041,7 @@ async function loadMonitoring(silent=false){
   }
  }
 }
-function renderMonitoring(){const q=($("monitorSearch").value||"").toLowerCase(),s=$("monitorStatus").value;const rows=monitoringRows.filter(r=>(!s||r.status===s)&&JSON.stringify(r).toLowerCase().includes(q));$("monitorRows").innerHTML="";if(!rows.length){$("monitorRows").innerHTML='<tr><td colspan="10">Tidak ada data sesuai pencarian.</td></tr>';return}for(const r of rows){const tr=document.createElement("tr");const cells=[r.monitoringId,r.so,r.do,r.company,r.reasonDelay,r.pic,(r.agingDays??"—")+" hari",r.lastUpdated,r.status];cells.forEach(v=>{const td=document.createElement("td");td.textContent=v??"";tr.appendChild(td)});const qr=document.createElement("td"),link=document.createElement("a"),img=document.createElement("img");const cardUrl=location.href.split("#")[0]+"#card="+encodeURIComponent(r.monitoringId);link.href=cardUrl;link.title="Buka Monitoring Card";link.textContent="Buka kartu";img.width=72;img.height=72;img.alt="QR "+r.monitoringId;img.loading="lazy";img.src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(cardUrl);link.prepend(img);qr.append(link);tr.append(qr);$("monitorRows").appendChild(tr)}}
+function renderMonitoring(){const q=($("monitorSearch").value||"").toLowerCase(),s=$("monitorStatus").value;const rows=monitoringRows.filter(r=>(!s||r.status===s)&&JSON.stringify(r).toLowerCase().includes(q));$("monitorRows").innerHTML="";if(!rows.length){$("monitorRows").innerHTML='<tr><td colspan="10">Tidak ada data sesuai pencarian.</td></tr>';return}for(const r of rows){const tr=document.createElement("tr");const cells=[r.monitoringId,r.so,r.do,r.company,r.reasonDelay,r.pic,(r.agingDays??"—")+" hari",r.lastUpdated,r.status];cells.forEach(v=>{const td=document.createElement("td");td.textContent=v??"";tr.appendChild(td)});const qr=document.createElement("td"),link=document.createElement("a"),img=document.createElement("img");const cardUrl=location.href.split("#")[0]+"#scan="+encodeURIComponent(r.monitoringId);link.href=cardUrl;link.title="Buka Monitoring Card";link.textContent="Buka kartu";img.width=72;img.height=72;img.alt="QR "+r.monitoringId;img.loading="lazy";img.src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(cardUrl);link.prepend(img);qr.append(link);tr.append(qr);$("monitorRows").appendChild(tr)}}
 $("monitorSearch").addEventListener("input",renderMonitoring);$("monitorStatus").addEventListener("change",renderMonitoring);
 function openMonitorForm(r={}){
  $("monitorEditor").open=true;
@@ -1095,7 +1097,8 @@ function printMonitoringCardWhenReady(){
  qr.addEventListener("load",print,{once:true});
  qr.addEventListener("error",()=>monitorNotice("QR gagal dimuat. Periksa koneksi internet lalu coba cetak lagi."),{once:true});
 }
-async function openMonitoringCard(id,printAfter=false){
+async function openMonitoringCard(id,printAfter=false,scanOnly=false){
+ document.body.classList.toggle("card-only",!!scanOnly);
  setPage("card");
  $("monitorCard").textContent="Memuat kartu…";
  try{
@@ -1136,16 +1139,16 @@ async function openMonitoringCard(id,printAfter=false){
   if(printAfter)printMonitoringCardWhenReady();
  }catch(e){$("monitorCard").textContent=e.message}
 }
-window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]),false,true)});window.addEventListener("load",()=>{
+window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#(?:scan|card)=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]),false,true)});window.addEventListener("load",()=>{
  const navigation=performance.getEntriesByType?performance.getEntriesByType("navigation")[0]:null;
  const isReload=navigation?navigation.type==="reload":!!(performance.navigation&&performance.navigation.type===1);
- const m=location.hash.match(/^#card=(.+)$/);
+ const m=location.hash.match(/^#(?:scan|card)=(.+)$/);
  if(isReload){
-  if(m)history.replaceState(null,"",location.pathname+location.search);
+  if(m&&!location.hash.startsWith("#scan="))history.replaceState(null,"",location.pathname+location.search);
   setPage("dashboard");
   loadMonitoring(true);
  }else if(m){
-  openMonitoringCard(decodeURIComponent(m[1]));
+  openMonitoringCard(decodeURIComponent(m[1]),false,true);
  }else{
   setPage("dashboard");
   loadMonitoring(true);
