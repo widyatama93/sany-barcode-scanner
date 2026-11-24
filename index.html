@@ -417,7 +417,14 @@ body.card-only .card-panel>.panel-head{display:none!important}body.card-only .mo
  body.print-four-up .print-four-card .monitor-print-qr strong{font-size:6.5pt}
  body.print-four-up .print-four-card .monitor-print-qr small{font-size:5pt}
  body.print-four-up .print-four-card .monitor-print-foot{padding:2mm 5mm;font-size:5pt}
-}</style>
+}
+@media print{
+ body.print-four-up .print-four-card .monitor-print-fields{gap:2.5mm!important}
+ body.print-four-up .print-four-card .monitor-print-field{position:relative;padding:3mm 3.5mm!important;min-height:25mm;background:linear-gradient(135deg,#fff 0%,#f8fafc 100%);border:1px solid #d8dde5;border-left:1.3mm solid #d71920;border-radius:2.5mm;display:flex;flex-direction:column;justify-content:center}
+ body.print-four-up .print-four-card .monitor-print-field span{font-size:7pt;letter-spacing:1.1px;color:#59616c;margin-bottom:2mm}
+ body.print-four-up .print-four-card .monitor-print-field strong{font-size:11.5pt;line-height:1.2;font-weight:900;color:#17191d;letter-spacing:.1px}
+}
+</style>
 </head>
 <body>
 <div class="topbar"></div>
