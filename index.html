@@ -378,7 +378,7 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 .pda-scan-status.is-error{color:#b10f17}
 @media(max-width:560px){.pda-scan-box{padding:13px}.pda-scan-row{grid-template-columns:1fr}.pda-scan-row .btn{width:100%}}
 
-\n/* Consistent menu transitions */\n.page{min-height:calc(100vh - 70px)}\n@keyframes menuEnter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}\nbody.page-transitioning.page-dashboard #dashboardExtra,body.page-transitioning.page-scanner .panel,body.page-transitioning.page-monitoring .monitoring-panel,body.page-transitioning.page-card .card-panel{animation:menuEnter .24s ease-out both}\nbody.page-card #monitorCard{min-height:420px}\n@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}body.page-transitioning.page-dashboard #dashboardExtra,body.page-transitioning.page-scanner .panel,body.page-transitioning.page-monitoring .monitoring-panel,body.page-transitioning.page-card .card-panel{animation:none}}\n</style>
+\n/* Consistent menu transitions */\n.page{min-height:calc(100vh - 70px)}\n@keyframes menuEnter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}\nbody.page-transitioning.page-dashboard #dashboardExtra,body.page-transitioning.page-scanner .panel,body.page-transitioning.page-monitoring .monitoring-panel,body.page-transitioning.page-card .card-panel{animation:menuEnter .24s ease-out both}\nbody.page-card #monitorCard{min-height:420px}\n@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}body.page-transitioning.page-dashboard #dashboardExtra,body.page-transitioning.page-scanner .panel,body.page-transitioning.page-monitoring .monitoring-panel,body.page-transitioning.page-card .card-panel{animation:none}}\n\n/* Print label and QR only; scanned URL opens a focused monitoring card. */\n.monitor-print-body{grid-template-columns:minmax(0,1fr) minmax(220px, .8fr);align-items:stretch}\n.monitor-print-fields{grid-template-columns:1fr}\n.monitor-print-side{display:grid;grid-template-rows:auto 1fr;gap:12px}\n.monitor-print-reason{grid-column:auto;min-height:0}\n.monitor-print-qr{min-height:145px}\nbody:not(.card-only) .monitor-print-reason p{display:none}\nbody.card-only .topbar,body.card-only .app-nav,body.card-only .hero,body.card-only .stats-grid,body.card-only .stats-bar,body.card-only #dashboardExtra,body.card-only #monitoringPanel,body.card-only .powered-footer,body.card-only .card-actions{display:none!important}\nbody.card-only .page{width:min(960px,calc(100% - 24px));margin:18px auto}\nbody.card-only #cardPanel{display:block!important}\nbody.card-only .monitor-print-card{margin:0 auto}\nbody.card-only .monitor-print-reason p{display:block}\n@media(max-width:700px){.monitor-print-body{grid-template-columns:1fr}.monitor-print-fields{grid-template-columns:1fr 1fr}.monitor-print-side{grid-template-columns:1fr 1fr;grid-template-rows:auto}.monitor-print-qr{min-height:100%}}\n@media print{body:not(.card-only) .monitor-print-reason p{display:none}.monitor-print-body{grid-template-columns:minmax(0,1fr) 75mm}.monitor-print-fields{grid-template-columns:1fr}.monitor-print-side{grid-template-rows:auto 1fr}.monitor-print-reason{min-height:0}.monitor-print-qr{min-height:42mm}}\n</style>
 </head>
 <body>
 <div class="topbar"></div>
@@ -1107,12 +1107,14 @@ async function openMonitoringCard(id,printAfter=false){
       '<div class="monitor-print-field"><span>Nomor SO</span><strong>'+escapeHtml(r.so)+'</strong></div>'+
       '<div class="monitor-print-field"><span>Nomor DO</span><strong>'+escapeHtml(r.do)+'</strong></div>'+
       '<div class="monitor-print-field"><span>Nama Company</span><strong>'+escapeHtml(r.company)+'</strong></div>'+
-      '<div class="monitor-print-reason"><span>Reason Delay</span><p>'+escapeHtml(r.reasonDelay)+'</p></div>'+
      '</section>'+
-     '<aside class="monitor-print-qr">'+
-      '<img id="monitorQr" src="'+qrUrl+'" alt="QR Monitoring Card">'+
-      '<strong>SCAN UNTUK BUKA KARTU</strong>'+
-      '<small>ID: '+escapeHtml(r.monitoringId)+'</small>'+
+     '<aside class="monitor-print-side">'+
+      '<div class="monitor-print-reason"><span>Reason Delay</span><p>'+escapeHtml(r.reasonDelay)+'</p></div>'+
+      '<div class="monitor-print-qr">'+
+       '<img id="monitorQr" src="'+qrUrl+'" alt="QR Monitoring Card">'+
+       '<strong>SCAN UNTUK BUKA KARTU</strong>'+
+       '<small>ID: '+escapeHtml(r.monitoringId)+'</small>'+
+      '</div>'+
      '</aside>'+
     '</div>'+
     '<footer class="monitor-print-foot"><span>SANY <b>WAREHOUSE &amp; DISTRIBUTION</b></span><span>MONITORING CARD</span></footer>'+
@@ -1120,7 +1122,7 @@ async function openMonitoringCard(id,printAfter=false){
   if(printAfter)printMonitoringCardWhenReady();
  }catch(e){$("monitorCard").textContent=e.message}
 }
-window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]))});window.addEventListener("load",()=>{
+window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#card=(.+)$/);if(m)openMonitoringCard(decodeURIComponent(m[1]),false,true)});window.addEventListener("load",()=>{
  const navigation=performance.getEntriesByType?performance.getEntriesByType("navigation")[0]:null;
  const isReload=navigation?navigation.type==="reload":!!(performance.navigation&&performance.navigation.type===1);
  const m=location.hash.match(/^#card=(.+)$/);
