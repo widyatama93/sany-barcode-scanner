@@ -385,6 +385,10 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 body:not(.card-only) .monitor-print-reason{display:none!important}
 body.card-only .monitor-print-reason{display:block!important}
 @media print{body:not(.card-only) .monitor-print-reason{display:none!important}.monitor-print-fields{grid-template-columns:1fr!important}}
+
+/* Final override: label fields must always stack vertically */
+.monitor-print-body .monitor-print-fields{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-auto-flow:row!important;}
+.monitor-print-body .monitor-print-field{grid-column:1!important;width:100%;}
 </style>
 </head>
 <body>
