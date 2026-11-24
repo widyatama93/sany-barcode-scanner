@@ -378,7 +378,7 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 .pda-scan-status.is-error{color:#b10f17}
 @media(max-width:560px){.pda-scan-box{padding:13px}.pda-scan-row{grid-template-columns:1fr}.pda-scan-row .btn{width:100%}}
 
-</style>
+\n/* Consistent menu transitions */\n.page{min-height:calc(100vh - 70px)}\n@keyframes menuEnter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}\nbody.page-transitioning.page-dashboard #dashboardExtra,body.page-transitioning.page-scanner .panel,body.page-transitioning.page-monitoring .monitoring-panel,body.page-transitioning.page-card .card-panel{animation:menuEnter .24s ease-out both}\nbody.page-card #monitorCard{min-height:420px}\n@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}body.page-transitioning.page-dashboard #dashboardExtra,body.page-transitioning.page-scanner .panel,body.page-transitioning.page-monitoring .monitoring-panel,body.page-transitioning.page-card .card-panel{animation:none}}\n</style>
 </head>
 <body>
 <div class="topbar"></div>
@@ -997,7 +997,7 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState===
 
 // Monitoring API contract: the Apps Script deployment must support getMonitoring and saveMonitoring.
 let monitoringRows=[];let monitoringWaiter=null,monitoringRetryTimer=null,statsDeferredTimer=null;document.body.classList.add("page-dashboard");
-function setPage(name){document.body.classList.remove("page-dashboard","page-scanner","page-monitoring","page-card");document.body.classList.add("page-"+name);document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===name));if(name==="monitoring")loadMonitoring();if(name==="dashboard")loadMonitoring(true);}
+let pageTransitionTimer=null;function setPage(name){document.body.classList.remove("page-dashboard","page-scanner","page-monitoring","page-card");document.body.classList.add("page-"+name,"page-transitioning");document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===name));window.scrollTo({top:0,behavior:"smooth"});clearTimeout(pageTransitionTimer);pageTransitionTimer=setTimeout(()=>document.body.classList.remove("page-transitioning"),260);if(name==="monitoring")loadMonitoring();if(name==="dashboard")loadMonitoring(true);}
 document.querySelectorAll(".nav-item").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
 function monitoringRequest(payload){return new Promise((resolve,reject)=>{if(monitoringWaiter){reject(new Error("Permintaan monitoring sedang berjalan."));return}if(!postPayload(payload)){reject(new Error("Gagal mengirim permintaan ke Apps Script."));return}const timer=setTimeout(()=>{monitoringWaiter=null;reject(new Error("Apps Script belum merespons. Pastikan endpoint monitoring sudah dipasang."))},20000);monitoringWaiter={resolve,reject,timer}})}
 window.addEventListener("message",event=>{let m=event.data;if(typeof m==="string"){try{m=JSON.parse(m)}catch(e){return}}const r=m&&m.__sanyScanner?m.result:m;if(!r||!["getMonitoring","saveMonitoring"].includes(r.action))return;if(!monitoringWaiter)return;clearTimeout(monitoringWaiter.timer);const w=monitoringWaiter;monitoringWaiter=null;w.resolve(r)});
