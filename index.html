@@ -443,12 +443,12 @@ body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
 .app-nav{align-items:center;overflow-x:auto;scrollbar-width:thin}.app-nav .nav-item{flex:0 0 auto}.language-picker{order:10;margin-left:auto;padding-left:10px;flex:0 0 auto;gap:7px;color:#d9dee7;font-size:11px;letter-spacing:.25px}.language-picker select{min-width:124px;border:1px solid #525963;border-radius:10px;background:linear-gradient(145deg,#30343b,#22262d);color:#fff;padding:9px 30px 9px 12px;font-size:12px;font-weight:750;box-shadow:inset 0 1px rgba(255,255,255,.08),0 2px 6px rgba(0,0,0,.18);outline:none}.language-picker select:focus{border-color:#ffc928;box-shadow:0 0 0 3px rgba(255,201,40,.2)}.language-picker select option{background:#fff;color:#17191d}@media(max-width:700px){.app-nav{display:flex;flex-wrap:wrap;gap:6px}.language-picker{width:100%;justify-content:flex-end;margin:4px 0 0;padding:9px 2px 0;border-top:1px solid rgba(255,255,255,.12)}.language-picker select{min-width:142px}}
 .qr-open-link{display:inline-flex!important;align-items:center;justify-content:center;min-width:74px;margin:5px auto 1px;padding:6px 12px;border:1px solid #e5b900;border-radius:999px;background:linear-gradient(135deg,#ffe17a,#ffc928 65%,#f5ba00);color:#222!important;font-size:11px;font-weight:850;line-height:1.1;text-decoration:none!important;box-shadow:0 2px 6px rgba(40,35,10,.14);transition:transform .16s,box-shadow .16s,filter .16s}.qr-open-link:hover{transform:translateY(-1px);filter:brightness(1.03);box-shadow:0 4px 10px rgba(40,35,10,.2)}.qr-open-link:focus-visible{outline:3px solid rgba(215,25,32,.32);outline-offset:2px}.qr-open-link img{display:block;margin-bottom:5px}.qr-open-link{display:block!important;width:max-content;min-width:90px;margin:7px auto 3px;padding:7px 14px;border:0!important;border-radius:7px!important;background:#252a33!important;color:#fff!important;font-size:11px;font-weight:800;line-height:1.2;text-align:center;text-decoration:none!important;box-shadow:none!important}.qr-open-link:hover{background:#363c46!important;transform:translateY(-1px)}.qr-open-link img{display:block;margin:0}
 .monitor-selection-bar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:14px 0 12px;padding:13px 15px;border:1px solid #e1e5eb;border-radius:13px;background:linear-gradient(110deg,#fff 0%,#fffdf5 100%);box-shadow:0 4px 14px rgba(20,25,35,.045)}.monitor-selection-caption{display:grid;gap:3px;min-width:180px}.monitor-selection-caption strong{font-size:13px;color:#17191d}.monitor-selection-caption span{font-size:11px;color:#68707b}.monitor-selection-actions{display:flex;gap:8px;flex:1;justify-content:flex-end}.monitor-selection-actions button{flex:1;max-width:150px;min-height:38px;padding:8px 12px;border:0;border-radius:8px;color:white;font-size:12px;font-weight:800;transition:transform .16s,box-shadow .16s,opacity .16s}.monitor-selection-actions button:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 5px 12px rgba(15,20,30,.18)}.monitor-selection-actions button:disabled{opacity:.42;cursor:not-allowed}.monitor-selection-actions .monitor-action-open{background:#252a33}.monitor-selection-actions .monitor-action-print{background:linear-gradient(135deg,#e11b22,#b80012)}#monitorRows td:first-child{white-space:nowrap}#monitorRows td:first-child input[type=radio]{width:16px;height:16px;margin:0 8px 0 0;vertical-align:middle;accent-color:#d71920;cursor:pointer}@media(max-width:700px){.monitor-selection-bar{align-items:stretch;flex-direction:column;gap:10px}.monitor-selection-actions{width:100%;gap:6px}.monitor-selection-actions button{min-width:0;padding:8px 5px;font-size:11px}}
-.monitor-table th:first-child{width:42px}#monitorRows td:first-child input[type=checkbox],#selectAllMonitoring{width:17px;height:17px;accent-color:#d71920;cursor:pointer}.table-wrap tbody tr:hover{background:#fff9e8}.table-wrap tbody tr:nth-child(even){background:#fafbfc}.table-wrap thead th{padding:13px 10px;background:#f4f6f9;color:#343b45;border-bottom:2px solid #dce1e8}.table-wrap tbody td{padding:13px 10px;line-height:1.4}.monitor-selection-actions button{flex:1 1 0;width:140px}.monitor-selection-actions button:disabled{opacity:.45;cursor:not-allowed}</style>
+.monitor-table th:first-child{width:42px}#monitorRows td:first-child input[type=checkbox],#selectAllMonitoring{width:17px;height:17px;accent-color:#d71920;cursor:pointer}.table-wrap tbody tr:hover{background:#fff9e8}.table-wrap tbody tr:nth-child(even){background:#fafbfc}.table-wrap thead th{padding:13px 10px;background:#f4f6f9;color:#343b45;border-bottom:2px solid #dce1e8}.table-wrap tbody td{padding:13px 10px;line-height:1.4}.monitor-selection-actions button{flex:1 1 0;width:140px}.monitor-selection-actions button:disabled{opacity:.45;cursor:not-allowed}body.page-shipping .stats-grid,body.page-shipping .stats-bar,body.page-shipping #dashboardExtra,body.page-shipping .panel:not(.scanner-panel){display:none!important}body.page-shipping .stats-grid{display:none!important}body.page-shipping .scanner-panel{display:block}</style>
 </head>
 <body>
 <div class="topbar"></div>
 <main class="page"><nav class="app-nav" aria-label="Menu aplikasi">
-<button class="nav-item active" data-page="dashboard">Dashboard</button><button class="nav-item" data-page="scanner">Barcode Scanner</button><button class="nav-item" data-page="monitoring">Delivery Pending Monitoring</button><button class="nav-item" data-page="card">QR Monitoring Card</button><label class="language-picker"><span id="languageLabel">Bahasa</span><select id="languageSelect" aria-label="Pilih bahasa"><option value="id">🇮🇩 Indonesia</option><option value="en">🇬🇧 English</option><option value="zh">🇨🇳 中文</option></select></label>
+<button class="nav-item active" data-page="dashboard">Dashboard</button><button class="nav-item" data-page="scanner">Barcode Scanner</button><button class="nav-item" data-page="shipping">Bukti Pengiriman</button><button class="nav-item" data-page="monitoring">Delivery Pending Monitoring</button><button class="nav-item" data-page="card">QR Monitoring Card</button><label class="language-picker"><span id="languageLabel">Bahasa</span><select id="languageSelect" aria-label="Pilih bahasa"><option value="id">🇮🇩 Indonesia</option><option value="en">🇬🇧 English</option><option value="zh">🇨🇳 中文</option></select></label>
 </nav>
 <header class="hero">
  <div class="hero-copy">
@@ -479,7 +479,7 @@ body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
 </section>
 <section id="cardPanel" class="panel card-panel"><div class="panel-head"><h2 class="section-title">QR MONITORING CARD</h2><span class="step">ID tetap · Data live</span></div><div id="monitorCard"><label for="cardIdInput">Masukkan Monitoring ID</label> <input id="cardIdInput" placeholder="Monitoring ID"><button class="btn btn-dark" type="button" onclick="openMonitoringCard(document.getElementById('cardIdInput').value.trim())">Buka kartu</button><p>Pindai QR pada tabel monitoring atau masukkan ID untuk melihat kartu terkini.</p></div></section>
 
-<section class="panel">
+<section class="panel scanner-panel">
  <div class="panel-head"><h2 class="section-title">1. SCAN BARCODE SURAT JALAN</h2><span class="step">SCAN / CAPTURE</span></div>
  <div class="scanner-layout">
   <div class="reader-wrap"><div id="reader"></div><div class="reader-empty" id="readerEmpty"><div class="camera-symbol">▣</div><strong>Kamera scanner siap digunakan</strong><span class="reader-caption">Tekan MULAI SCAN untuk mengaktifkan kamera</span></div><div id="scanFeedback" class="scan-feedback" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -493,7 +493,7 @@ body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
  </div>
 </section>
 
-<section class="panel">
+<section class="panel scanner-panel">
  <div class="panel-head"><h2 class="section-title">2. DAFTAR NOMOR SURAT JALAN / DO</h2><span class="step">MAX. 200 DO</span></div>
  <label class="field-label" for="doNumber">Tambah nomor DO secara manual (jika diperlukan)</label>
  <div class="do-entry"><input id="doNumber" type="text" placeholder="Ketik / tempel nomor DO" autocomplete="off"><button class="add-do" type="button" onclick="addManualDO()">TAMBAH DO</button></div>
@@ -513,7 +513,7 @@ body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
  <div class="hint">Nomor yang sama tidak akan ditambahkan dua kali. Periksa daftar sebelum menekan tombol simpan.</div>
 </section>
 
-<section class="panel">
+<section class="panel scanner-panel">
  <div class="panel-head"><h2 class="section-title">3. FOTO BUKTI PENGIRIMAN</h2><span class="step">OPTIONAL</span></div>
  <div class="file-row">
   <label class="file-label">▣ &nbsp; AMBIL FOTO<input id="cameraInput" type="file" accept="image/*" capture="environment"></label>
@@ -523,7 +523,7 @@ body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
  <div id="photoCount">Foto dipilih: 0 / 15</div><div id="preview"></div>
 </section>
 
-<section class="panel">
+<section class="panel scanner-panel">
  <div class="panel-head"><h2 class="section-title">4. KETERANGAN (OPSIONAL)</h2><span class="step">REMARKS</span></div>
  <textarea id="keterangan" rows="2" placeholder="Tambahkan catatan jika diperlukan"></textarea>
  <button id="saveButton" class="btn btn-red save" type="button" onclick="saveBatch()">SIMPAN SEMUA DO</button>
@@ -542,8 +542,10 @@ let photos=[],doNumbers=[],scanner=null,scannerRunning=false,scannerStarting=fal
 let statsInFlight=false,statsRetryCount=0,statsRequestPending=false,lastScannedCode="",lastScannedAt=0;
 const $=id=>document.getElementById(id);
 
-const DRAFT_STORAGE_KEY="sany_do_scanner_draft_v1";
-const HISTORY_STORAGE_KEY="sany_do_scanner_history_v1";
+let activeScannerMode="scanner";
+const scannerModeSnapshots={};
+function getDraftStorageKey(){return activeScannerMode==="shipping"?"sany_shipping_proof_draft_v1":"sany_do_scanner_draft_v1"}
+function getHistoryStorageKey(){return activeScannerMode==="shipping"?"sany_shipping_proof_history_v1":"sany_do_scanner_history_v1"}
 const MAX_HISTORY_ITEMS=500;
 let doHistory=[];
 
@@ -603,7 +605,7 @@ function safeWriteStorage(key,value){
  catch(err){console.warn("Tidak dapat menyimpan data lokal:",err);const note=$("autosaveNote");if(note)note.textContent="⚠ Penyimpanan otomatis tidak tersedia di browser ini.";return false}
 }
 function persistDraft(){
- const ok=safeWriteStorage(DRAFT_STORAGE_KEY,{
+ const ok=safeWriteStorage(getDraftStorageKey(),{
   dos:doNumbers,
   keterangan:$("keterangan")?$("keterangan").value:"",
   updatedAt:new Date().toISOString()
@@ -619,7 +621,7 @@ function persistDraft(){
  }
 }
 function restoreDraft(){
- const draft=safeReadStorage(DRAFT_STORAGE_KEY,null);
+ const draft=safeReadStorage(getDraftStorageKey(),null);
  if(!draft||!Array.isArray(draft.dos))return;
  const restored=[...new Set(draft.dos.map(normalizeDO).filter(Boolean))].slice(0,MAX_DOS);
  if(restored.length){
@@ -630,7 +632,7 @@ function restoreDraft(){
  }
 }
 function loadDOHistory(){
- const data=safeReadStorage(HISTORY_STORAGE_KEY,[]);
+ const data=safeReadStorage(getHistoryStorageKey(),[]);
  doHistory=Array.isArray(data)?data:[];
  renderDOHistory();
 }
@@ -638,7 +640,7 @@ function recordSavedBatch(codes){
  const now=new Date().toISOString();
  const entries=codes.map(code=>({code, savedAt:now}));
  doHistory=[...entries,...doHistory].slice(0,MAX_HISTORY_ITEMS);
- safeWriteStorage(HISTORY_STORAGE_KEY,doHistory);
+ safeWriteStorage(getHistoryStorageKey(),doHistory);
  renderDOHistory();
 }
 function renderDOHistory(){
@@ -950,6 +952,7 @@ $("galleryInput").addEventListener("change",async e=>{await addFiles(e.target.fi
 function postPayload(data){
  if(!validateEndpoint())return false;
  try{
+  if(activeScannerMode==="shipping"){const map={submitBatch:"submitShippingBatch",getStats:"getShippingStats",getInitialData:"getShippingInitialData",checkDO:"checkShippingDO"};if(map[data.action])data.action=map[data.action]}
   data.requestId="sany-"+Date.now()+"-"+Math.random().toString(36).slice(2,8);
   $("payload").value=JSON.stringify(data);$("backendForm").submit();return true;
  }catch(err){console.error("Gagal mengirim payload:",err);return false}
@@ -1019,6 +1022,7 @@ window.addEventListener("message",event=>{
  if(typeof message==="string"){try{message=JSON.parse(message)}catch(err){return}}
  const result=message&&message.__sanyScanner?message.result:message;
  if(!result||typeof result.success!=="boolean")return;
+ if(activeScannerMode==="shipping"){const aliases={getShippingStats:"getStats",submitShippingBatch:"submitBatch"};if(aliases[result.action])result.action=aliases[result.action]}
  if(result.action==="getStats"){
   if(result.success&&result.stats)statsSuccess(result.stats);else statsFailed(result.message||"Statistik gagal dimuat.");
   return;
@@ -1034,7 +1038,7 @@ window.addEventListener("message",event=>{
     showStatus("BERHASIL! "+messageText+" Foto batch: "+(Number(result.totalPhotos)||0)+".","ok");
     recordSavedBatch(doNumbers.slice());
     doNumbers=[];$("doNumber").value="";$("keterangan").value="";photos=[];renderDOList();renderPhotos();
-    safeWriteStorage(DRAFT_STORAGE_KEY,{dos:[],keterangan:"",updatedAt:new Date().toISOString()});
+    safeWriteStorage(getDraftStorageKey(),{dos:[],keterangan:"",updatedAt:new Date().toISOString()});
     setStatsInfo("Batch tersimpan. Memperbarui statistik...");setTimeout(()=>requestStats(),800);
    }else showStatus("TIDAK ADA DATA BARU. "+messageText,"info");
   }else if(result.duplicate)showStatus("DUPLIKAT! "+(result.message||"Nomor DO sudah pernah direkam."),"error");
@@ -1062,8 +1066,28 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState===
 
 // Monitoring API contract: the Apps Script deployment must support getMonitoring and saveMonitoring.
 let monitoringRows=[];let monitoringWaiter=null,monitoringRetryTimer=null,statsDeferredTimer=null;document.body.classList.add("page-dashboard");
-let pageTransitionTimer=null;function setPage(name){document.body.classList.remove("page-dashboard","page-scanner","page-monitoring","page-card");document.body.classList.add("page-"+name,"page-transitioning");document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===name));window.scrollTo({top:0,behavior:"smooth"});clearTimeout(pageTransitionTimer);pageTransitionTimer=setTimeout(()=>document.body.classList.remove("page-transitioning"),260);if(name==="monitoring")loadMonitoring();if(name==="dashboard")loadMonitoring(true);}
-document.querySelectorAll(".nav-item").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
+let pageTransitionTimer=null;function switchScannerMode(mode){
+ if(mode!== "scanner"&&mode!=="shipping")return;
+ if(mode===activeScannerMode){setPage(mode);return}
+ if(scannerRunning||scannerStarting)stopScanner();
+ scannerModeSnapshots[activeScannerMode]={dos:doNumbers.slice(),photos:photos.slice(),history:doHistory.slice(),note:$("keterangan").value};
+ activeScannerMode=mode;
+ const saved=scannerModeSnapshots[mode];
+ doNumbers=saved?saved.dos.slice():[];
+ photos=saved?saved.photos.slice():[];
+ doHistory=saved?saved.history.slice():[];
+ $("keterangan").value=saved?saved.note:"";
+ if(!saved){loadDOHistory();restoreDraft()}
+ renderDOList();renderDOHistory();renderPhotos();
+ const firstTitle=document.querySelector(".scanner-panel .section-title");
+ if(firstTitle)firstTitle.textContent=mode==="shipping"?"1. BUKTI PENGIRIMAN":"1. SCAN BARCODE SURAT JALAN";
+ const cameraTitle=document.querySelector(".scanner-side h3");
+ if(cameraTitle)cameraTitle.textContent=mode==="shipping"?"Scan bukti pengiriman":"Scan beberapa DO sekaligus";
+ setPage(mode);
+ requestStats()
+}
+function setPage(name){document.body.classList.remove("page-dashboard","page-scanner","page-monitoring","page-card","page-shipping");document.body.classList.add("page-"+name,"page-transitioning");document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===name));window.scrollTo({top:0,behavior:"smooth"});clearTimeout(pageTransitionTimer);pageTransitionTimer=setTimeout(()=>document.body.classList.remove("page-transitioning"),260);if(name==="monitoring")loadMonitoring();if(name==="dashboard")loadMonitoring(true);}
+document.querySelectorAll(".nav-item").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.page==="scanner"||b.dataset.page==="shipping")switchScannerMode(b.dataset.page);else setPage(b.dataset.page)}));
 function monitoringRequest(payload){return new Promise((resolve,reject)=>{if(monitoringWaiter){reject(new Error("Permintaan monitoring sedang berjalan."));return}if(!postPayload(payload)){reject(new Error("Gagal mengirim permintaan ke Apps Script."));return}const timer=setTimeout(()=>{monitoringWaiter=null;reject(new Error("Apps Script belum merespons. Pastikan endpoint monitoring sudah dipasang."))},20000);monitoringWaiter={resolve,reject,timer}})}
 window.addEventListener("message",event=>{let m=event.data;if(typeof m==="string"){try{m=JSON.parse(m)}catch(e){return}}const r=m&&m.__sanyScanner?m.result:m;if(!r||!["getMonitoring","saveMonitoring"].includes(r.action))return;if(!monitoringWaiter)return;clearTimeout(monitoringWaiter.timer);const w=monitoringWaiter;monitoringWaiter=null;w.resolve(r)});
 function monitorNotice(msg){$("monitorNotice").textContent=msg||""}
