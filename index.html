@@ -439,12 +439,14 @@ body.card-only .card-panel>.panel-head{display:none!important}body.card-only .mo
 .monitor-tamma-logo{display:flex;justify-content:center;align-items:center;padding:10px 18px 14px;background:#fff}.monitor-tamma-logo img{display:block;width:min(220px,55%);max-height:58px;object-fit:contain;object-position:center}
 body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
 @media print{body.print-four-up .print-four-card .monitor-tamma-logo{padding:1.5mm 3mm 2mm}body.print-four-up .print-four-card .monitor-tamma-logo img{width:38mm;max-height:10mm}}
+
+.app-nav{align-items:center;overflow-x:auto;scrollbar-width:thin}.app-nav .nav-item{flex:0 0 auto}.language-picker{order:10;margin-left:auto;padding-left:10px;flex:0 0 auto;gap:7px;color:#d9dee7;font-size:11px;letter-spacing:.25px}.language-picker select{min-width:124px;border:1px solid #525963;border-radius:10px;background:linear-gradient(145deg,#30343b,#22262d);color:#fff;padding:9px 30px 9px 12px;font-size:12px;font-weight:750;box-shadow:inset 0 1px rgba(255,255,255,.08),0 2px 6px rgba(0,0,0,.18);outline:none}.language-picker select:focus{border-color:#ffc928;box-shadow:0 0 0 3px rgba(255,201,40,.2)}.language-picker select option{background:#fff;color:#17191d}@media(max-width:700px){.app-nav{display:flex;flex-wrap:wrap;gap:6px}.language-picker{width:100%;justify-content:flex-end;margin:4px 0 0;padding:9px 2px 0;border-top:1px solid rgba(255,255,255,.12)}.language-picker select{min-width:142px}}
 </style>
 </head>
 <body>
 <div class="topbar"></div>
-<main class="page"><nav class="app-nav" aria-label="Menu aplikasi"><label class="language-picker"><span id="languageLabel">Bahasa</span><select id="languageSelect" aria-label="Pilih bahasa"><option value="id">🇮🇩 Indonesia</option><option value="en">🇬🇧 English</option><option value="zh">🇨🇳 中文</option></select></label>
-<button class="nav-item active" data-page="dashboard">Dashboard</button><button class="nav-item" data-page="scanner">Barcode Scanner</button><button class="nav-item" data-page="monitoring">Delivery Pending Monitoring</button><button class="nav-item" data-page="card">QR Monitoring Card</button>
+<main class="page"><nav class="app-nav" aria-label="Menu aplikasi">
+<button class="nav-item active" data-page="dashboard">Dashboard</button><button class="nav-item" data-page="scanner">Barcode Scanner</button><button class="nav-item" data-page="monitoring">Delivery Pending Monitoring</button><button class="nav-item" data-page="card">QR Monitoring Card</button><label class="language-picker"><span id="languageLabel">Bahasa</span><select id="languageSelect" aria-label="Pilih bahasa"><option value="id">🇮🇩 Indonesia</option><option value="en">🇬🇧 English</option><option value="zh">🇨🇳 中文</option></select></label>
 </nav>
 <header class="hero">
  <div class="hero-copy">
