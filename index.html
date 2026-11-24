@@ -1090,7 +1090,30 @@ async function loadMonitoring(silent=false){
   }
  }
 }
-let selectedMonitoringIds=[];function updateMonitoringSelectionButtons(){const ready=selectedMonitoringIds.length>0;["selectedOpenQr","selectedOpenCard","selectedPrintCard"].forEach(id=>{const x=$(id);if(x)x.disabled=!ready});const hint=$("monitorSelectionHint");if(hint)hint.textContent=ready?selectedMonitoringIds.length+" data dipilih":"Pilih satu atau beberapa baris monitoring."}function selectMonitoringRow(id,checked){selectedMonitoringIds=checked?[...new Set([...selectedMonitoringIds,id])]:selectedMonitoringIds.filter(x=>x!==id);updateMonitoringSelectionButtons()}function openSelectedMonitoringQr(){if(selectedMonitoringIds.length)window.open(location.href.split("#")[0]+"#scan="+encodeURIComponent(selectedMonitoringIds[0]),"_blank","noopener")}function openSelectedMonitoringCard(){if(selectedMonitoringIds.length)openMonitoringCard(selectedMonitoringIds[0])}async function printSelectedMonitoringCard(){const records=selectedMonitoringIds.map(id=>monitoringRows.find(r=>r.monitoringId===id)).filter(Boolean);if(!records.length)return;await openMonitoringCard(records[0].monitoringId);const template=document.querySelector(".monitor-print-card");if(!template)return;const sheet=$("printFourSheet");sheet.innerHTML="";records.forEach((r,index)=>{const card=template.cloneNode(true);card.classList.add("print-four-card");const fields=card.querySelectorAll(".monitor-print-field strong");[r.so,r.do,r.company].forEach((v,i)=>{if(fields[i])fields[i].textContent=v||""});card.querySelector(".monitor-print-reason")?.remove();const qr=card.querySelector("img#monitorQr");if(qr){qr.removeAttribute("id");const url=location.href.split("#")[0]+"#scan="+encodeURIComponent(r.monitoringId);qr.src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&data="+encodeURIComponent(url)}sheet.appendChild(card)});document.body.classList.add("print-four-up");const imgs=[...sheet.querySelectorAll("img")];await Promise.all(imgs.map(i=>i.complete?Promise.resolve():new Promise(ok=>{i.onload=ok;i.onerror=ok})));window.print()}
+let selectedMonitoringIds=[];function updateMonitoringSelectionButtons(){const ready=selectedMonitoringIds.length>0;["selectedOpenQr","selectedOpenCard","selectedPrintCard"].forEach(id=>{const x=$(id);if(x)x.disabled=!ready});const hint=$("monitorSelectionHint");if(hint)hint.textContent=ready?selectedMonitoringIds.length+" data dipilih":"Pilih satu atau beberapa baris monitoring."}function selectMonitoringRow(id,checked){selectedMonitoringIds=checked?[...new Set([...selectedMonitoringIds,id])]:selectedMonitoringIds.filter(x=>x!==id);updateMonitoringSelectionButtons()}function openSelectedMonitoringQr(){if(selectedMonitoringIds.length)window.open(location.href.split("#")[0]+"#scan="+encodeURIComponent(selectedMonitoringIds[0]),"_blank","noopener")}function openSelectedMonitoringCard(){if(selectedMonitoringIds.length)openMonitoringCard(selectedMonitoringIds[0])}async function printSelectedMonitoringCard(){
+ const records=selectedMonitoringIds.map(id=>monitoringRows.find(r=>String(r.monitoringId)===String(id))).filter(Boolean);
+ if(!records.length)return;
+ await openMonitoringCard(records[0].monitoringId);
+ const template=document.querySelector(".monitor-print-card");
+ if(!template){monitorNotice("Template kartu belum tersedia.");return}
+ let sheet=$("printFourSheet");
+ if(!sheet){sheet=document.createElement("div");sheet.id="printFourSheet";document.body.appendChild(sheet)}
+ sheet.replaceChildren();
+ records.forEach(r=>{
+  const card=template.cloneNode(true);
+  card.classList.add("print-four-card");
+  const fields=card.querySelectorAll(".monitor-print-field strong");
+  [r.so,r.do,r.company].forEach((value,index)=>{if(fields[index])fields[index].textContent=value??""});
+  card.querySelector(".monitor-print-reason")?.remove();
+  const qr=card.querySelector("#monitorQr");
+  if(qr){qr.removeAttribute("id");qr.src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&data="+encodeURIComponent(location.href.split("#")[0]+"#scan="+encodeURIComponent(r.monitoringId))}
+  sheet.appendChild(card);
+ });
+ document.body.classList.add("print-four-up");
+ const images=[...sheet.querySelectorAll("img")];
+ await Promise.all(images.map(image=>image.complete?Promise.resolve():new Promise(resolve=>{image.onload=resolve;image.onerror=resolve})));
+ setTimeout(()=>window.print(),200);
+}
 function renderMonitoring(){const q=($("monitorSearch").value||"").toLowerCase(),s=$("monitorStatus").value;const rows=monitoringRows.filter(r=>(!s||r.status===s)&&JSON.stringify(r).toLowerCase().includes(q));$("monitorRows").innerHTML="";if(!rows.length){$("monitorRows").innerHTML='<tr><td colspan="10">Tidak ada data sesuai pencarian.</td></tr>';return}for(const r of rows){const tr=document.createElement("tr");const cells=[r.so,r.do,r.company,r.reasonDelay,r.pic,(r.agingDays??"—")+" hari",r.lastUpdated,r.status];const td0=document.createElement("td");const pick=document.createElement("input");pick.type="checkbox";pick.checked=selectedMonitoringIds.includes(r.monitoringId);pick.setAttribute("aria-label","Pilih data "+r.monitoringId);pick.onchange=()=>selectMonitoringRow(r.monitoringId,pick.checked);td0.appendChild(pick);tr.appendChild(td0);cells.forEach(v=>{const td=document.createElement("td");td.textContent=v??"";tr.appendChild(td)});const qr=document.createElement("td"),link=document.createElement("a"),img=document.createElement("img");const cardUrl=location.href.split("#")[0]+"#scan="+encodeURIComponent(r.monitoringId);link.href=cardUrl;link.title="Buka QR Monitoring Card";img.width=72;img.height=72;img.alt="QR "+r.monitoringId;img.loading="lazy";img.src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(cardUrl);qr.append(img);tr.append(qr);$("monitorRows").appendChild(tr)}const all=$("selectAllMonitoring");if(all){all.onchange=()=>{selectedMonitoringIds=all.checked?rows.map(x=>x.monitoringId):selectedMonitoringIds.filter(id=>!rows.some(x=>x.monitoringId===id));renderMonitoring()}}updateMonitoringSelectionButtons()}
 $("monitorSearch").addEventListener("input",renderMonitoring);$("monitorStatus").addEventListener("change",renderMonitoring);
 function openMonitorForm(r={}){
