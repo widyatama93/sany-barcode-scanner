@@ -394,7 +394,30 @@ body.card-only .monitor-print-reason{display:block!important}
 .language-picker{display:flex;align-items:center;gap:8px;margin-left:auto;color:#fff;font-size:12px;font-weight:700;white-space:nowrap}.language-picker select{border:1px solid #5b6068;border-radius:8px;background:#25292f;color:#fff;padding:9px 11px;font-weight:700}.language-picker select option{color:#17191d;background:#fff}@media(max-width:700px){.language-picker{margin-left:0}.app-nav{flex-wrap:wrap}}
 
 body.card-only .card-panel>.panel-head{display:none!important}body.card-only .monitor-print-qr{display:none!important}body.card-only .monitor-print-body{grid-template-columns:1fr!important}body.card-only .monitor-print-fields{grid-template-columns:1fr!important}body.card-only .monitor-print-side{display:block!important}body.card-only .monitor-print-reason{display:block!important}
-.monitor-row-card-actions{display:grid;gap:6px;min-width:96px;margin-top:5px}.monitor-row-card-actions button{border:0;border-radius:7px;padding:7px 9px;font-size:11px;font-weight:800;white-space:nowrap;transition:transform .15s,box-shadow .15s}.monitor-row-card-actions button:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(23,32,43,.14)}.monitor-action-open{background:#252a33;color:#fff}.monitor-action-print{background:#d71920;color:#fff}</style>
+.monitor-row-card-actions{display:grid;gap:6px;min-width:96px;margin-top:5px}.monitor-row-card-actions button{border:0;border-radius:7px;padding:7px 9px;font-size:11px;font-weight:800;white-space:nowrap;transition:transform .15s,box-shadow .15s}.monitor-row-card-actions button:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(23,32,43,.14)}.monitor-action-open{background:#252a33;color:#fff}.monitor-action-print{background:#d71920;color:#fff}
+@page{size:A4 portrait;margin:5mm}
+#printFourSheet{display:none}
+@media print{
+ body.print-four-up> :not(#printFourSheet){display:none!important}
+ body.print-four-up #printFourSheet{display:grid!important;width:200mm;height:287mm;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;overflow:hidden}
+ body.print-four-up .print-four-card{display:flex!important;flex-direction:column;width:98.5mm;height:142mm;min-height:0!important;margin:0!important;border:1px solid #cfd3da;border-radius:3mm;box-shadow:none!important;overflow:hidden;break-inside:avoid}
+ body.print-four-up .print-four-card .monitor-print-head{min-height:23mm;padding:4mm 6mm}
+ body.print-four-up .print-four-card .monitor-print-brand{font-size:22pt}
+ body.print-four-up .print-four-card .monitor-print-brand small{font-size:5.5pt}
+ body.print-four-up .print-four-card .monitor-print-kicker{font-size:6pt}
+ body.print-four-up .print-four-card .monitor-print-title{padding:4mm 6mm 1mm;font-size:16pt}
+ body.print-four-up .print-four-card .monitor-print-rule{margin:0 6mm 3mm;width:16mm;height:1mm}
+ body.print-four-up .print-four-card .monitor-print-body{grid-template-columns:minmax(0,1fr) 37mm;gap:3mm;padding:0 6mm 3mm;flex:1;min-height:0}
+ body.print-four-up .print-four-card .monitor-print-fields{grid-template-columns:1fr!important;gap:2mm}
+ body.print-four-up .print-four-card .monitor-print-field{padding:2mm 3mm}
+ body.print-four-up .print-four-card .monitor-print-field strong{font-size:8pt}
+ body.print-four-up .print-four-card .monitor-print-reason{display:none!important}
+ body.print-four-up .print-four-card .monitor-print-qr{padding:2mm;min-height:0}
+ body.print-four-up .print-four-card .monitor-print-qr img{width:32mm;height:32mm}
+ body.print-four-up .print-four-card .monitor-print-qr strong{font-size:6.5pt}
+ body.print-four-up .print-four-card .monitor-print-qr small{font-size:5pt}
+ body.print-four-up .print-four-card .monitor-print-foot{padding:2mm 5mm;font-size:5pt}
+}</style>
 </head>
 <body>
 <div class="topbar"></div>
@@ -1086,17 +1109,21 @@ async function saveMonitoring(e,printAfter=false){
 function renderDashboardMonitoring(){const counts={"Pending":0,"Ready to Ship":0,"Shipped":0};let late=0;for(const r of monitoringRows){if(counts[r.status]!==undefined)counts[r.status]++;if(r.status!=="Shipped"&&Number(r.agingDays)>7)late++}const total=monitoringRows.length,max=Math.max(1,...Object.values(counts));$("monTotal").textContent=total;$("monPending").textContent=counts.Pending;$("monReady").textContent=counts["Ready to Ship"];$("monShipped").textContent=counts.Shipped;$("monLate").textContent=late;$("statusBars").innerHTML="";Object.entries(counts).forEach(([k,v])=>{$("statusBars").insertAdjacentHTML("beforeend",'<div class="status-line"><span>'+k+'</span><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(v/max*100)+'%"></div></div><b>'+v+'</b></div>')});$("dashboardUpdated").textContent="Terakhir diperbarui: "+new Date().toLocaleTimeString("id-ID");const recent=monitoringRows.slice().sort((a,b)=>String(b.lastUpdated).localeCompare(String(a.lastUpdated))).slice(0,5);$("recentActivity").innerHTML=recent.length?recent.map(r=>'<div class="activity-item"><b>'+escapeHtml(r.do||"DO")+'</b> · '+escapeHtml(r.status||"")+'<br><small>'+escapeHtml(r.company||"")+' · '+escapeHtml(r.lastUpdated||"")+'</small></div>').join(""):"Belum ada aktivitas monitoring."}
 function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function printMonitoringCardWhenReady(){
- const qr=$("monitorQr");
- if(!qr){monitorNotice("QR kartu belum tersedia.");return}
- const print=()=>setTimeout(()=>window.print(),250);
- if(qr.complete){
-  if(qr.naturalWidth>0)print();
-  else monitorNotice("QR belum berhasil dimuat. Periksa koneksi lalu coba cetak lagi.");
-  return;
- }
+ const qr=$("monitorQr"),card=document.querySelector(".monitor-print-card");
+ if(!qr||!card){monitorNotice("QR kartu belum tersedia.");return}
+ const print=()=>{
+  let sheet=document.getElementById("printFourSheet");
+  if(sheet)sheet.remove();
+  sheet=document.createElement("div");sheet.id="printFourSheet";
+  for(let i=0;i<4;i++){const clone=card.cloneNode(true);clone.classList.add("print-four-card");const image=clone.querySelector("#monitorQr");if(image){image.removeAttribute("id");image.alt="QR Monitoring Card";}sheet.appendChild(clone)}
+  document.body.appendChild(sheet);document.body.classList.add("print-four-up");
+  setTimeout(()=>window.print(),250);
+ };
+ if(qr.complete){if(qr.naturalWidth>0)print();else monitorNotice("QR belum berhasil dimuat. Periksa koneksi lalu coba cetak lagi.");return}
  qr.addEventListener("load",print,{once:true});
  qr.addEventListener("error",()=>monitorNotice("QR gagal dimuat. Periksa koneksi internet lalu coba cetak lagi."),{once:true});
 }
+window.addEventListener("afterprint",()=>{document.body.classList.remove("print-four-up");document.getElementById("printFourSheet")?.remove()});
 async function openMonitoringCard(id,printAfter=false,scanOnly=false){
  document.body.classList.toggle("card-only",!!scanOnly);
  setPage("card");
