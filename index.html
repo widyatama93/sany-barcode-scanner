@@ -435,6 +435,10 @@ body.card-only .card-panel>.panel-head{display:none!important}body.card-only .mo
 .monitor-print-field span{display:flex!important;align-items:center;align-self:stretch!important;width:auto!important;max-width:none!important;position:relative;padding:6px 10px 6px 12px!important;margin:-2px -3px 10px!important;border:0!important;border-radius:6px!important;background:linear-gradient(90deg,#ffe17a 0%,#ffcf28 72%,#ffc400 100%)!important;color:#29251a!important;font-size:9px!important;font-weight:900!important;letter-spacing:1.15px!important;box-shadow:inset 0 -1px 0 rgba(165,116,0,.16)!important}
 .monitor-print-field span:before{content:"";width:4px;height:14px;flex:none;margin-right:8px;border-radius:3px;background:#d71920;box-shadow:1px 0 0 rgba(255,255,255,.45)}
 @media print{body.print-four-up .print-four-card .monitor-print-field{padding:2.4mm 2.8mm!important;border-radius:2.5mm!important;border-top-width:.8mm!important}.monitor-print-field span{padding:1.5mm 2mm!important;margin:-.4mm -.5mm 2mm!important;border-radius:1.2mm!important;font-size:6.2pt!important;letter-spacing:.6px!important}.monitor-print-field span:before{width:.8mm;height:3.2mm;margin-right:1.5mm}}
+
+.monitor-tamma-logo{display:flex;justify-content:center;align-items:center;padding:10px 18px 14px;background:#fff}.monitor-tamma-logo img{display:block;width:min(220px,55%);max-height:58px;object-fit:contain;object-position:center}
+body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
+@media print{body.print-four-up .print-four-card .monitor-tamma-logo{padding:1.5mm 3mm 2mm}body.print-four-up .print-four-card .monitor-tamma-logo img{width:38mm;max-height:10mm}}
 </style>
 </head>
 <body>
@@ -1152,6 +1156,7 @@ async function openMonitoringCard(id,printAfter=false,scanOnly=false){
   if(!r)throw new Error("Monitoring ID tidak ditemukan");
   const cardUrl=location.href.split("#")[0]+"#card="+encodeURIComponent(r.monitoringId);
   const qrUrl="https://api.qrserver.com/v1/create-qr-code/?size=480x480&data="+encodeURIComponent(cardUrl);
+  const tammaLogoSrc=document.querySelector(".powered-logo")?.getAttribute("src")||"";
   $("monitorCard").innerHTML=
    '<div class="card-actions no-print">'+
     '<button class="btn btn-red" type="button" onclick="printMonitoringCardWhenReady()">Cetak Kartu</button>'+
@@ -1180,6 +1185,7 @@ async function openMonitoringCard(id,printAfter=false,scanOnly=false){
      '</aside>'+
     '</div>'+
     '<footer class="monitor-print-foot"><span>SANY <b>WAREHOUSE &amp; DISTRIBUTION</b></span><span>MONITORING CARD</span></footer>'+
+    '<div class="monitor-tamma-logo"><img src="'+tammaLogoSrc+'" alt="Tamma Powered by Tech"></div>'+
    '</article>';
   if(printAfter)printMonitoringCardWhenReady();
  }catch(e){$("monitorCard").textContent=e.message}
