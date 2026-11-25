@@ -12,7 +12,7 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "./icons/sany-app.svg?v=2",
+      "src": "./icons/sany-app.svg?v=3",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
