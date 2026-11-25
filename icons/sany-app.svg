@@ -1,6 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<defs><linearGradient id="r" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#ed1c24"/><stop offset="1" stop-color="#b80d16"/></linearGradient></defs>
-<rect width="512" height="512" rx="112" fill="url(#r)"/>
-<path d="M94 120h324v47H146v55h222c39 0 62 22 62 60v47c0 40-24 63-65 63H94v-48h267v-70H143c-34 0-54-21-54-56v-41c0-37 22-57 61-57h-56z" fill="#fff"/>
-<path d="M94 421h324" stroke="#ffc928" stroke-width="18" stroke-linecap="round"/>
-</svg>
+<rect width="512" height="512" rx="96" fill="#fff"/>
+<g transform="translate(20 126) scale(.9)">
+<path d="M20 118 92 40h130l-50 30-39 55H20z" fill="#0755a4"/>
+<path d="M118 70c31-42 77-61 113-42 21 11 24 35 10 58-13 21-40 43-64 61 48-23 100-55 121-91 24-42-8-66-56-63-52 3-106 28-151 68z" fill="#f58200"/>
+<path d="M94 67h67l-45 105h-57z" fill="#083a7a"/>
+<path d="M178 75h35v50h-35z" fill="#063a7c"/>
+<path d="M226 74h67v22h-67zM226 103h54v18h-54z" fill="#072d67"/>
+<text x="294" y="98" font-family="Arial,sans-serif" font-size="55" font-weight="900" fill="#072d67">TAMMA</text>
+<rect x="220" y="132" width="290" height="35" rx="17" fill="#073a7b"/>
+<text x="237" y="157" font-family="Arial,sans-serif" font-size="19" font-style="italic" fill="#fff">Powered by</text>
+<text x="366" y="157" font-family="Arial,sans-serif" font-size="21" font-style="italic" font-weight="700" fill="#f58200">Tamma</text>
+</g></svg>
