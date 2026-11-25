@@ -1390,9 +1390,9 @@ window.addEventListener("scroll",()=>{
  });
 },{passive:true});
 
-/* Installable web app support, with guided steps when the browser has no native prompt. */
+/* Use the browser's native install prompt whenever the browser exposes it. */
 const sanyInstallButton=document.getElementById("pwaInstallButton");
-let sanyInstallPrompt=null;
+let sanyInstallPrompt=null,sanyInstallBusy=false;
 const sanyIsInstalled=()=>window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 if(sanyInstallButton&&sanyIsInstalled())sanyInstallButton.hidden=true;
 window.addEventListener("beforeinstallprompt",event=>{
@@ -1400,20 +1400,33 @@ window.addEventListener("beforeinstallprompt",event=>{
  if(sanyInstallButton)sanyInstallButton.hidden=false;
 });
 if(sanyInstallButton)sanyInstallButton.addEventListener("click",async()=>{
- if(sanyInstallPrompt){
-  sanyInstallPrompt.prompt();
-  const choice=await sanyInstallPrompt.userChoice;
-  sanyInstallPrompt=null;
-  if(choice&&choice.outcome==="accepted")sanyInstallButton.hidden=true;
-  return;
+ if(sanyInstallBusy)return;
+ sanyInstallBusy=true;sanyInstallButton.setAttribute("aria-disabled","true");
+ try{
+  if(typeof navigator.install==="function"){
+   await navigator.install();
+   sanyInstallButton.hidden=true;
+   return;
+  }
+  if(sanyInstallPrompt){
+   const promptEvent=sanyInstallPrompt;sanyInstallPrompt=null;
+   await promptEvent.prompt();
+   const choice=await promptEvent.userChoice;
+   if(choice&&choice.outcome==="accepted")sanyInstallButton.hidden=true;
+   return;
+  }
+  const lang=localStorage.getItem(LANG_STORAGE_KEY)||"id";
+  const help={
+   id:"Browser ini belum memberikan prompt instalasi ke halaman.\n\nAndroid (Chrome): tekan ⋮ lalu pilih “Install app” atau “Tambahkan ke layar utama”.\n\nDesktop (Chrome/Edge): buka menu browser lalu pilih “Install app” atau “Apps > Install this site as an app”.\n\niPhone/iPad (Safari): tekan Bagikan, lalu pilih “Tambahkan ke Layar Utama”.",
+   en:"This browser has not made an install prompt available to this page.\n\nAndroid (Chrome): tap ⋮, then choose “Install app” or “Add to Home screen”.\n\nDesktop (Chrome/Edge): open the browser menu and choose “Install app” or “Apps > Install this site as an app”.\n\niPhone/iPad (Safari): tap Share, then choose “Add to Home Screen”.",
+   zh:"此浏览器尚未向网页提供安装提示。\n\nAndroid（Chrome）：点击 ⋮，选择“安装应用”或“添加到主屏幕”。\n\n电脑（Chrome/Edge）：打开浏览器菜单，选择“安装应用”或“应用 > 将此网站安装为应用”。\n\niPhone/iPad（Safari）：点击分享，然后选择“添加到主屏幕”。"
+  };
+  alert(help[lang]||help.id);
+ }catch(error){
+  if(error&&error.name!=="AbortError")console.warn("Native app installation unavailable:",error);
+ }finally{
+  sanyInstallBusy=false;sanyInstallButton.removeAttribute("aria-disabled");
  }
- const lang=localStorage.getItem(LANG_STORAGE_KEY)||"id";
- const help={
-  id:"Browser ini belum membuka pemasangan otomatis.\n\nAndroid (Chrome): tekan ⋮ lalu pilih “Install app” atau “Tambahkan ke layar utama”.\n\nDesktop (Chrome/Edge): buka menu browser lalu pilih “Install app” atau “Apps > Install this site as an app”.\n\niPhone/iPad (Safari): tekan Bagikan, lalu pilih “Tambahkan ke Layar Utama”.",
-  en:"This browser did not open the automatic installer.\n\nAndroid (Chrome): tap ⋮, then choose “Install app” or “Add to Home screen”.\n\nDesktop (Chrome/Edge): open the browser menu and choose “Install app” or “Apps > Install this site as an app”.\n\niPhone/iPad (Safari): tap Share, then choose “Add to Home Screen”.",
-  zh:"此浏览器未显示自动安装窗口。\n\nAndroid（Chrome）：点击 ⋮，选择“安装应用”或“添加到主屏幕”。\n\n电脑（Chrome/Edge）：打开浏览器菜单，选择“安装应用”或“应用 > 将此网站安装为应用”。\n\niPhone/iPad（Safari）：点击分享，然后选择“添加到主屏幕”。"
- };
- alert(help[lang]||help.id);
 });
 window.addEventListener("appinstalled",()=>{if(sanyInstallButton)sanyInstallButton.hidden=true;sanyInstallPrompt=null;});
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(error=>console.warn("Service worker tidak dapat didaftarkan:",error)));}
