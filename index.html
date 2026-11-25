@@ -586,6 +586,42 @@ body.page-shipping[data-shipping-method="TRUCKING"] .shipping-scan-mark,body.pag
  .shipping-method-summary{align-items:flex-start}
  .shipping-auto-label{font-size:8px;padding:5px 7px}
 }
+
+/* Split operational statistics by hardcopy and softcopy source. */
+.dashboard-statistics{display:grid;grid-template-columns:1fr 1.25fr;gap:16px;margin:18px 0 20px;align-items:stretch}
+.dashboard-stat-group{position:relative;overflow:hidden;min-width:0;padding:18px;border:1px solid #e4e8ee;border-radius:18px;background:linear-gradient(145deg,#fff 0%,#fbfcfe 100%);box-shadow:0 10px 28px rgba(22,29,39,.055)}
+.dashboard-stat-group:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:#d71920}
+.dashboard-stat-group--shipping:before{background:linear-gradient(180deg,#1769c2,#ffc928)}
+.dashboard-stat-heading{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.dashboard-stat-brand{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:13px;background:#fff0f0;color:#c9000d;font-size:22px;font-weight:900}
+.dashboard-stat-brand--shipping{background:#edf5ff;color:#1769c2}
+.dashboard-stat-title{min-width:0;flex:1}
+.dashboard-stat-kicker{display:block;margin-bottom:3px;color:#a0a6af;font-size:9px;font-weight:900;letter-spacing:1.15px}
+.dashboard-stat-title h2{margin:0;color:#20242a;font-size:17px;font-weight:900}
+.dashboard-stat-title p{margin:4px 0 0;color:#737b87;font-size:11px;line-height:1.4}
+.dashboard-stat-state{flex:0 0 auto;padding:6px 9px;border:1px solid #f0d4d5;border-radius:99px;background:#fff7f7;color:#a91820;font-size:9px;font-weight:850;white-space:nowrap}
+.dashboard-stat-group--shipping .dashboard-stat-state{border-color:#d6e6fa;background:#f3f8ff;color:#1457a1}
+.dashboard-stat-state.is-error{border-color:#f4c4c4;background:#fff3f3;color:#b4232c}
+.dashboard-stat-state.is-ready{border-color:#cde8d7;background:#f2fbf5;color:#176b3c}
+.dashboard-stat-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dashboard-stat-card{min-width:0;min-height:103px;padding:13px 14px;border:1px solid #e8ebf0;border-radius:13px;background:#fff;box-shadow:0 3px 10px rgba(20,25,35,.025)}
+.dashboard-stat-group--scanner .dashboard-stat-card{border-top:2px solid #d71920}
+.dashboard-stat-group--shipping .dashboard-stat-card{border-top:2px solid #1769c2}
+.dashboard-stat-label{color:#78818d;font-size:9px;font-weight:850;letter-spacing:.75px}
+.dashboard-stat-card strong{display:block;margin-top:9px;color:#1b2027;font-size:27px;font-weight:900;letter-spacing:-.7px;font-variant-numeric:tabular-nums;line-height:1}
+.dashboard-stat-card small{display:block;margin-top:7px;color:#969da7;font-size:10px;line-height:1.35}
+.dashboard-stat-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:13px;padding-top:10px;border-top:1px solid #edf0f3;color:#77808c;font-size:9px;font-weight:750}
+.dashboard-stat-foot time{color:#9aa1aa;font-weight:600;text-align:right}
+body.page-scanner .dashboard-statistics{display:grid!important;grid-template-columns:1fr!important}
+body.page-scanner .dashboard-stat-group--shipping{display:none}
+body.page-shipping .dashboard-statistics{display:grid!important;grid-template-columns:1fr!important}
+body.page-shipping .dashboard-stat-group--scanner{display:none}
+body.page-shipping .stats-bar{display:flex!important}
+body.page-monitoring .dashboard-statistics,body.page-card .dashboard-statistics{display:none!important}
+body.page-monitoring .stats-bar,body.page-card .stats-bar{display:none!important}
+@media(max-width:900px){.dashboard-statistics{grid-template-columns:1fr}.dashboard-stat-group--scanner .dashboard-stat-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.dashboard-stat-group{padding:15px 14px}.dashboard-stat-heading{gap:9px}.dashboard-stat-brand{width:37px;height:37px;flex-basis:37px;border-radius:11px;font-size:19px}.dashboard-stat-title h2{font-size:15px}.dashboard-stat-title p{font-size:10px}.dashboard-stat-state{padding:5px 7px;font-size:8px}.dashboard-stat-card{min-height:93px;padding:11px}.dashboard-stat-card strong{font-size:24px}.dashboard-stat-foot{font-size:8px}}
+
 </style>
 </head>
 <body>
@@ -608,13 +644,35 @@ body.page-shipping[data-shipping-method="TRUCKING"] .shipping-scan-mark,body.pag
  <div class="hero-art" aria-hidden="true"></div>
 </header>
 
-<section class="stats-grid" aria-label="Statistik pengiriman">
- <div class="stat-card"><div class="stat-top">Total DO Tersimpan <span class="stat-icon">▤</span></div><div class="stat-value" id="statTotal">—</div><div class="stat-foot">Akumulasi seluruh DO</div></div>
- <div class="stat-card"><div class="stat-top">Total Foto <span class="stat-icon">▧</span></div><div class="stat-value" id="statTotalPhotos">—</div><div class="stat-foot">Foto bukti tersimpan</div></div>
- <div class="stat-card"><div class="stat-top">DO Hari Ini <span class="stat-icon">◷</span></div><div class="stat-value" id="statToday">—</div><div class="stat-foot">Pencatatan hari ini</div></div>
- <div class="stat-card"><div class="stat-top">Foto Hari Ini <span class="stat-icon">▣</span></div><div class="stat-value" id="statTodayPhotos">—</div><div class="stat-foot">Bukti foto hari ini</div></div>
+<section class="dashboard-statistics" aria-label="Statistik operasional">
+ <article class="dashboard-stat-group dashboard-stat-group--scanner">
+  <header class="dashboard-stat-heading">
+   <span class="dashboard-stat-brand dashboard-stat-brand--scanner" aria-hidden="true">▣</span>
+   <div class="dashboard-stat-title"><span class="dashboard-stat-kicker">REKAP HARDCOPY</span><h2>Barcode Scanner</h2><p>Rekap surat jalan fisik dari pemindaian barcode</p></div>
+   <span class="dashboard-stat-state" id="scannerStatsState">Menunggu data…</span>
+  </header>
+  <div class="dashboard-stat-cards dashboard-stat-cards--two">
+   <article class="dashboard-stat-card"><div class="dashboard-stat-label">TOTAL DO DIREKAM</div><strong id="scannerStatTotal">—</strong><small>Akumulasi DO Barcode Scanner</small></article>
+   <article class="dashboard-stat-card"><div class="dashboard-stat-label">DO HARI INI</div><strong id="scannerStatToday">—</strong><small>DO yang direkap hari ini</small></article>
+  </div>
+  <footer class="dashboard-stat-foot"><span>▤ &nbsp; Statistik Barcode Scanner</span><time id="scannerStatsUpdated">Belum diperbarui</time></footer>
+ </article>
+ <article class="dashboard-stat-group dashboard-stat-group--shipping">
+  <header class="dashboard-stat-heading">
+   <span class="dashboard-stat-brand dashboard-stat-brand--shipping" aria-hidden="true">▱</span>
+   <div class="dashboard-stat-title"><span class="dashboard-stat-kicker">REKAP SOFTCOPY</span><h2>Bukti Pengiriman</h2><p>Rekap DO dan foto bukti pengiriman</p></div>
+   <span class="dashboard-stat-state" id="shippingStatsState">Menunggu data…</span>
+  </header>
+  <div class="dashboard-stat-cards">
+   <article class="dashboard-stat-card"><div class="dashboard-stat-label">TOTAL BUKTI DO</div><strong id="shippingStatTotal">—</strong><small>DO dengan catatan softcopy</small></article>
+   <article class="dashboard-stat-card"><div class="dashboard-stat-label">DO HARI INI</div><strong id="shippingStatToday">—</strong><small>Bukti pengiriman hari ini</small></article>
+   <article class="dashboard-stat-card"><div class="dashboard-stat-label">TOTAL FOTO</div><strong id="shippingStatPhotos">—</strong><small>Foto bukti tersimpan</small></article>
+   <article class="dashboard-stat-card"><div class="dashboard-stat-label">FOTO HARI INI</div><strong id="shippingStatTodayPhotos">—</strong><small>Foto yang dikirim hari ini</small></article>
+  </div>
+  <footer class="dashboard-stat-foot"><span>▧ &nbsp; Data Bukti Pengiriman</span><time id="shippingStatsUpdated">Belum diperbarui</time></footer>
+ </article>
 </section>
-<div class="stats-bar"><span id="statsInfo">Menyiapkan statistik...</span><button class="text-button" id="refreshButton" type="button" onclick="manualRefreshStats()">↻ REFRESH DATA</button></div><section class="dashboard-extra" id="dashboardExtra"><article class="dash-box"><h3>Delivery Monitoring</h3><div class="stats-grid"><div class="stat-card"><div class="stat-top">Total DO Monitoring</div><div class="stat-value" id="monTotal">—</div></div><div class="stat-card"><div class="stat-top">Pending</div><div class="stat-value" id="monPending">—</div></div><div class="stat-card"><div class="stat-top">Ready to Ship</div><div class="stat-value" id="monReady">—</div></div><div class="stat-card"><div class="stat-top">Shipped</div><div class="stat-value" id="monShipped">—</div></div><div class="stat-card"><div class="stat-top">Terlambat (&gt;7 hari)</div><div class="stat-value" id="monLate">—</div></div></div><div id="statusBars" class="status-bars"></div><p id="dashboardUpdated">Menunggu data backend…</p></article><article class="dash-box"><h3>Aktivitas Terbaru</h3><div id="recentActivity" class="activity-list">Memuat data…</div></article></section><section id="monitoringPanel" class="panel monitoring-panel">
+<div class="stats-bar"><span id="statsInfo">Memuat statistik Barcode Scanner dan Bukti Pengiriman…</span><button class="text-button" id="refreshButton" type="button" onclick="manualRefreshStats()">↻ REFRESH DATA</button></div><section class="dashboard-extra" id="dashboardExtra"><article class="dash-box"><h3>Delivery Monitoring</h3><div class="stats-grid"><div class="stat-card"><div class="stat-top">Total DO Monitoring</div><div class="stat-value" id="monTotal">—</div></div><div class="stat-card"><div class="stat-top">Pending</div><div class="stat-value" id="monPending">—</div></div><div class="stat-card"><div class="stat-top">Ready to Ship</div><div class="stat-value" id="monReady">—</div></div><div class="stat-card"><div class="stat-top">Shipped</div><div class="stat-value" id="monShipped">—</div></div><div class="stat-card"><div class="stat-top">Terlambat (&gt;7 hari)</div><div class="stat-value" id="monLate">—</div></div></div><div id="statusBars" class="status-bars"></div><p id="dashboardUpdated">Menunggu data backend…</p></article><article class="dash-box"><h3>Aktivitas Terbaru</h3><div id="recentActivity" class="activity-list">Memuat data…</div></article></section><section id="monitoringPanel" class="panel monitoring-panel">
 <div class="panel-head"><h2 class="section-title">DELIVERY PENDING MONITORING</h2><button class="btn btn-dark" type="button" onclick="loadMonitoring()">↻ REFRESH</button></div>
 <div class="monitor-toolbar"><input id="monitorSearch" type="search" placeholder="Cari SO, DO, Company, PIC..." aria-label="Cari monitoring"><select id="monitorStatus"><option value="">Semua status</option><option>Pending</option><option>Ready to Ship</option><option>Shipped</option></select><button class="btn btn-red" type="button" onclick="openMonitorForm()">+ Tambah Monitoring</button></div>
 <div id="monitorNotice" class="monitor-notice" role="status"></div>
@@ -1131,22 +1189,88 @@ function renderPhotos(){
 }
 $("cameraInput").addEventListener("change",async e=>{await addFiles(e.target.files);e.target.value=""});
 $("galleryInput").addEventListener("change",async e=>{await addFiles(e.target.files);e.target.value=""});
-function postPayload(data){
+function postPayload(data,preserveAction=false){
  if(!validateEndpoint())return false;
  try{
-  if(activeScannerMode==="shipping"){const map={submitBatch:"submitShippingBatch",getStats:"getShippingStats",getInitialData:"getShippingInitialData",checkDO:"checkShippingDO"};if(map[data.action])data.action=map[data.action]}
+  if(activeScannerMode==="shipping"&&!preserveAction){const map={submitBatch:"submitShippingBatch",getStats:"getShippingStats",getInitialData:"getShippingInitialData",checkDO:"checkShippingDO"};if(map[data.action])data.action=map[data.action]}
   data.requestId="sany-"+Date.now()+"-"+Math.random().toString(36).slice(2,8);
   $("payload").value=JSON.stringify(data);$("backendForm").submit();return true;
  }catch(err){console.error("Gagal mengirim payload:",err);return false}
 }
-function displayStats(stats){
- $("statTotal").textContent=Number(stats.total)||0;
- $("statTotalPhotos").textContent=Number(stats.totalPhotos)||0;
- $("statToday").textContent=Number(stats.today)||0;
- $("statTodayPhotos").textContent=Number(stats.todayPhotos)||0;
- setStatsInfo("Terakhir diperbarui: "+new Date().toLocaleTimeString("id-ID"));
+const DASHBOARD_STATS_COPY={
+ id:{loading:"Memuat dua sumber statistik…",ready:"Statistik diperbarui",partial:"Sebagian statistik berhasil dimuat",retry:"Mencoba kembali",failed:"Gagal memuat",waiting:"Menunggu data…",paused:"Statistik akan diperbarui setelah penyimpanan selesai.",updated:"Diperbarui"},
+ en:{loading:"Loading both data sources…",ready:"Statistics updated",partial:"Some statistics could not be loaded",retry:"Retrying",failed:"Load failed",waiting:"Waiting for data…",paused:"Statistics will refresh after saving.",updated:"Updated"},
+ zh:{loading:"正在加载两个数据源…",ready:"统计数据已更新",partial:"部分统计数据加载失败",retry:"正在重试",failed:"加载失败",waiting:"等待数据…",paused:"保存完成后将更新统计数据。",updated:"已更新"}
+};
+let dashboardStatsQueue=[],dashboardStatsActiveSource=null,dashboardStatsAttempts={scanner:0,shipping:0},dashboardStatsErrors={};
+function dashboardStatsCopy(){return DASHBOARD_STATS_COPY[localStorage.getItem(LANG_STORAGE_KEY)||"id"]||DASHBOARD_STATS_COPY.id}
+function setDashboardStatState(source,message,state=""){
+ const el=$(source==="scanner"?"scannerStatsState":"shippingStatsState");
+ if(!el)return;
+ el.textContent=message;
+ el.className="dashboard-stat-state"+(state?" "+state:"");
 }
-function clearStatsTimeout(){if(statsTimeout){clearTimeout(statsTimeout);statsTimeout=null}}
+function setDashboardStatTime(source){
+ const id=source==="scanner"?"scannerStatsUpdated":"shippingStatsUpdated";
+ const locale=({id:"id-ID",en:"en-US",zh:"zh-CN"})[localStorage.getItem(LANG_STORAGE_KEY)||"id"]||"id-ID";
+ const el=$(id);if(el)el.textContent=dashboardStatsCopy().updated+" · "+new Date().toLocaleTimeString(locale);
+}
+function displayDashboardStats(source,stats){
+ if(source==="scanner"){
+  $("scannerStatTotal").textContent=Number(stats.total)||0;
+  $("scannerStatToday").textContent=Number(stats.today)||0;
+ }else{
+  $("shippingStatTotal").textContent=Number(stats.total)||0;
+  $("shippingStatToday").textContent=Number(stats.today)||0;
+  $("shippingStatPhotos").textContent=Number(stats.totalPhotos)||0;
+  $("shippingStatTodayPhotos").textContent=Number(stats.todayPhotos)||0;
+ }
+ setDashboardStatTime(source);
+}
+function finishDashboardStats(){
+ statsInFlight=false;statsRequestPending=false;dashboardStatsActiveSource=null;
+ $("refreshButton").disabled=false;
+ const copy=dashboardStatsCopy();
+ setStatsInfo(Object.values(dashboardStatsErrors).some(Boolean)?copy.partial:copy.ready);
+}
+function sendDashboardStatsRequest(){
+ if(!statsInFlight||!statsRequestPending||saving)return;
+ if(!dashboardStatsActiveSource){
+  if(!dashboardStatsQueue.length){finishDashboardStats();return}
+  dashboardStatsActiveSource=dashboardStatsQueue.shift();
+ }
+ const source=dashboardStatsActiveSource;
+ const action=source==="scanner"?"getStats":"getShippingStats";
+ if(!postPayload({action:action},true)){dashboardStatsFailure(source,"Gagal mengirim permintaan statistik.");return}
+ clearStatsTimeout();
+ statsTimeout=setTimeout(()=>dashboardStatsFailure(source,"Server belum merespons permintaan statistik."),STATS_TIMEOUT);
+}
+function dashboardStatsFailure(source,message){
+ if(!statsInFlight||source!==dashboardStatsActiveSource)return;
+ clearStatsTimeout();
+ const copy=dashboardStatsCopy(),attempt=dashboardStatsAttempts[source]||0;
+ if(attempt<STATS_MAX_RETRY){
+  dashboardStatsAttempts[source]=attempt+1;
+  setDashboardStatState(source,copy.retry+" ("+(attempt+1)+"/"+STATS_MAX_RETRY+")…");
+  setStatsInfo(copy.retry+" "+(source==="scanner"?"Barcode Scanner":"Bukti Pengiriman")+"…");
+  statsTimeout=setTimeout(()=>sendDashboardStatsRequest(),2000*(attempt+1));
+  return;
+ }
+ dashboardStatsErrors[source]=true;
+ setDashboardStatState(source,copy.failed,"is-error");
+ console.error("Statistik "+source+" gagal:",message);
+ dashboardStatsActiveSource=null;
+ sendDashboardStatsRequest();
+}
+function dashboardStatsSuccess(source,stats){
+ if(!statsInFlight||source!==dashboardStatsActiveSource)return;
+ clearStatsTimeout();
+ dashboardStatsErrors[source]=false;
+ displayDashboardStats(source,stats||{});
+ setDashboardStatState(source,dashboardStatsCopy().ready,"is-ready");
+ dashboardStatsActiveSource=null;
+ sendDashboardStatsRequest();
+}
 function requestStats(manual=false){
  if(!validateEndpoint())return;
  if(monitoringWaiter){
@@ -1157,30 +1281,21 @@ function requestStats(manual=false){
   },1200);
   return;
  }
- if(statsInFlight){if(manual)setStatsInfo("Permintaan statistik sedang diproses...");return}
- if(saving){if(manual)setStatsInfo("Menunggu proses penyimpanan selesai...");return}
- statsInFlight=true;statsRequestPending=true;statsRetryCount=0;$("refreshButton").disabled=true;
- setStatsInfo(manual?"Memperbarui statistik...":"Memuat statistik...");
- sendStatsRequest();
+ if(statsInFlight){if(manual)setStatsInfo("Pembaruan statistik sedang berjalan…");return}
+ if(saving){if(manual)setStatsInfo("Menunggu proses penyimpanan selesai…");return}
+ dashboardStatsQueue=["scanner","shipping"];
+ dashboardStatsActiveSource=null;
+ dashboardStatsAttempts={scanner:0,shipping:0};
+ dashboardStatsErrors={scanner:false,shipping:false};
+ statsInFlight=true;statsRequestPending=true;
+ $("refreshButton").disabled=true;
+ const copy=dashboardStatsCopy();
+ setStatsInfo(manual?copy.loading:copy.loading);
+ setDashboardStatState("scanner",copy.loading);
+ setDashboardStatState("shipping",copy.loading);
+ sendDashboardStatsRequest();
 }
-function sendStatsRequest(){
- if(!statsRequestPending)return;
- if(!postPayload({action:"getStats"})){statsFailed("Gagal mengirim permintaan statistik.");return}
- clearStatsTimeout();statsTimeout=setTimeout(()=>statsFailed("Server belum merespons permintaan statistik."),STATS_TIMEOUT);
-}
-function statsFailed(message){
- clearStatsTimeout();
- if(statsRetryCount<STATS_MAX_RETRY){
-  statsRetryCount++;setStatsInfo("Statistik belum tersedia. Mencoba kembali ("+statsRetryCount+"/"+STATS_MAX_RETRY+")...");
-  setTimeout(()=>{if(!statsRequestPending)return;if(saving){statsFailed(message);return}sendStatsRequest()},2000*statsRetryCount);return;
- }
- statsInFlight=false;statsRequestPending=false;$("refreshButton").disabled=false;
- setStatsInfo("Gagal memuat statistik. Tekan REFRESH untuk mencoba lagi.");console.error("Statistik gagal:",message);
-}
-function statsSuccess(stats){
- clearStatsTimeout();statsInFlight=false;statsRequestPending=false;$("refreshButton").disabled=false;displayStats(stats);
-}
-function manualRefreshStats(){if(statsInFlight){setStatsInfo("Statistik sedang diperbarui...");return}requestStats(true)}
+function manualRefreshStats(){if(statsInFlight){setStatsInfo("Pembaruan statistik sedang berjalan…");return}requestStats(true)}
 function startStatsAutoRefresh(){
  setTimeout(()=>requestStats(),1200);
  if(statsTimer)clearInterval(statsTimer);
@@ -1190,6 +1305,7 @@ function finishSaving(){clearTimeout(requestTimeout);saving=false;$("saveButton"
 function cancelStatsForSave(){
  if(statsTimeout)clearTimeout(statsTimeout);statsTimeout=null;
  statsInFlight=false;statsRequestPending=false;statsRetryCount=0;
+ dashboardStatsQueue=[];dashboardStatsActiveSource=null;
  if(statsDeferredTimer){clearTimeout(statsDeferredTimer);statsDeferredTimer=null}
  $("refreshButton").disabled=false;
  setStatsInfo("Statistik diperbarui setelah penyimpanan selesai.");
@@ -1211,11 +1327,20 @@ window.addEventListener("message",event=>{
  if(typeof message==="string"){try{message=JSON.parse(message)}catch(err){return}}
  const result=message&&message.__sanyScanner?message.result:message;
  if(!result||typeof result.success!=="boolean")return;
- if(activeScannerMode==="shipping"){const aliases={getShippingStats:"getStats",submitShippingBatch:"submitBatch"};if(aliases[result.action])result.action=aliases[result.action]}
- if(result.action==="getStats"){
-  if(result.success&&result.stats)statsSuccess(result.stats);else statsFailed(result.message||"Statistik gagal dimuat.");
+ const rawAction=result.action;
+ if(rawAction==="getStats"||rawAction==="getShippingStats"){
+  const source=rawAction==="getStats"?"scanner":"shipping";
+  if(statsInFlight&&dashboardStatsActiveSource===source){
+   if(result.success&&result.stats)dashboardStatsSuccess(source,result.stats);
+   else dashboardStatsFailure(source,result.message||"Statistik gagal dimuat.");
+  }
   return;
  }
+ if(rawAction==="error"&&statsInFlight&&dashboardStatsActiveSource){
+  dashboardStatsFailure(dashboardStatsActiveSource,result.message||"Statistik gagal dimuat.");
+  return;
+ }
+ if(activeScannerMode==="shipping"&&result.action==="submitShippingBatch")result.action="submitBatch";
  if(result.action==="submitBatch"||result.action==="submitScan"||result.action==="error"){
   finishSaving();
   if(result.success){
@@ -1541,6 +1666,12 @@ Object.assign(LANG_TEXT.zh,{
  "BUKTI PENGIRIMAN":"发货凭证","Metode pengiriman":"发货方式",
  "Pengiriman PCP":"PCP运输","Pengiriman CKB":"CKB运输","Pengiriman trucking":"卡车运输",
  "Pickup mandiri":"自提 / 网约车","1. BUKTI PENGIRIMAN":"1. 发货凭证"
+});
+Object.assign(LANG_TEXT.en,{
+ "Statistik operasional":"Operations statistics","REKAP HARDCOPY":"HARDCOPY RECORDS","REKAP SOFTCOPY":"SOFTCOPY RECORDS","Rekap surat jalan fisik dari pemindaian barcode":"Hardcopy delivery-note scan summary","Rekap DO dan foto bukti pengiriman":"Delivery proof and photo summary","TOTAL DO DIREKAM":"TOTAL DO SCANNED","Akumulasi DO Barcode Scanner":"Barcode Scanner DO total","DO yang direkap hari ini":"DOs recorded today","TOTAL BUKTI DO":"TOTAL SHIPPING PROOFS","DO dengan catatan softcopy":"DOs with digital proof","Bukti pengiriman hari ini":"Shipping proofs today","FOTO HARI INI":"PHOTOS TODAY","Foto yang dikirim hari ini":"Photos submitted today","Statistik Barcode Scanner":"Barcode Scanner statistics","Data Bukti Pengiriman":"Shipping Proof data","Belum diperbarui":"Not updated yet","Memuat dua sumber statistik…":"Loading both statistics sources…","Menunggu data…":"Waiting for data…","Statistik diperbarui setelah penyimpanan selesai.":"Statistics will refresh after saving."
+});
+Object.assign(LANG_TEXT.zh,{
+ "Statistik operasional":"运营统计","REKAP HARDCOPY":"纸质单据汇总","REKAP SOFTCOPY":"电子单据汇总","Rekap surat jalan fisik dari pemindaian barcode":"条码扫描纸质送货单汇总","Rekap DO dan foto bukti pengiriman":"送货单与凭证照片汇总","TOTAL DO DIREKAM":"扫描DO总数","Akumulasi DO Barcode Scanner":"条码扫描DO累计","DO yang direkap hari ini":"今日记录DO","TOTAL BUKTI DO":"发货凭证DO总数","DO dengan catatan softcopy":"含电子凭证的DO","Bukti pengiriman hari ini":"今日发货凭证","FOTO HARI INI":"今日照片","Foto yang dikirim hari ini":"今日提交照片","Statistik Barcode Scanner":"条码扫描统计","Data Bukti Pengiriman":"发货凭证数据","Belum diperbarui":"尚未更新","Memuat dua sumber statistik…":"正在加载两个统计数据源…","Menunggu data…":"等待数据…","Statistik diperbarui setelah penyimpanan selesai.":"保存完成后将更新统计数据。"
 });
 function applyUiLanguage(lang){
  lang=LANG_TEXT[lang]?lang:"id";document.documentElement.lang=lang==="zh"?"zh-CN":lang;
