@@ -698,7 +698,7 @@ body.page-shipping[data-shipping-method="TRUCKING"] .shipping-scan-mark,body.pag
 <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxJEqMN9vj2BDUbQ1Vgh90nLJzadN0CGICfuhGnXgwXszjoW1UbxSH5xK1xFe_aha8_/exec";
 const MAX_DOS=200,MAX_PHOTOS=15,MAX_PHOTO_BYTES=350*1024,STATS_INTERVAL=30000,STATS_TIMEOUT=15000,STATS_MAX_RETRY=3;
-let photos=[],doNumbers=[],scanner=null,scannerRunning=false,scannerStarting=false,saving=false,requestTimeout=null,statsTimer=null,statsTimeout=null,pdaScanTimer=null;
+let photos=[],doNumbers=[],scanner=null,scannerRunning=false,scannerStarting=false,cameraAutoStopPending=false,cameraVisibilityObserver=null,saving=false,requestTimeout=null,statsTimer=null,statsTimeout=null,pdaScanTimer=null;
 let statsInFlight=false,statsRetryCount=0,statsRequestPending=false,lastScannedCode="",lastScannedAt=0;
 const $=id=>document.getElementById(id);
 
@@ -1027,6 +1027,7 @@ async function startScanner(){
   startButton.disabled=true;
   stopButton.disabled=false;
   showScanFeedback("KAMERA AKTIF — Arahkan barcode ke area scan.","info");
+  if(cameraAutoStopPending){cameraAutoStopPending=false;await stopScanner()}
 
  }catch(err){
   scannerRunning=false;
@@ -1043,6 +1044,20 @@ async function startScanner(){
  }finally{
   scannerStarting=false;
  }
+}
+function setupCameraAutoStop(){
+ if(!("IntersectionObserver" in window))return;
+ const cameraView=document.querySelector(".reader-wrap");
+ if(!cameraView)return;
+ if(cameraVisibilityObserver)cameraVisibilityObserver.disconnect();
+ cameraVisibilityObserver=new IntersectionObserver(entries=>{
+  const entry=entries[0];
+  const inView=entry.isIntersecting&&entry.intersectionRatio>=0.12;
+  if(inView){cameraAutoStopPending=false;return}
+  if(scannerStarting){cameraAutoStopPending=true;return}
+  if(scannerRunning)stopScanner();
+ },{threshold:[0,0.12]});
+ cameraVisibilityObserver.observe(cameraView);
 }
 async function stopScanner(){
  if(!scanner||!scannerRunning)return;
@@ -1232,6 +1247,7 @@ function saveBatch(){
  sendRequest(payload);
 }
 window.addEventListener("load",()=>{
+ setupCameraAutoStop();
  loadDOHistory();
  restoreDraft();
  renderDOList();
