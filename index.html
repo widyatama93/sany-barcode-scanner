@@ -514,6 +514,26 @@ body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
 body.page-scanner .shipping-method-panel,body.page-scanner .shipping-scan-context{display:none!important}
 body.page-shipping .shipping-method-panel{display:block!important}
 body.page-shipping .shipping-method-panel{padding:22px}
+
+/* Route selector behavior and complete route theming for Shipping only. */
+.shipping-method-grid.is-collapsed .shipping-method-tab:not(.is-active){display:none}
+.shipping-method-change{margin-top:12px;padding:8px 12px;border:1px solid #d9dee5;border-radius:9px;background:#fff;color:#252a31;font-size:11px;font-weight:800;cursor:pointer}
+.shipping-method-change:hover{background:#f5f6f8}
+.shipping-method-tab[data-method="SELFPICK / GOJEK"]{background:linear-gradient(135deg,#2382e8,#0753b5);color:#fff}
+.shipping-method-summary[data-method="SELFPICK / GOJEK"]{border-color:#cfe0fa;border-left-color:#1769c2;background:#f3f8ff}
+.shipping-method-summary[data-method="SELFPICK / GOJEK"] .shipping-method-dot{background:#1769c2}
+.shipping-method-summary[data-method="SELFPICK / GOJEK"] small{color:#1457a1}
+.shipping-method-summary[data-method="SELFPICK / GOJEK"] .shipping-auto-label{border-color:#cfe0fa;color:#1457a1}
+body.page-shipping[data-shipping-method="PCP"]{--route-accent:#d71920;--route-soft:#fff8f8;--route-line:#f0c8ca}
+body.page-shipping[data-shipping-method="CKB"]{--route-accent:#198754;--route-soft:#f5fbf7;--route-line:#cfe7da}
+body.page-shipping[data-shipping-method="TRUCKING"]{--route-accent:#d5a300;--route-soft:#fffaf0;--route-line:#f0dfa6}
+body.page-shipping[data-shipping-method="SELFPICK / GOJEK"]{--route-accent:#1769c2;--route-soft:#f3f8ff;--route-line:#cfe0fa}
+body.page-shipping .scanner-panel{border-top:4px solid var(--route-accent);background:linear-gradient(180deg,var(--route-soft) 0, #fff 95px)}
+body.page-shipping .scanner-panel .section-title{color:var(--route-accent)}
+body.page-shipping .scanner-panel .step{color:var(--route-accent);border-color:var(--route-line);background:var(--route-soft)}
+body.page-shipping #startButton,body.page-shipping #saveButton{background:var(--route-accent)!important;border-color:var(--route-accent)!important;box-shadow:0 6px 16px rgba(23,25,29,.18)}
+body.page-shipping .shipping-scan-context{border-color:var(--route-line);background:var(--route-soft)}
+body.page-shipping .shipping-scan-mark{background:var(--route-accent);color:#fff}
 .shipping-method-heading{margin:0 0 16px}
 .shipping-method-kicker{display:inline-block;margin-bottom:7px;color:#a0a6af;font-size:10px;font-weight:850;letter-spacing:1.3px}
 .shipping-method-heading h2{margin:0 0 6px;font-size:19px;font-weight:850;color:#17191d}
@@ -613,6 +633,7 @@ body.page-shipping[data-shipping-method="TRUCKING"] .shipping-scan-mark,body.pag
   <button type="button" class="shipping-method-tab" data-method="SELFPICK / GOJEK" aria-pressed="false" onclick="setShippingMethod('SELFPICK / GOJEK')"><strong>GOJEK / SELFPICK</strong><span>Pickup mandiri</span><small class="shipping-method-state">Pilih jalur</small></button>
  </div>
  <div class="shipping-method-summary" id="shippingMethodSummary" data-method="PCP"><span class="shipping-method-dot"></span><div><small id="shippingMethodStatus">JALUR AKTIF</small><strong id="shippingMethodName">Pengiriman PCP</strong></div><span class="shipping-auto-label" id="shippingAutoLabel">METODE OTOMATIS</span></div>
+ <button type="button" class="shipping-method-change" id="shippingMethodChange" onclick="toggleShippingMethodPicker()">Pilih jalur lain</button>
 </section>
 
 <section class="panel scanner-panel">
@@ -683,6 +704,7 @@ let activeScannerMode="scanner";
 const scannerModeSnapshots={};
 let activeShippingMethod="PCP";
 const shippingMethodSnapshots={};
+let shippingMethodPickerOpen=true;
 function getShippingMethodStorageSuffix(){return activeShippingMethod.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"")}
 function getDraftStorageKey(){return activeScannerMode==="shipping"?"sany_shipping_proof_draft_"+getShippingMethodStorageSuffix():"sany_do_scanner_draft_v1"}
 function getHistoryStorageKey(){return activeScannerMode==="shipping"?"sany_shipping_proof_history_"+getShippingMethodStorageSuffix():"sany_do_scanner_history_v1"}
@@ -1229,6 +1251,8 @@ function updateShippingMethodUI(){
  if(name)name.textContent=copy.routePrefix+" "+method;
  if(auto)auto.textContent=copy.automatic;
  const summary=$("shippingMethodSummary");if(summary)summary.dataset.method=method;
+ const grid=document.querySelector(".shipping-method-grid");if(grid)grid.classList.toggle("is-collapsed",!shippingMethodPickerOpen);
+ const change=$("shippingMethodChange");if(change)change.textContent=lang==="en"?"Choose another route":lang==="zh"?"选择其他路线":"Pilih jalur lain";
  const mark=$("shippingScanMark");if(mark)mark.textContent=method==="SELFPICK / GOJEK"?"G":method.charAt(0);
  const cameraTitle=$("shippingScanTitle"),cameraDescription=$("shippingScanDescription");
  if(cameraTitle)cameraTitle.textContent=copy.camera+method;
@@ -1244,15 +1268,21 @@ function updateShippingMethodUI(){
   if(state)state.textContent=selected?copy.active:(lang==="en"?"Choose route":lang==="zh"?"选择路线":"Pilih jalur");
  });
 }
+function toggleShippingMethodPicker(){
+ if(activeScannerMode!=="shipping")return;
+ shippingMethodPickerOpen=!shippingMethodPickerOpen;
+ updateShippingMethodUI();
+}
 async function setShippingMethod(method){
  if(activeScannerMode!=="shipping"||SHIPPING_METHODS.indexOf(method)<0)return;
  if(saving){showStatus("Tunggu penyimpanan selesai sebelum mengganti jalur pengiriman.","info");return}
- if(method===activeShippingMethod){updateShippingMethodUI();return}
+ if(method===activeShippingMethod){shippingMethodPickerOpen=false;updateShippingMethodUI();return}
  if(scannerRunning||scannerStarting)await stopScanner();
  if(pdaScanTimer){clearTimeout(pdaScanTimer);pdaScanTimer=null}
  const pdaInput=$("pdaInput");if(pdaInput)pdaInput.value="";
  shippingMethodSnapshots[activeShippingMethod]={dos:doNumbers.slice(),photos:photos.slice(),history:doHistory.slice(),note:$("keterangan").value};
  activeShippingMethod=method;
+ shippingMethodPickerOpen=false;
  const saved=shippingMethodSnapshots[method];
  if(saved){
   doNumbers=saved.dos.slice();photos=saved.photos.slice();doHistory=saved.history.slice();$("keterangan").value=saved.note||"";
