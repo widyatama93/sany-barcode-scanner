@@ -1172,10 +1172,17 @@ function startStatsAutoRefresh(){
  statsTimer=setInterval(()=>{if(!statsInFlight&&!saving)requestStats()},STATS_INTERVAL);
 }
 function finishSaving(){clearTimeout(requestTimeout);saving=false;$("saveButton").disabled=false}
+function cancelStatsForSave(){
+ if(statsTimeout)clearTimeout(statsTimeout);statsTimeout=null;
+ statsInFlight=false;statsRequestPending=false;statsRetryCount=0;
+ if(statsDeferredTimer){clearTimeout(statsDeferredTimer);statsDeferredTimer=null}
+ $("refreshButton").disabled=false;
+ setStatsInfo("Statistik diperbarui setelah penyimpanan selesai.");
+}
 function sendRequest(data){
  if(saving)return;
  if(monitoringWaiter){showStatus("Data Monitoring sedang dimuat. Tunggu sebentar lalu simpan kembali.","info");return}
- if(statsInFlight){showStatus("Statistik sedang diperbarui. Tunggu sebentar lalu simpan kembali.","info");return}
+ cancelStatsForSave();
  if(!postPayload(data)){showStatus("Gagal mengirim data ke server. Periksa koneksi.","error");return}
  saving=true;$("saveButton").disabled=true;showStatus("Mengirim "+doNumbers.length+" DO dalam satu permintaan. Mohon tunggu hingga proses selesai...","info");
  clearTimeout(requestTimeout);
@@ -1217,7 +1224,6 @@ function saveBatch(){
  if(!doNumbers.length){showStatus("Belum ada DO. Scan barcode atau tambahkan nomor DO terlebih dahulu.","error");return}
  if(doNumbers.length>MAX_DOS){showStatus("Maksimal 200 DO dalam satu batch.","error");return}
  if(photos.length>MAX_PHOTOS){showStatus("Maksimal 15 foto untuk satu batch.","error");return}
- if(statsInFlight){showStatus("Sedang memuat statistik. Tunggu sebentar sebelum menyimpan.","info");return}
  const routeText=activeScannerMode==="shipping"?" melalui "+activeShippingMethod:"";
  const message="Simpan "+doNumbers.length+" DO sekaligus"+routeText+" dengan "+photos.length+" foto untuk seluruh batch?";
  if(!confirm(message))return;
