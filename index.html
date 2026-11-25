@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#d71920">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/sany-app.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/sany-app.svg">
 <title>SANY Industrial | Delivery Order Scanner</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js">
 </script>
@@ -217,7 +220,22 @@ body{background:linear-gradient(180deg,#e9ecf2 0%,#f5f6f9 55%,#e9ecf2 100%)}
 }
 
 /* Warehouse distribution navigation and monitoring */
-.app-nav{display:flex;gap:8px;overflow:auto;padding:12px;margin:16px 0;background:#17191d;border-radius:13px;position:sticky;top:0;z-index:20}.nav-item{white-space:nowrap;border:0;background:transparent;color:#fff;padding:11px 14px;border-radius:8px;font-weight:750}.nav-item.active{background:#ffc928;color:#17191d}body.page-dashboard .panel,body.page-dashboard .monitoring-panel,body.page-dashboard .card-panel{display:none}body.page-scanner #dashboardExtra,body.page-scanner .monitoring-panel,body.page-scanner .card-panel{display:none}body.page-scanner .stats-grid{display:grid!important}body.page-scanner .stats-bar{display:flex!important}body.page-monitoring .stats-grid,body.page-monitoring .stats-bar,body.page-monitoring #dashboardExtra,body.page-monitoring .panel:not(.monitoring-panel),body.page-monitoring .card-panel{display:none}body.page-card .stats-grid,body.page-card .stats-bar,body.page-card #dashboardExtra,body.page-card .panel:not(.card-panel){display:none}body.page-dashboard #dashboardExtra{display:grid}.dashboard-extra{grid-template-columns:1.1fr 1fr;gap:16px;margin:14px 0 24px}.dash-box{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:var(--shadow)}.dash-box h3{margin:0 0 14px}.status-bars{display:grid;gap:12px}.status-line{display:grid;grid-template-columns:130px 1fr 40px;gap:10px;align-items:center;font-size:13px}.bar-track{height:10px;background:#eceff3;border-radius:99px;overflow:hidden}.bar-fill{height:100%;background:#ffc928;border-radius:99px}.monitor-toolbar{display:flex;gap:10px;margin:14px 0;flex-wrap:wrap}.monitor-toolbar input{flex:1;min-width:200px}.monitor-toolbar input,.monitor-toolbar select,.monitor-fields input,.monitor-fields select{border:1px solid var(--line);border-radius:9px;padding:11px}.monitor-notice{color:#8a5b00;font-weight:700;margin:8px 0}.table-wrap{overflow:auto}table{border-collapse:collapse;min-width:1050px;width:100%;font-size:12px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f7f8fa;position:sticky;top:0}.status-pill{border-radius:99px;padding:5px 9px;background:#fff2bc;font-weight:800;white-space:nowrap}.row-actions{display:flex;gap:7px}.row-actions button{border:1px solid var(--line);border-radius:7px;background:white;padding:6px}.monitor-editor{margin-top:16px}.monitor-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:15px 0}.monitor-fields label{display:grid;gap:5px;font-size:12px;font-weight:700}.card-content{max-width:680px;margin:10px auto;padding:24px;border:1px solid var(--line);border-left:7px solid #ffc928;border-radius:14px;background:#fff}.card-content h3{font-size:26px;margin:4px 0 18px}.card-content dl{display:grid;grid-template-columns:170px 1fr;gap:12px}.card-content dt{color:var(--muted)}#monitorQr{width:180px;height:180px}.activity-list{display:grid;gap:10px}.activity-item{border-bottom:1px solid var(--line);padding-bottom:9px;font-size:13px}@media(max-width:700px){.dashboard-extra{grid-template-columns:1fr}.monitor-fields{grid-template-columns:1fr}.card-content dl{grid-template-columns:1fr;gap:5px}.app-nav{top:0}}
+.app-nav{display:flex;gap:8px;overflow:auto;padding:12px;margin:16px 0;background:#17191d;border-radius:13px;position:sticky;top:0;z-index:20}.nav-item{white-space:nowrap;border:0;background:transparent;color:#fff;padding:11px 14px;border-radius:8px;font-weight:750}.nav-item.active{background:#ffc928;color:#17191d}body.page-dashboard .panel,body.page-dashboard .monitoring-panel,body.page-dashboard .card-panel{display:none}body.page-scanner #dashboardExtra,body.page-scanner .monitoring-panel,body.page-scanner .card-panel{display:none}body.page-scanner .stats-grid{display:grid!important}body.page-scanner .stats-bar{display:flex!important}body.page-monitoring .stats-grid,body.page-monitoring .stats-bar,body.page-monitoring #dashboardExtra,body.page-monitoring .panel:not(.monitoring-panel),body.page-monitoring .card-panel{display:none}body.page-card .stats-grid,body.page-card .stats-bar,body.page-card #dashboardExtra,body.page-card .panel:not(.card-panel){display:none}body.page-dashboard #dashboardExtra{display:grid}.dashboard-extra{grid-template-columns:1.1fr 1fr;gap:16px;margin:14px 0 24px}.dash-box{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:var(--shadow)}.dash-box h3{margin:0 0 14px}.status-bars{display:grid;gap:12px}.status-line{display:grid;grid-template-columns:130px 1fr 40px;gap:10px;align-items:center;font-size:13px}.bar-track{height:10px;background:#eceff3;border-radius:99px;overflow:hidden}.bar-fill{height:100%;background:#ffc928;border-radius:99px}.monitor-toolbar{display:flex;gap:10px;margin:14px 0;flex-wrap:wrap}.monitor-toolbar input{flex:1;min-width:200px}.monitor-toolbar input,.monitor-toolbar select,.monitor-fields input,.monitor-fields select{border:1px solid var(--line);border-radius:9px;padding:11px}.monitor-notice{color:#8a5b00;font-weight:700;margin:8px 0}.table-wrap{overflow:auto}table{border-collapse:collapse;min-width:1050px;width:100%;font-size:12px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f7f8fa;position:sticky;top:0}.status-pill{border-radius:99px;padding:5px 9px;background:#fff2bc;font-weight:800;white-space:nowrap}.row-actions{display:flex;gap:7px}.row-actions button{border:1px solid var(--line);border-radius:7px;background:white;padding:6px}.monitor-editor{margin-top:16px}.monitor-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:15px 0}.monitor-fields label{display:grid;gap:5px;font-size:12px;font-weight:700}.card-content{max-width:680px;margin:10px auto;padding:24px;border:1px solid var(--line);border-left:7px solid #ffc928;border-radius:14px;background:#fff}.card-content h3{font-size:26px;margin:4px 0 18px}.card-content dl{display:grid;grid-template-columns:170px 1fr;gap:12px}.card-content dt{color:var(--muted)}#monitorQr{width:180px;height:180px}.activity-list{display:grid;gap:10px}.activity-item{border-bottom:1px solid var(--line);padding-bottom:9px;font-size:13px}@media(max-width:700px){
+.dashboard-extra{grid-template-columns:1fr}.monitor-fields{grid-template-columns:1fr}.card-content dl{grid-template-columns:1fr;gap:5px}
+.app-nav{top:0;align-items:center;flex-wrap:wrap;transition:padding .18s ease,border-radius .18s ease;scrollbar-width:none}
+.app-nav::-webkit-scrollbar{display:none}
+.nav-menu-toggle{display:none}
+.pwa-install-button{border:1px solid rgba(255,255,255,.25);border-radius:9px;background:#292d33;color:#fff;padding:10px 12px;font-weight:750}
+.pwa-install-button[hidden]{display:none}
+body.nav-compact .app-nav:not(.nav-expanded){gap:7px;padding:7px 9px;border-radius:0 0 12px 12px}
+body.nav-compact .app-nav:not(.nav-expanded) .nav-item:not(.active),
+body.nav-compact .app-nav:not(.nav-expanded) .language-picker,
+body.nav-compact .app-nav:not(.nav-expanded) .pwa-install-button{display:none}
+body.nav-compact .app-nav:not(.nav-expanded) .nav-menu-toggle{display:inline-flex;align-items:center;gap:6px;border:1px solid #464b53;background:#252930;color:#fff;border-radius:9px;padding:8px 11px;font-weight:800}
+body.nav-compact .app-nav:not(.nav-expanded) .nav-item.active{padding:9px 13px}
+body.nav-compact .app-nav.nav-expanded{box-shadow:0 8px 24px rgba(0,0,0,.2)}
+}
+@media(min-width:701px){.nav-menu-toggle{display:none!important}}
 
 /* Branding restored from the iPhone optimized version */
 .powered-footer{display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:96px;padding:10px;margin:14px 0 0;background:#fff;border:1px solid #e5e7eb;border-radius:13px}
@@ -448,7 +466,9 @@ body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
 <body>
 <div class="topbar"></div>
 <main class="page"><nav class="app-nav" aria-label="Menu aplikasi">
+<button class="nav-menu-toggle" type="button" aria-label="Buka menu" aria-expanded="false" onclick="toggleMobileNav()" title="Buka menu">☰ <span>Menu</span></button>
 <button class="nav-item active" data-page="dashboard">Dashboard</button><button class="nav-item" data-page="scanner">Barcode Scanner</button><button class="nav-item" data-page="shipping">Bukti Pengiriman</button><button class="nav-item" data-page="monitoring">Delivery Pending Monitoring</button><button class="nav-item" data-page="card">QR Monitoring Card</button><label class="language-picker"><span id="languageLabel">Bahasa</span><select id="languageSelect" aria-label="Pilih bahasa"><option value="id">🇮🇩 Indonesia</option><option value="en">🇬🇧 English</option><option value="zh">🇨🇳 中文</option></select></label>
+<button class="pwa-install-button" id="pwaInstallButton" type="button" hidden>Install App</button>
 </nav>
 <header class="hero">
  <div class="hero-copy">
@@ -1086,7 +1106,7 @@ let pageTransitionTimer=null;function switchScannerMode(mode){
  setPage(mode);
  requestStats()
 }
-function setPage(name){document.body.classList.remove("page-dashboard","page-scanner","page-monitoring","page-card","page-shipping");document.body.classList.add("page-"+name,"page-transitioning");document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===name));window.scrollTo({top:0,behavior:"smooth"});clearTimeout(pageTransitionTimer);pageTransitionTimer=setTimeout(()=>document.body.classList.remove("page-transitioning"),260);if(name==="monitoring")loadMonitoring();if(name==="dashboard")loadMonitoring(true);}
+function setPage(name){const mobileNav=document.querySelector(".app-nav");if(mobileNav)mobileNav.classList.remove("nav-expanded");const menuToggle=document.querySelector(".nav-menu-toggle");if(menuToggle)menuToggle.setAttribute("aria-expanded","false");document.body.classList.remove("page-dashboard","page-scanner","page-monitoring","page-card","page-shipping");document.body.classList.add("page-"+name,"page-transitioning");document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===name));window.scrollTo({top:0,behavior:"smooth"});clearTimeout(pageTransitionTimer);pageTransitionTimer=setTimeout(()=>document.body.classList.remove("page-transitioning"),260);if(name==="monitoring")loadMonitoring();if(name==="dashboard")loadMonitoring(true);}
 document.querySelectorAll(".nav-item").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.page==="scanner"||b.dataset.page==="shipping")switchScannerMode(b.dataset.page);else setPage(b.dataset.page)}));
 function monitoringRequest(payload){return new Promise((resolve,reject)=>{if(monitoringWaiter){reject(new Error("Permintaan monitoring sedang berjalan."));return}if(!postPayload(payload)){reject(new Error("Gagal mengirim permintaan ke Apps Script."));return}const timer=setTimeout(()=>{monitoringWaiter=null;reject(new Error("Apps Script belum merespons. Pastikan endpoint monitoring sudah dipasang."))},20000);monitoringWaiter={resolve,reject,timer}})}
 window.addEventListener("message",event=>{let m=event.data;if(typeof m==="string"){try{m=JSON.parse(m)}catch(e){return}}const r=m&&m.__sanyScanner?m.result:m;if(!r||!["getMonitoring","saveMonitoring"].includes(r.action))return;if(!monitoringWaiter)return;clearTimeout(monitoringWaiter.timer);const w=monitoringWaiter;monitoringWaiter=null;w.resolve(r)});
@@ -1296,6 +1316,44 @@ document.addEventListener("DOMContentLoaded",()=>{
  applyUiLanguage(saved);
  new MutationObserver(()=>{if(!window.__sanyLangApplying){window.__sanyLangApplying=true;applyUiLanguage(localStorage.getItem(LANG_STORAGE_KEY)||"id");window.__sanyLangApplying=false}}).observe(document.body,{childList:true,subtree:true});
 });
+
+
+/* Mobile navigation collapses while scrolling so it stops covering the page. */
+let mobileNavLastY=window.scrollY||0, mobileNavFrame=0;
+function toggleMobileNav(){
+ const nav=document.querySelector(".app-nav"),toggle=document.querySelector(".nav-menu-toggle");
+ if(!nav||!toggle)return;
+ const expanded=nav.classList.toggle("nav-expanded");
+ toggle.setAttribute("aria-expanded",String(expanded));
+}
+window.addEventListener("scroll",()=>{
+ if(mobileNavFrame)return;
+ mobileNavFrame=requestAnimationFrame(()=>{
+  mobileNavFrame=0;
+  const y=window.scrollY||0;
+  if(window.innerWidth<=700){
+   if(y<55){document.body.classList.remove("nav-compact");const nav=document.querySelector(".app-nav");if(nav)nav.classList.remove("nav-expanded");const toggle=document.querySelector(".nav-menu-toggle");if(toggle)toggle.setAttribute("aria-expanded","false");}
+   else if(y>100){document.body.classList.add("nav-compact");if(y>mobileNavLastY+3){const nav=document.querySelector(".app-nav");if(nav)nav.classList.remove("nav-expanded");const toggle=document.querySelector(".nav-menu-toggle");if(toggle)toggle.setAttribute("aria-expanded","false");}}
+  }else document.body.classList.remove("nav-compact");
+  mobileNavLastY=y;
+ });
+},{passive:true});
+
+/* Installable web app support. */
+let sanyInstallPrompt=null;
+const sanyInstallButton=document.getElementById("pwaInstallButton");
+window.addEventListener("beforeinstallprompt",event=>{
+ event.preventDefault();sanyInstallPrompt=event;
+ if(sanyInstallButton)sanyInstallButton.hidden=false;
+});
+if(sanyInstallButton)sanyInstallButton.addEventListener("click",async()=>{
+ if(!sanyInstallPrompt)return;
+ sanyInstallPrompt.prompt();
+ await sanyInstallPrompt.userChoice;
+ sanyInstallPrompt=null;sanyInstallButton.hidden=true;
+});
+window.addEventListener("appinstalled",()=>{if(sanyInstallButton)sanyInstallButton.hidden=true;sanyInstallPrompt=null;});
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(error=>console.warn("Service worker tidak dapat didaftarkan:",error)));}
 
 </script>
 </body>
