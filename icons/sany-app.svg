@@ -1,13 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<rect width="512" height="512" rx="96" fill="#fff"/>
-<g transform="translate(20 126) scale(.9)">
-<path d="M20 118 92 40h130l-50 30-39 55H20z" fill="#0755a4"/>
-<path d="M118 70c31-42 77-61 113-42 21 11 24 35 10 58-13 21-40 43-64 61 48-23 100-55 121-91 24-42-8-66-56-63-52 3-106 28-151 68z" fill="#f58200"/>
-<path d="M94 67h67l-45 105h-57z" fill="#083a7a"/>
-<path d="M178 75h35v50h-35z" fill="#063a7c"/>
-<path d="M226 74h67v22h-67zM226 103h54v18h-54z" fill="#072d67"/>
-<text x="294" y="98" font-family="Arial,sans-serif" font-size="55" font-weight="900" fill="#072d67">TAMMA</text>
-<rect x="220" y="132" width="290" height="35" rx="17" fill="#073a7b"/>
-<text x="237" y="157" font-family="Arial,sans-serif" font-size="19" font-style="italic" fill="#fff">Powered by</text>
-<text x="366" y="157" font-family="Arial,sans-serif" font-size="21" font-style="italic" font-weight="700" fill="#f58200">Tamma</text>
-</g></svg>
+<defs>
+  <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#0755a4"/>
+    <stop offset="1" stop-color="#06265d"/>
+  </linearGradient>
+  <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#ff9d00"/>
+    <stop offset="1" stop-color="#f36b00"/>
+  </linearGradient>
+</defs>
+<rect width="512" height="512" rx="112" fill="#fff"/>
+<g>
+  <path d="M74 128h294l-38 67H240l-61 213h-72l62-213H37z" fill="url(#navy)"/>
+  <path d="M66 296c47-105 158-193 267-194 39 0 67 14 73 39 8 33-30 72-67 98 30-39 43-70 29-84-17-17-64-5-111 21-63 36-119 88-143 132-20 36-16 65 7 75 28 13 80-10 130-43-49 62-117 103-169 93-56-10-54-72-16-137z" fill="url(#orange)"/>
+  <path d="M125 345v-44l44-38v82M125 322l-22-19v-35M169 300l25-22v-39" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="103" cy="268" r="10" fill="#fff"/>
+  <circle cx="194" cy="239" r="10" fill="#fff"/>
+  <circle cx="169" cy="343" r="10" fill="#fff"/>
+  <rect x="383" y="72" width="43" height="43" rx="5" fill="#082d68"/>
+  <rect x="432" y="107" width="25" height="25" rx="4" fill="#f58200"/>
+  <rect x="357" y="128" width="30" height="30" rx="4" fill="#082d68"/>
+  <rect x="405" y="151" width="39" height="39" rx="5" fill="#f58200"/>
+  <rect x="372" y="197" width="27" height="27" rx="4" fill="#082d68"/>
+</g>
+</svg>
