@@ -16,7 +16,7 @@ const SHIPPING_CONFIG = {
   SPREADSHEET_PROPERTY: "SANY_SHIPPING_SPREADSHEET_ID",
   SHEET_NAME: "Bukti Pengiriman",
   FOLDER_NAME: "Foto Bukti Pengiriman",
-  HEADERS: ["Timestamp", "Nomor Surat Jalan", "Status", "Foto Bukti Pengiriman", "Keterangan"],
+  HEADERS: ["Timestamp", "Nomor Surat Jalan", "Status", "Foto Bukti Pengiriman", "Keterangan", "Metode Pengiriman"],
   STATUS: "Terkirim",
   MAX_DOS: 200,
   MAX_PHOTOS: 15,
@@ -24,31 +24,59 @@ const SHIPPING_CONFIG = {
 };
 
 /**
- * Run once after setting SANY_SHIPPING_SPREADSHEET_ID in Script Properties.
- * Creates the Shipping tab and Drive folder.
+ * Ensures required headers exist without moving or deleting existing shipping data.
+ * A new "Metode Pengiriman" column is appended for older sheets.
+ */
+function ensureShippingHeaders_(sheet) {
+  if (sheet.getLastRow() === 0) {
+    sheet.getRange(1, 1, 1, SHIPPING_CONFIG.HEADERS.length)
+      .setValues([SHIPPING_CONFIG.HEADERS]);
+  } else {
+    let lastColumn = Math.max(1, sheet.getLastColumn());
+    let current = sheet.getRange(1, 1, 1, lastColumn).getDisplayValues()[0]
+      .map(value => String(value || "").trim());
+    if (current.every(value => !value)) {
+      sheet.getRange(1, 1, 1, SHIPPING_CONFIG.HEADERS.length)
+        .setValues([SHIPPING_CONFIG.HEADERS]);
+      current = SHIPPING_CONFIG.HEADERS.slice();
+    } else {
+      SHIPPING_CONFIG.HEADERS.forEach(header => {
+        if (current.indexOf(header) < 0) {
+          const column = Math.max(sheet.getLastColumn(), current.length) + 1;
+          sheet.getRange(1, column).setValue(header);
+          current[column - 1] = header;
+        }
+      });
+    }
+  }
+
+  const headerWidth = Math.max(sheet.getLastColumn(), SHIPPING_CONFIG.HEADERS.length);
+  const headers = sheet.getRange(1, 1, 1, headerWidth).getDisplayValues()[0]
+    .map(value => String(value || "").trim());
+  const methodColumn = headers.indexOf("Metode Pengiriman") + 1;
+  if (methodColumn < 1) throw new Error('Kolom "Metode Pengiriman" gagal disiapkan.');
+  return methodColumn;
+}
+
+/**
+ * Run after setting SANY_SHIPPING_SPREADSHEET_ID in Script Properties.
+ * Creates the Shipping tab/folder and adds the method header to existing sheets.
  */
 function setupShippingAwal() {
   const ss = getShippingSpreadsheet_();
   let sheet = ss.getSheetByName(SHIPPING_CONFIG.SHEET_NAME);
   if (!sheet) sheet = ss.insertSheet(SHIPPING_CONFIG.SHEET_NAME);
 
-  if (sheet.getLastRow() === 0) {
-    sheet.getRange(1, 1, 1, SHIPPING_CONFIG.HEADERS.length).setValues([SHIPPING_CONFIG.HEADERS]);
-  } else {
-    const current = sheet.getRange(1, 1, 1, SHIPPING_CONFIG.HEADERS.length).getValues()[0];
-    if (current.every(value => value === "")) {
-      sheet.getRange(1, 1, 1, SHIPPING_CONFIG.HEADERS.length).setValues([SHIPPING_CONFIG.HEADERS]);
-    }
-  }
-
-  sheet.getRange(1, 1, 1, SHIPPING_CONFIG.HEADERS.length)
+  ensureShippingHeaders_(sheet);
+  const headerWidth = Math.max(sheet.getLastColumn(), SHIPPING_CONFIG.HEADERS.length);
+  sheet.getRange(1, 1, 1, headerWidth)
     .setFontWeight("bold")
     .setBackground("#d71920")
     .setFontColor("#ffffff");
   sheet.setFrozenRows(1);
-  sheet.autoResizeColumns(1, SHIPPING_CONFIG.HEADERS.length);
+  sheet.autoResizeColumns(1, headerWidth);
   getOrCreateShippingFolder_();
-  return "Setup Shipping berhasil. Tab Bukti Pengiriman dan folder foto siap.";
+  return "Setup Shipping berhasil. Tab Bukti Pengiriman siap dengan kolom Metode Pengiriman.";
 }
 
 /**
@@ -115,6 +143,12 @@ function checkShippingDO_(request) {
 }
 
 function saveShippingBatch_(request) {
+  const shippingMethod = String(request.shippingMethod || "").trim().toUpperCase();
+  const allowedMethods = ["PCP", "CKB", "TRUCKING", "SELFPICK / GOJEK"];
+  if (allowedMethods.indexOf(shippingMethod) < 0) {
+    throw new Error("Pilih metode pengiriman PCP, CKB, TRUCKING, atau SELFPICK / GOJEK.");
+  }
+
   let incoming = Array.isArray(request.dos) ? request.dos : [];
   if (!incoming.length && request.doNumber) incoming = [request.doNumber];
 
@@ -160,6 +194,7 @@ function saveShippingBatch_(request) {
   const createdFiles = [];
   try {
     const sheet = getShippingSheet_();
+    const methodColumn = ensureShippingHeaders_(sheet);
     const lastRow = sheet.getLastRow();
     const oldCodes = lastRow < 2 ? [] :
       sheet.getRange(2, 2, lastRow - 1, 1).getDisplayValues()
@@ -209,8 +244,15 @@ function saveShippingBatch_(request) {
       photoCell,
       note
     ]);
-    sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, SHIPPING_CONFIG.HEADERS.length)
-      .setValues(rows);
+    const firstNewRow = sheet.getLastRow() + 1;
+    if (methodColumn === 6) {
+      const completeRows = rows.map(row => row.concat(shippingMethod));
+      sheet.getRange(firstNewRow, 1, completeRows.length, 6).setValues(completeRows);
+    } else {
+      sheet.getRange(firstNewRow, 1, rows.length, 5).setValues(rows);
+      sheet.getRange(firstNewRow, methodColumn, accepted.length, 1)
+        .setValues(accepted.map(() => [shippingMethod]));
+    }
 
     const duplicates = duplicatesExisting.concat(duplicateInRequest);
     return {
@@ -221,7 +263,8 @@ function saveShippingBatch_(request) {
       saved: accepted,
       duplicates: duplicates,
       totalPhotos: photoUrls.length,
-      message: accepted.length + " surat jalan berhasil disimpan" +
+      shippingMethod: shippingMethod,
+      message: accepted.length + " surat jalan berhasil disimpan melalui " + shippingMethod +
         (duplicates.length ? ". " + duplicates.length + " nomor duplikat dilewati." : ".")
     };
   } catch (error) {
