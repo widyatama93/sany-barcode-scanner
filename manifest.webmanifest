@@ -12,17 +12,17 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "./icons/sany-app.svg?v=3",
+      "src": "./icons/sany-app.svg?v=4",
       "sizes": "192x192",
       "type": "image/svg+xml"
     },
     {
-      "src": "./icons/sany-app.svg?v=3",
+      "src": "./icons/sany-app.svg?v=4",
       "sizes": "512x512",
       "type": "image/svg+xml"
     },
     {
-      "src": "./icons/sany-app.svg?v=3",
+      "src": "./icons/sany-app.svg?v=4",
       "sizes": "any",
       "type": "image/svg+xml"
     }
