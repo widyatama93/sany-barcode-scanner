@@ -1,9 +1,9 @@
-const CACHE_NAME = "sany-warehouse-shell-v1";
+const CACHE_NAME = "sany-warehouse-shell-v2";
 const APP_ROOT = self.registration.scope;
 const APP_SHELL = [
   APP_ROOT,
   new URL("manifest.webmanifest", APP_ROOT).href,
-  new URL("icons/sany-app.svg", APP_ROOT).href
+  new URL("icons/sany-app.svg?v=2", APP_ROOT).href
 ];
 
 self.addEventListener("install", event => {
