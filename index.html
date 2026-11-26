@@ -626,6 +626,30 @@ body.page-monitoring .stats-bar,body.page-card .stats-bar{display:none!important
 .nav-brand-copy{min-width:0;max-width:82px}
 .nav-brand-copy small{color:#e3e5e9;font-size:8px;font-weight:850;letter-spacing:.85px;line-height:1.45}
 
+/* PCP / CKB shipment entry cards: DO and Air Waybill are easy to distinguish. */
+.shipping-entry-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:stretch;margin:4px 0 14px}
+.shipping-record-card{min-width:0;padding:16px;border:1px solid #e1e5eb;border-radius:16px;background:linear-gradient(145deg,#fff,#fbfcfd);box-shadow:0 5px 16px rgba(20,25,35,.045)}
+.shipping-record-heading{display:flex;align-items:center;gap:10px;margin-bottom:13px;padding-bottom:12px;border-bottom:1px solid #edf0f3}
+.shipping-record-icon{display:grid;place-items:center;flex:0 0 40px;height:40px;border-radius:12px;background:linear-gradient(145deg,var(--route-accent),color-mix(in srgb,var(--route-accent),#111 16%));color:#fff;font-size:11px;font-weight:950;letter-spacing:.3px;box-shadow:0 4px 10px color-mix(in srgb,var(--route-accent),transparent 78%)}
+.shipping-record-heading>div{display:grid;gap:4px;min-width:0;flex:1}
+.shipping-record-heading strong{color:#252b34;font-size:11px;font-weight:950;letter-spacing:.35px;line-height:1.35}
+.shipping-record-heading small{color:#818995;font-size:10px}
+.shipping-record-heading .do-counter{white-space:nowrap}
+.shipping-do-card .field-label{display:block;margin:0 0 7px}
+.shipping-do-card .do-list{max-height:250px;overflow:auto}
+.shipping-awb-section{margin:0;min-width:0;padding:16px;border-left-width:1px}
+.shipping-awb-heading{padding-bottom:12px;border-bottom:1px solid color-mix(in srgb,var(--route-line),#fff 35%)}
+.shipping-awb-list{max-height:250px;overflow:auto}
+body.page-shipping[data-shipping-method="PCP"] .shipping-entry-grid,
+body.page-shipping[data-shipping-method="CKB"] .shipping-entry-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:680px){
+ body.page-shipping[data-shipping-method="PCP"] .shipping-entry-grid,
+ body.page-shipping[data-shipping-method="CKB"] .shipping-entry-grid{grid-template-columns:minmax(0,1fr)}
+ .shipping-record-card,.shipping-awb-section{padding:13px}
+ .shipping-record-heading{gap:8px}
+ .shipping-record-icon{flex-basis:36px;height:36px}
+ .shipping-record-heading strong{font-size:10px}
+}
 /* PCP / CKB airwaybill scan and capture-time evidence. */
 .shipping-scan-targets[hidden]{display:none!important}
 .shipping-scan-targets{display:none;align-items:center;justify-content:space-between;gap:10px;margin:-5px 0 15px;padding:10px 12px;border:1px solid var(--route-line,#e5e7eb);border-radius:11px;background:var(--route-soft,#fafbfc)}
@@ -743,11 +767,19 @@ body.page-shipping[data-shipping-method="CKB"] #shippingScanTargets{display:flex
 
 <section class="panel scanner-panel">
  <div class="panel-head"><h2 class="section-title">2. DAFTAR NOMOR SURAT JALAN / DO</h2><span class="step">MAX. 200 DO</span></div>
- <label class="field-label" for="doNumber">Tambah nomor DO secara manual (jika diperlukan)</label>
- <div class="do-entry"><input id="doNumber" type="text" placeholder="Ketik / tempel nomor DO" autocomplete="off"><button class="add-do" type="button" onclick="addManualDO()">TAMBAH DO</button></div>
- <div class="shipping-awb-section" id="shippingAwbSection" hidden><div class="shipping-awb-heading"><span class="shipping-awb-icon">⌁</span><div><strong>NOMOR RESI / AIR WAYBILL</strong><small>Scan dengan kamera atau PDA, atau masukkan secara manual.</small></div><span class="shipping-awb-count" id="airWaybillCount">0</span></div><div class="do-entry"><input id="airWaybillInput" type="text" placeholder="Masukkan nomor resi / Air Waybill" autocomplete="off"><button class="add-airwaybill" type="button" onclick="addManualAirWaybill()">TAMBAH RESI</button></div><div id="airWaybillList" class="shipping-awb-list"><div class="batch-empty">Belum ada nomor resi.</div></div></div>
- <div class="do-summary"><span>Daftar DO yang akan disimpan</span><span class="do-counter" id="doCount">0 / 200 DO</span></div>
- <div id="doList" class="do-list"><div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div></div>
+ <div class="shipping-entry-grid">
+  <div class="shipping-record-card shipping-do-card">
+   <div class="shipping-record-heading"><span class="shipping-record-icon">DO</span><div><strong>DAFTAR NOMOR SURAT JALAN / DO</strong><small>Data DO yang akan disimpan</small></div><span class="do-counter" id="doCount">0 / 200 DO</span></div>
+   <label class="field-label" for="doNumber">Tambah nomor DO secara manual (jika diperlukan)</label>
+   <div class="do-entry"><input id="doNumber" type="text" placeholder="Ketik / tempel nomor DO" autocomplete="off"><button class="add-do" type="button" onclick="addManualDO()">TAMBAH DO</button></div>
+   <div id="doList" class="do-list"><div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div></div>
+  </div>
+  <div class="shipping-awb-section" id="shippingAwbSection" hidden>
+   <div class="shipping-awb-heading"><span class="shipping-awb-icon">AWB</span><div><strong>NOMOR RESI / AIR WAYBILL</strong><small>Scan dengan kamera atau PDA, atau masukkan secara manual.</small></div><span class="shipping-awb-count" id="airWaybillCount">0</span></div>
+   <div class="do-entry"><input id="airWaybillInput" type="text" placeholder="Masukkan nomor resi / Air Waybill" autocomplete="off"><button class="add-airwaybill" type="button" onclick="addManualAirWaybill()">TAMBAH RESI</button></div>
+   <div id="airWaybillList" class="shipping-awb-list"><div class="batch-empty">Belum ada nomor resi.</div></div>
+  </div>
+ </div>
  <div class="batch-actions"><button type="button" onclick="clearDOList()">HAPUS SEMUA DO</button></div>
 
  <div class="autosave-note is-saved" id="autosaveNote" role="status" aria-live="polite">
