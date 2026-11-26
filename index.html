@@ -757,6 +757,9 @@ body.page-shipping[data-shipping-method="CKB"].shipping-has-do-results .shipping
  .shipping-result-remove{width:23px;height:23px}
 }
 </style>
+<style>
+.shipping-photo-required{border-color:#d71920!important;box-shadow:0 0 0 3px rgba(215,25,32,.13),0 8px 20px rgba(215,25,32,.08)!important}
+</style>
 </head>
 <body>
 <div class="topbar"></div>
@@ -1421,6 +1424,7 @@ async function addFiles(fileList,source="gallery"){
 }
 function renderPhotos(){
  const preview=$("preview");preview.innerHTML="";$("photoCount").textContent="Foto batch: "+photos.length+" / "+MAX_PHOTOS;
+ const photoPanel=$("cameraInput")?.closest(".panel");if(photoPanel&&photos.length)photoPanel.classList.remove("shipping-photo-required");
  photos.forEach((photo,index)=>{
   const card=document.createElement("div");card.className="photo-card";
   const img=document.createElement("img");img.src=photo.preview;img.alt="Foto "+(index+1);
@@ -1648,6 +1652,12 @@ function saveBatch(){
   const awbSection=$("shippingAwbSection"),awbInput=$("airWaybillInput");
   if(awbSection)awbSection.classList.add("is-required");
   if(awbInput){awbInput.focus();awbInput.scrollIntoView({behavior:"smooth",block:"center"})}
+  return;
+ }
+ if(activeScannerMode==="shipping"&&supportsAirWaybill()&&!photos.length){
+  showStatus("Minimal satu foto bukti wajib ditambahkan. Foto batch akan tercatat pada setiap DO PCP/CKB.","error");
+  const photoPanel=$("cameraInput")?.closest(".panel");
+  if(photoPanel){photoPanel.classList.add("shipping-photo-required");photoPanel.scrollIntoView({behavior:"smooth",block:"center"})}
   return;
  }
  if(photos.length>MAX_PHOTOS){showStatus("Maksimal 15 foto untuk satu batch.","error");return}
