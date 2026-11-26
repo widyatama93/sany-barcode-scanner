@@ -622,12 +622,15 @@ body.page-monitoring .stats-bar,body.page-card .stats-bar{display:none!important
 @media(max-width:900px){.dashboard-statistics{grid-template-columns:1fr}.dashboard-stat-group--scanner .dashboard-stat-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.dashboard-stat-group{padding:15px 14px}.dashboard-stat-heading{gap:9px}.dashboard-stat-brand{width:37px;height:37px;flex-basis:37px;border-radius:11px;font-size:19px}.dashboard-stat-title h2{font-size:15px}.dashboard-stat-title p{font-size:10px}.dashboard-stat-state{padding:5px 7px;font-size:8px}.dashboard-stat-card{min-height:93px;padding:11px}.dashboard-stat-card strong{font-size:24px}.dashboard-stat-foot{font-size:8px}}
 
+.nav-brand-logo{display:block;flex:0 0 auto;width:120px;height:39px;object-fit:contain;object-position:center;border-radius:5px;background:#e51d26}
+.nav-brand-copy{min-width:0;max-width:82px}
+.nav-brand-copy small{color:#e3e5e9;font-size:8px;font-weight:850;letter-spacing:.85px;line-height:1.45}
 </style>
 </head>
 <body>
 <div class="topbar"></div>
 <main class="page"><nav class="app-nav" aria-label="Menu aplikasi">
-<div class="nav-brand"><span class="nav-brand-mark">S</span><span class="nav-brand-copy"><strong>SANY</strong><small>WAREHOUSE &amp; DISTRIBUTION</small></span></div>
+<div class="nav-brand"><img class="nav-brand-logo" src="./assets/sany-logo.jpg" alt="SANY"><span class="nav-brand-copy"><small>WAREHOUSE &amp; DISTRIBUTION</small></span></div>
 <div class="nav-section-label">WORKSPACE</div>
 <button class="nav-menu-toggle" type="button" aria-label="Buka menu" aria-expanded="false" onclick="toggleMobileNav()" title="Buka menu">☰ <span>Menu</span></button>
 <button class="nav-item active" data-page="dashboard">Dashboard</button><button class="nav-item" data-page="scanner">Barcode Scanner</button><button class="nav-item" data-page="shipping">Bukti Pengiriman</button><button class="nav-item" data-page="monitoring">Delivery Pending Monitoring</button><button class="nav-item" data-page="card">QR Monitoring Card</button><label class="language-picker"><span id="languageLabel">Bahasa</span><select id="languageSelect" aria-label="Pilih bahasa"><option value="id">🇮🇩 Indonesia</option><option value="en">🇬🇧 English</option><option value="zh">🇨🇳 中文</option></select></label>
