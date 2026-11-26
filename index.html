@@ -681,6 +681,9 @@ body.page-shipping[data-shipping-method="CKB"] #shippingScanTargets{display:flex
 @media(max-width:600px){.shipping-scan-targets{align-items:flex-start;flex-direction:column}.shipping-scan-targets>div{width:100%}.shipping-scan-target{flex:1 1 auto}.shipping-awb-section{padding:12px}.add-airwaybill{padding:0 10px}}
 
 </style>
+<style>
+.shipping-awb-section.is-required{border-color:#d71920!important;box-shadow:0 0 0 3px rgba(215,25,32,.12),0 8px 20px rgba(215,25,32,.08)!important}
+</style>
 </head>
 <body>
 <div class="topbar"></div>
@@ -780,7 +783,7 @@ body.page-shipping[data-shipping-method="CKB"] #shippingScanTargets{display:flex
    <div id="doList" class="do-list"><div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div></div>
   </div>
   <div class="shipping-awb-section" id="shippingAwbSection" hidden>
-   <div class="shipping-awb-heading"><span class="shipping-awb-icon">AWB</span><div><strong>NOMOR RESI / AIR WAYBILL</strong><small>Scan dengan kamera atau PDA, atau masukkan secara manual.</small></div><span class="shipping-awb-count" id="airWaybillCount">0</span></div>
+   <div class="shipping-awb-heading"><span class="shipping-awb-icon">AWB</span><div><strong>NOMOR RESI / AIR WAYBILL</strong><small>Scan dengan kamera atau PDA, atau masukkan manual. Satu resi dapat digunakan untuk beberapa DO dalam batch ini.</small></div><span class="shipping-awb-count" id="airWaybillCount">0</span></div>
    <div class="do-entry"><input id="airWaybillInput" type="text" placeholder="Masukkan nomor resi / Air Waybill" autocomplete="off"><button class="add-airwaybill" type="button" onclick="addManualAirWaybill()">TAMBAH RESI</button></div>
    <div id="airWaybillList" class="shipping-awb-list"><div class="batch-empty">Belum ada nomor resi.</div></div>
   </div>
@@ -1525,6 +1528,13 @@ function saveBatch(){
  if(saving)return;
  if(!doNumbers.length){showStatus("Belum ada DO. Scan barcode atau tambahkan nomor DO terlebih dahulu.","error");return}
  if(doNumbers.length>MAX_DOS){showStatus("Maksimal 200 DO dalam satu batch.","error");return}
+ if(activeScannerMode==="shipping"&&supportsAirWaybill()&&!airWaybillNumbers.length){
+  showStatus("Nomor Resi / Air Waybill wajib diisi untuk PCP dan CKB. Satu resi dapat digunakan untuk beberapa DO dalam batch ini.","error");
+  const awbSection=$("shippingAwbSection"),awbInput=$("airWaybillInput");
+  if(awbSection)awbSection.classList.add("is-required");
+  if(awbInput){awbInput.focus();awbInput.scrollIntoView({behavior:"smooth",block:"center"})}
+  return;
+ }
  if(photos.length>MAX_PHOTOS){showStatus("Maksimal 15 foto untuk satu batch.","error");return}
  const routeText=activeScannerMode==="shipping"?" melalui "+activeShippingMethod:"";
  const awbText=activeScannerMode==="shipping"&&supportsAirWaybill()&&airWaybillNumbers.length?" dan "+airWaybillNumbers.length+" Resi / Air Waybill":"";
