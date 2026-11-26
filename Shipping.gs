@@ -198,6 +198,9 @@ function saveShippingBatch_(request) {
   }
 
   const photos = Array.isArray(request.photos) ? request.photos : [];
+  if (supportsAirWaybill && !photos.length) {
+    throw new Error("Minimal satu foto bukti wajib ditambahkan untuk setiap batch PCP / CKB. Foto batch akan dicatat pada setiap baris DO.");
+  }
   if (photos.length > SHIPPING_CONFIG.MAX_PHOTOS) {
     throw new Error("Maksimal " + SHIPPING_CONFIG.MAX_PHOTOS + " foto dalam satu batch.");
   }
