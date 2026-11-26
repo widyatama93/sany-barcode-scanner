@@ -506,7 +506,7 @@ body.card-only .monitor-tamma-logo{padding:14px 18px 18px}
   body.nav-compact .app-nav:not(.nav-expanded) .pwa-install-button{width:36px;min-width:36px;min-height:36px;padding:4px;margin:0 0 0 auto}
   body.nav-compact .app-nav:not(.nav-expanded) .pwa-install-button .install-label{display:none}
   body.nav-compact .app-nav:not(.nav-expanded) .pwa-install-button .install-icon{width:24px;height:24px}
-  body.nav-compact .app-nav.nav-expanded{height:auto;max-height:78vh;align-items:stretch;overflow-y:auto;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  body.nav-compact .app-nav.nav-expanded{position:sticky;top:0;z-index:80;height:auto;max-height:78vh;align-items:stretch;overflow-y:auto;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 }
 </style>
 <style>
@@ -1731,27 +1731,35 @@ document.addEventListener("DOMContentLoaded",()=>{
 });
 
 
-/* Mobile navigation collapses while scrolling so it stops covering the page. */
-let mobileNavLastY=window.scrollY||0, mobileNavFrame=0;
+/* Mobile navigation stays reachable and remains open while the page scrolls. */
+let mobileNavFrame=0;
 if(window.innerWidth<=900)document.body.classList.add("nav-compact");
-function toggleMobileNav(){
+function setMobileNavExpanded(expanded){
  const nav=document.querySelector(".app-nav"),toggle=document.querySelector(".nav-menu-toggle");
  if(!nav||!toggle)return;
- const expanded=nav.classList.toggle("nav-expanded");
- toggle.setAttribute("aria-expanded",String(expanded));
+ nav.classList.toggle("nav-expanded",!!expanded);
+ toggle.setAttribute("aria-expanded",String(!!expanded));
+}
+function toggleMobileNav(){
+ const nav=document.querySelector(".app-nav");
+ if(!nav)return;
+ setMobileNavExpanded(!nav.classList.contains("nav-expanded"));
 }
 window.addEventListener("scroll",()=>{
  if(mobileNavFrame)return;
  mobileNavFrame=requestAnimationFrame(()=>{
   mobileNavFrame=0;
-  const y=window.scrollY||0;
-  if(window.innerWidth<=700){
-   if(y<55){document.body.classList.add("nav-compact");const nav=document.querySelector(".app-nav");if(nav)nav.classList.remove("nav-expanded");const toggle=document.querySelector(".nav-menu-toggle");if(toggle)toggle.setAttribute("aria-expanded","false");}
-   else if(y>100){document.body.classList.add("nav-compact");if(y>mobileNavLastY+3){const nav=document.querySelector(".app-nav");if(nav)nav.classList.remove("nav-expanded");const toggle=document.querySelector(".nav-menu-toggle");if(toggle)toggle.setAttribute("aria-expanded","false");}}
-  }else document.body.classList.remove("nav-compact");
-  mobileNavLastY=y;
+  if(window.innerWidth<=700)document.body.classList.add("nav-compact");
+  else document.body.classList.remove("nav-compact");
  });
 },{passive:true});
+document.addEventListener("click",event=>{
+ const nav=document.querySelector(".app-nav");
+ if(nav&&nav.classList.contains("nav-expanded")&&!nav.contains(event.target))setMobileNavExpanded(false);
+});
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape")setMobileNavExpanded(false);
+});
 
 /* Use the browser's native install prompt whenever the browser exposes it. */
 const sanyInstallButton=document.getElementById("pwaInstallButton");
