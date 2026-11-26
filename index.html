@@ -1015,6 +1015,7 @@ $("airWaybillInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preven
 function renderAirWaybillList(){
  const list=$("airWaybillList"),count=$("airWaybillCount");if(!list||!count)return;
  count.textContent=airWaybillNumbers.length;list.innerHTML="";
+ const awbSection=$("shippingAwbSection");if(awbSection&&airWaybillNumbers.length)awbSection.classList.remove("is-required");
  if(!airWaybillNumbers.length){list.innerHTML='<div class="batch-empty">Belum ada nomor resi. Scan dengan kamera / PDA atau masukkan manual.</div>';persistDraft();return}
  airWaybillNumbers.forEach((code,index)=>{const chip=document.createElement("span");chip.className="airwaybill-chip";const label=document.createElement("span");label.textContent=code;const remove=document.createElement("button");remove.type="button";remove.textContent="×";remove.title="Hapus nomor resi";remove.setAttribute("aria-label","Hapus nomor resi "+code);remove.onclick=()=>{airWaybillNumbers.splice(index,1);renderAirWaybillList()};chip.append(label,remove);list.appendChild(chip)});
  persistDraft();
