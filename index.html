@@ -760,6 +760,41 @@ body.page-shipping[data-shipping-method="CKB"].shipping-has-do-results .shipping
 <style>
 .shipping-photo-required{border-color:#d71920!important;box-shadow:0 0 0 3px rgba(215,25,32,.13),0 8px 20px rgba(215,25,32,.08)!important}
 </style>
+<style>
+/* SANY delivery note recap page */
+.scanner-recap-banner{display:none}
+body.page-scanner .scanner-recap-banner{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 auto 18px;padding:22px 25px;border:1px solid #e7e9ed;border-left:5px solid #d71920;border-radius:18px;background:linear-gradient(115deg,#fff 0%,#fff 68%,#fff7e2 100%);box-shadow:0 8px 24px rgba(22,28,38,.055)}
+.scanner-recap-copy{min-width:0}
+.scanner-recap-kicker{display:block;margin-bottom:7px;color:#d71920;font-size:9px;font-weight:900;letter-spacing:1.4px}
+.scanner-recap-copy h1{margin:0;color:#20242b;font-size:clamp(22px,3vw,30px);line-height:1.1;font-weight:900;letter-spacing:-.4px}
+.scanner-recap-copy p{margin:8px 0 0;color:#68717d;font-size:12px;line-height:1.5}
+.scanner-recap-limit{display:grid;grid-template-columns:34px auto;grid-template-rows:auto auto;align-items:center;column-gap:10px;flex:none;padding:11px 14px;border:1px solid #f2df9e;border-radius:13px;background:#fffaf0;color:#473811}
+.scanner-recap-limit>span{grid-row:1/3;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#ffca28;color:#27231a;font-size:18px;font-weight:900}
+.scanner-recap-limit strong{font-size:10px;font-weight:900;letter-spacing:.35px}
+.scanner-recap-limit small{margin-top:3px;color:#82754e;font-size:8px;font-weight:800;letter-spacing:.6px}
+body.page-scanner .scanner-panel{overflow:hidden;border:1px solid #e4e7ec;border-top:3px solid #d71920;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(22,28,38,.055)}
+body.page-scanner .scanner-panel .panel-head{margin:-24px -25px 19px;padding:14px 20px;min-height:54px;border-bottom:1px solid #eceef2;border-left:4px solid #d71920;border-radius:15px 15px 0 0;background:linear-gradient(100deg,#fff 0%,#fff 78%,#fff8e7 100%);color:#20242b}
+body.page-scanner .scanner-panel .section-title{color:#252a32;font-size:13px;letter-spacing:.25px}
+body.page-scanner .scanner-panel .step{padding:6px 10px;border:1px solid #f0dfaa;border-radius:99px;background:#fff8e3;color:#76601f;font-size:9px}
+body.page-scanner .scanner-panel .pda-scan-box{margin-top:17px;border:1px solid #e7e9ee;border-radius:14px;background:linear-gradient(135deg,#fbfcfd,#fff)}
+body.page-scanner .scanner-panel .pda-scan-heading{margin-bottom:12px}
+body.page-scanner .scanner-panel .do-entry input{border-radius:11px}
+body.page-scanner .scanner-panel .save{min-height:48px;border-radius:12px;box-shadow:0 7px 15px rgba(215,25,32,.16)}
+@media(max-width:680px){
+ body.page-scanner .scanner-recap-banner{align-items:flex-start;margin-bottom:13px;padding:16px 15px;border-radius:15px}
+ .scanner-recap-kicker{font-size:8px;letter-spacing:1px}
+ .scanner-recap-copy h1{font-size:22px}
+ .scanner-recap-copy p{max-width:240px;font-size:10px}
+ .scanner-recap-limit{grid-template-columns:29px auto;column-gap:7px;padding:8px}
+ .scanner-recap-limit>span{width:29px;height:29px}
+ .scanner-recap-limit strong{font-size:9px}
+ .scanner-recap-limit small{font-size:7px}
+ body.page-scanner .scanner-panel{border-radius:15px}
+ body.page-scanner .scanner-panel .panel-head{margin:-19px -15px 16px;padding:12px 13px;min-height:48px;border-radius:12px 12px 0 0}
+ body.page-scanner .scanner-panel .section-title{font-size:11px}
+ body.page-scanner .scanner-panel .step{padding:5px 8px;font-size:8px}
+}
+</style>
 </head>
 <body>
 <div class="topbar"></div>
@@ -767,7 +802,7 @@ body.page-shipping[data-shipping-method="CKB"].shipping-has-do-results .shipping
 <div class="nav-brand"><img class="nav-brand-logo" src="./assets/sany-logo.jpg" alt="SANY"><span class="nav-brand-copy"><small>WAREHOUSE &amp; DISTRIBUTION</small></span></div>
 <div class="nav-section-label">WORKSPACE</div>
 <button class="nav-menu-toggle" type="button" aria-label="Buka menu" aria-expanded="false" onclick="toggleMobileNav()" title="Buka menu">☰ <span>Menu</span></button>
-<button class="nav-item active" data-page="dashboard">Dashboard</button><button class="nav-item" data-page="scanner">Barcode Scanner</button><button class="nav-item" data-page="shipping">Bukti Pengiriman</button><button class="nav-item" data-page="monitoring">Delivery Pending Monitoring</button><button class="nav-item" data-page="card">QR Monitoring Card</button><label class="language-picker"><span id="languageLabel">Bahasa</span><select id="languageSelect" aria-label="Pilih bahasa"><option value="id">🇮🇩 Indonesia</option><option value="en">🇬🇧 English</option><option value="zh">🇨🇳 中文</option></select></label>
+<button class="nav-item active" data-page="dashboard">Dashboard</button><button class="nav-item" data-page="scanner">Rekap Surat Jalan</button><button class="nav-item" data-page="shipping">Bukti Pengiriman</button><button class="nav-item" data-page="monitoring">Delivery Pending Monitoring</button><button class="nav-item" data-page="card">QR Monitoring Card</button><label class="language-picker"><span id="languageLabel">Bahasa</span><select id="languageSelect" aria-label="Pilih bahasa"><option value="id">🇮🇩 Indonesia</option><option value="en">🇬🇧 English</option><option value="zh">🇨🇳 中文</option></select></label>
 <button class="pwa-install-button" id="pwaInstallButton" type="button" aria-label="Pasang aplikasi" title="Pasang aplikasi"><span class="install-icon" aria-hidden="true">↓</span><span class="install-label">Install App</span></button>
 </nav>
 <header class="hero">
@@ -833,6 +868,10 @@ body.page-shipping[data-shipping-method="CKB"].shipping-has-do-results .shipping
  <button type="button" class="shipping-method-change" id="shippingMethodChange" onclick="toggleShippingMethodPicker()">Pilih jalur lain</button>
 </section>
 
+<section class="scanner-recap-banner">
+ <div class="scanner-recap-copy"><span class="scanner-recap-kicker">SANY WAREHOUSE &amp; DISTRIBUTION</span><h1>Rekap Surat Jalan</h1><p>Catat dan rekap nomor surat jalan dengan pemindaian kamera atau PDA.</p></div>
+ <div class="scanner-recap-limit"><span aria-hidden="true">▦</span><strong>MAKS. 200 DO</strong><small>DALAM SATU BATCH</small></div>
+</section>
 <section class="panel scanner-panel">
  <div class="panel-head"><h2 class="section-title">1. SCAN BARCODE SURAT JALAN</h2><span class="step">SCAN / CAPTURE</span></div>
  <div class="shipping-scan-context" id="shippingScanContext"><span class="shipping-scan-mark" id="shippingScanMark">P</span><div><strong id="shippingScanTitle">Scan bukti pengiriman - PCP</strong><small id="shippingScanDescription">Gunakan kamera atau aktifkan PDA. Semua DO pada batch ini dicatat melalui PCP.</small></div></div>
@@ -1992,6 +2031,18 @@ Object.assign(LANG_TEXT.en,{
 });
 Object.assign(LANG_TEXT.zh,{
  "Barcode yang dipindai":"要扫描的条码","NOMOR RESI / AIR WAYBILL":"运单 / 空运提单号","Scan dengan kamera atau PDA, atau masukkan secara manual.":"使用相机或PDA扫描，也可手动输入。","Masukkan nomor resi / Air Waybill":"输入运单 / 空运提单号","TAMBAH RESI":"添加运单号","Belum ada nomor resi.":"暂无运单号。","Belum ada nomor resi. Scan dengan kamera / PDA atau masukkan manual.":"暂无运单号。使用相机 / PDA 扫描或手动输入。","Waktu foto:":"照片时间：","Barcode tidak ditambahkan. Periksa pesan duplikat atau batas jumlah DO.":"未添加条码。请检查重复项或数量上限。","Mode scan Nomor Resi / Air Waybill aktif. Gunakan kamera atau PDA.":"运单扫描模式已开启。请使用相机或PDA。","Mode scan Nomor DO aktif. Gunakan kamera atau PDA.":"DO扫描模式已开启。请使用相机或PDA。"
+});
+Object.assign(LANG_TEXT.en,{
+ "Rekap Surat Jalan":"Delivery Note Recap",
+ "Catat dan rekap nomor surat jalan dengan pemindaian kamera atau PDA.":"Record and recap delivery note numbers using the camera or a PDA scanner.",
+ "MAKS. 200 DO":"MAX. 200 DOs",
+ "DALAM SATU BATCH":"PER BATCH"
+});
+Object.assign(LANG_TEXT.zh,{
+ "Rekap Surat Jalan":"送货单汇总",
+ "Catat dan rekap nomor surat jalan dengan pemindaian kamera atau PDA.":"使用相机或PDA扫描并汇总送货单编号。",
+ "MAKS. 200 DO":"最多200个DO",
+ "DALAM SATU BATCH":"每批次"
 });
 function applyUiLanguage(lang){
  lang=LANG_TEXT[lang]?lang:"id";document.documentElement.lang=lang==="zh"?"zh-CN":lang;
