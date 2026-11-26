@@ -16,7 +16,7 @@ const SHIPPING_CONFIG = {
   SPREADSHEET_PROPERTY: "SANY_SHIPPING_SPREADSHEET_ID",
   SHEET_NAME: "Bukti Pengiriman",
   FOLDER_NAME: "Foto Bukti Pengiriman",
-  HEADERS: ["Timestamp", "Nomor Surat Jalan", "Status", "Foto Bukti Pengiriman", "Keterangan", "Metode Pengiriman"],
+  HEADERS: ["Timestamp", "Nomor Surat Jalan", "Status", "Foto Bukti Pengiriman", "Keterangan", "Metode Pengiriman", "Nomor Resi / Air Waybill", "Waktu Ambil Foto"],
   STATUS: "Terkirim",
   MAX_DOS: 200,
   MAX_PHOTOS: 15,
@@ -25,7 +25,7 @@ const SHIPPING_CONFIG = {
 
 /**
  * Ensures required headers exist without moving or deleting existing shipping data.
- * A new "Metode Pengiriman" column is appended for older sheets.
+ * New shipping metadata columns are appended for older sheets without moving existing rows.
  */
 function ensureShippingHeaders_(sheet) {
   if (sheet.getLastRow() === 0) {
@@ -53,9 +53,15 @@ function ensureShippingHeaders_(sheet) {
   const headerWidth = Math.max(sheet.getLastColumn(), SHIPPING_CONFIG.HEADERS.length);
   const headers = sheet.getRange(1, 1, 1, headerWidth).getDisplayValues()[0]
     .map(value => String(value || "").trim());
-  const methodColumn = headers.indexOf("Metode Pengiriman") + 1;
-  if (methodColumn < 1) throw new Error('Kolom "Metode Pengiriman" gagal disiapkan.');
-  return methodColumn;
+  const columns = {
+    method: headers.indexOf("Metode Pengiriman") + 1,
+    airWaybill: headers.indexOf("Nomor Resi / Air Waybill") + 1,
+    photoTime: headers.indexOf("Waktu Ambil Foto") + 1
+  };
+  Object.keys(columns).forEach(key => {
+    if (columns[key] < 1) throw new Error("Kolom Shipping gagal disiapkan: " + key);
+  });
+  return columns;
 }
 
 /**
@@ -76,7 +82,7 @@ function setupShippingAwal() {
   sheet.setFrozenRows(1);
   sheet.autoResizeColumns(1, headerWidth);
   getOrCreateShippingFolder_();
-  return "Setup Shipping berhasil. Tab Bukti Pengiriman siap dengan kolom Metode Pengiriman.";
+  return "Setup Shipping berhasil. Kolom Metode Pengiriman, Nomor Resi / Air Waybill, dan Waktu Ambil Foto siap digunakan.";
 }
 
 /**
@@ -149,6 +155,24 @@ function saveShippingBatch_(request) {
     throw new Error("Pilih metode pengiriman PCP, CKB, TRUCKING, atau SELFPICK / GOJEK.");
   }
 
+  const supportsAirWaybill = shippingMethod === "PCP" || shippingMethod === "CKB";
+  const rawAirWaybills = Array.isArray(request.airWaybills) ? request.airWaybills : [];
+  if (!supportsAirWaybill && rawAirWaybills.some(value => String(value || "").trim())) {
+    throw new Error("Nomor Resi / Air Waybill hanya digunakan untuk PCP dan CKB.");
+  }
+  const airWaybills = [];
+  const seenAirWaybills = {};
+  rawAirWaybills.forEach(value => {
+    const code = normalizeShippingDO_(value);
+    if (code && !seenAirWaybills[code]) {
+      seenAirWaybills[code] = true;
+      airWaybills.push(code);
+    }
+  });
+  if (airWaybills.length > SHIPPING_CONFIG.MAX_DOS) {
+    throw new Error("Maksimal " + SHIPPING_CONFIG.MAX_DOS + " nomor Resi / Air Waybill.");
+  }
+
   let incoming = Array.isArray(request.dos) ? request.dos : [];
   if (!incoming.length && request.doNumber) incoming = [request.doNumber];
 
@@ -194,7 +218,7 @@ function saveShippingBatch_(request) {
   const createdFiles = [];
   try {
     const sheet = getShippingSheet_();
-    const methodColumn = ensureShippingHeaders_(sheet);
+    const columns = ensureShippingHeaders_(sheet);
     const lastRow = sheet.getLastRow();
     const oldCodes = lastRow < 2 ? [] :
       sheet.getRange(2, 2, lastRow - 1, 1).getDisplayValues()
@@ -237,6 +261,16 @@ function saveShippingBatch_(request) {
     const timestamp = new Date();
     const photoCell = photoUrls.join("\n");
     const note = String(request.keterangan || "").trim();
+    const photoTimestampValues = shippingMethod === "TRUCKING" || shippingMethod === "SELFPICK / GOJEK"
+      ? (Array.isArray(request.photoTimestamps) ? request.photoTimestamps : []).map(value => {
+          if (!value) return "";
+          const capturedAt = new Date(value);
+          if (isNaN(capturedAt.getTime())) return "";
+          return Utilities.formatDate(capturedAt, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss");
+        }).filter(Boolean)
+      : [];
+    const photoTimeCell = photoTimestampValues.join("\n");
+    const airWaybillCell = supportsAirWaybill ? airWaybills.join("\n") : "";
     const rows = accepted.map(code => [
       timestamp,
       code,
@@ -245,14 +279,13 @@ function saveShippingBatch_(request) {
       note
     ]);
     const firstNewRow = sheet.getLastRow() + 1;
-    if (methodColumn === 6) {
-      const completeRows = rows.map(row => row.concat(shippingMethod));
-      sheet.getRange(firstNewRow, 1, completeRows.length, 6).setValues(completeRows);
-    } else {
-      sheet.getRange(firstNewRow, 1, rows.length, 5).setValues(rows);
-      sheet.getRange(firstNewRow, methodColumn, accepted.length, 1)
-        .setValues(accepted.map(() => [shippingMethod]));
-    }
+    sheet.getRange(firstNewRow, 1, rows.length, 5).setValues(rows);
+    sheet.getRange(firstNewRow, columns.method, accepted.length, 1)
+      .setValues(accepted.map(() => [shippingMethod]));
+    sheet.getRange(firstNewRow, columns.airWaybill, accepted.length, 1)
+      .setValues(accepted.map(() => [airWaybillCell]));
+    sheet.getRange(firstNewRow, columns.photoTime, accepted.length, 1)
+      .setValues(accepted.map(() => [photoTimeCell]));
 
     const duplicates = duplicatesExisting.concat(duplicateInRequest);
     return {
@@ -263,6 +296,8 @@ function saveShippingBatch_(request) {
       saved: accepted,
       duplicates: duplicates,
       totalPhotos: photoUrls.length,
+      totalAirWaybills: airWaybills.length,
+      totalPhotoTimestamps: photoTimestampValues.length,
       shippingMethod: shippingMethod,
       message: accepted.length + " surat jalan berhasil disimpan melalui " + shippingMethod +
         (duplicates.length ? ". " + duplicates.length + " nomor duplikat dilewati." : ".")
