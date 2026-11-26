@@ -684,6 +684,34 @@ body.page-shipping[data-shipping-method="CKB"] #shippingScanTargets{display:flex
 <style>
 .shipping-awb-section.is-required{border-color:#d71920!important;box-shadow:0 0 0 3px rgba(215,25,32,.12),0 8px 20px rgba(215,25,32,.08)!important}
 </style>
+<style>
+/* Compact one-row scanned results for PCP and CKB only */
+.shipping-result-head,.shipping-result-row{display:none}
+body.page-shipping[data-shipping-method="PCP"] .shipping-result-head,
+body.page-shipping[data-shipping-method="CKB"] .shipping-result-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) 38px 28px;align-items:center;gap:7px;padding:0 9px 7px}
+body.page-shipping[data-shipping-method="PCP"] .shipping-result-row,
+body.page-shipping[data-shipping-method="CKB"] .shipping-result-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) 38px 28px;align-items:center;gap:7px;min-width:0;padding:9px;border:1px solid #e5e8ed;border-left:3px solid var(--route-accent);border-radius:11px;background:#fff;box-shadow:0 2px 7px rgba(20,25,35,.04)}
+body.page-shipping[data-shipping-method="PCP"] .do-list,
+body.page-shipping[data-shipping-method="CKB"] .do-list{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;max-height:260px;overflow:auto;padding:1px}
+.shipping-result-head span{color:#858d98;font-size:9px;font-weight:900;letter-spacing:.45px}
+.shipping-result-head-photo{text-align:center}
+.shipping-result-do,.shipping-result-awb{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#252b33;font-size:12px;font-weight:800}
+.shipping-result-awb{color:#4f5864;font-size:11px}
+.shipping-result-photo{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#f0f2f5;color:#a1a8b1;font-size:16px;font-weight:900}
+.shipping-result-photo.has-photo{background:#e5f6ec;color:#16834a}
+.shipping-result-remove{width:26px;height:26px;font-size:17px}
+@media(max-width:680px){
+ body.page-shipping[data-shipping-method="PCP"] .shipping-result-head,
+ body.page-shipping[data-shipping-method="CKB"] .shipping-result-head{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr) 30px 26px;gap:5px;padding-left:7px;padding-right:5px}
+ body.page-shipping[data-shipping-method="PCP"] .shipping-result-row,
+ body.page-shipping[data-shipping-method="CKB"] .shipping-result-row{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr) 30px 26px;gap:5px;padding:7px}
+ .shipping-result-head span{font-size:8px;letter-spacing:.2px}
+ .shipping-result-do{font-size:11px}
+ .shipping-result-awb{font-size:10px}
+ .shipping-result-photo{width:24px;height:24px}
+ .shipping-result-remove{width:24px;height:24px}
+}
+</style>
 </head>
 <body>
 <div class="topbar"></div>
@@ -1018,6 +1046,7 @@ function renderAirWaybillList(){
  const awbSection=$("shippingAwbSection");if(awbSection&&airWaybillNumbers.length)awbSection.classList.remove("is-required");
  if(!airWaybillNumbers.length){list.innerHTML='<div class="batch-empty">Belum ada nomor resi. Scan dengan kamera / PDA atau masukkan manual.</div>';persistDraft();return}
  airWaybillNumbers.forEach((code,index)=>{const chip=document.createElement("span");chip.className="airwaybill-chip";const label=document.createElement("span");label.textContent=code;const remove=document.createElement("button");remove.type="button";remove.textContent="×";remove.title="Hapus nomor resi";remove.setAttribute("aria-label","Hapus nomor resi "+code);remove.onclick=()=>{airWaybillNumbers.splice(index,1);renderAirWaybillList()};chip.append(label,remove);list.appendChild(chip)});
+ renderDOList();
  persistDraft();
 }
 function activatePdaScanner(){
@@ -1061,9 +1090,27 @@ function renderDOList(){
  const list=$("doList");list.innerHTML="";
  $("doCount").textContent=doNumbers.length+" / "+MAX_DOS+" DO";
  const liveCount=$("scanLiveCount");if(liveCount)liveCount.textContent=doNumbers.length;
- persistDraft();
- if(!doNumbers.length){list.innerHTML='<div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div>';return}
+ const combinedShipping=activeScannerMode==="shipping"&&supportsAirWaybill();
+ let head=document.getElementById("shippingResultHead");
+ if(head)head.remove();
+ if(!doNumbers.length){
+  list.innerHTML='<div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div>';
+  persistDraft();return;
+ }
+ if(combinedShipping){
+  head=document.createElement("div");head.id="shippingResultHead";head.className="shipping-result-head";
+  [["NOMOR DO","do"],["NOMOR RESI / AWB","awb"],["FOTO","photo"],["","remove"]].forEach(([label,kind])=>{const cell=document.createElement("span");cell.className="shipping-result-head-"+kind;cell.textContent=label;head.appendChild(cell)});
+  list.before(head);
+ }
  doNumbers.forEach((code,index)=>{
+  if(combinedShipping){
+   const row=document.createElement("div");row.className="shipping-result-row";
+   const doCell=document.createElement("span");doCell.className="shipping-result-do";doCell.textContent=code;doCell.title="Nomor DO "+code;
+   const awbCell=document.createElement("span");awbCell.className="shipping-result-awb";awbCell.textContent=airWaybillNumbers.length?airWaybillNumbers.join(" · "):"Menunggu AWB";awbCell.title=airWaybillNumbers.length?"Nomor Resi / Air Waybill: "+airWaybillNumbers.join(", "):"Nomor Resi / Air Waybill belum ditambahkan";
+   const photoCell=document.createElement("span");photoCell.className="shipping-result-photo"+(photos.length?" has-photo":"");photoCell.textContent=photos.length?"✓":"—";photoCell.title=photos.length?"Foto bukti sudah ditambahkan":"Foto bukti belum ditambahkan";photoCell.setAttribute("aria-label",photoCell.title);
+   const remove=document.createElement("button");remove.type="button";remove.className="remove-do shipping-result-remove";remove.textContent="×";remove.title="Hapus DO";remove.setAttribute("aria-label","Hapus DO "+code);remove.onclick=()=>{doNumbers.splice(index,1);renderDOList()};
+   row.append(doCell,awbCell,photoCell,remove);list.appendChild(row);return;
+  }
   const item=document.createElement("div");item.className="do-item";
   const n=document.createElement("span");n.className="do-index";n.textContent=(index+1)+".";
   const label=document.createElement("span");label.className="do-code";label.textContent=code;
@@ -1071,6 +1118,7 @@ function renderDOList(){
   remove.onclick=()=>{doNumbers.splice(index,1);renderDOList()};
   item.append(n,label,remove);list.appendChild(item);
  });
+ persistDraft();
 }
 function clearDOList(){
  if(!doNumbers.length)return;
@@ -1318,6 +1366,7 @@ function renderPhotos(){
   if(isPhotoTimestampMethod()&&photo.capturedAt){const stamp=document.createElement("small");stamp.className="photo-timestamp";stamp.textContent="Waktu foto: "+formatPhotoTimestamp(photo.capturedAt);card.appendChild(stamp)}
   preview.appendChild(card);
  });
+ renderDOList();
 }
 $("cameraInput").addEventListener("change",async e=>{await addFiles(e.target.files,"camera");e.target.value=""});
 $("galleryInput").addEventListener("change",async e=>{await addFiles(e.target.files,"gallery");e.target.value=""});
