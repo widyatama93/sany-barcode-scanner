@@ -712,6 +712,51 @@ body.page-shipping[data-shipping-method="CKB"] .do-list{display:grid;grid-templa
  .shipping-result-remove{width:24px;height:24px}
 }
 </style>
+<style>
+/* PCP/CKB: keep entry forms separate from a single clear scan-results table */
+.shipping-results-card{display:none;margin:14px 0;padding:15px;border:1px solid #e2e6ec;border-radius:16px;background:#fff;box-shadow:0 5px 16px rgba(20,25,35,.045)}
+.shipping-results-card[hidden]{display:none!important}
+body.page-shipping[data-shipping-method="PCP"] .shipping-results-card:not([hidden]),
+body.page-shipping[data-shipping-method="CKB"] .shipping-results-card:not([hidden]){display:block}
+.shipping-results-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 1px 12px;border-bottom:1px solid #edf0f3}
+.shipping-results-heading>div{display:grid;gap:4px}
+.shipping-results-heading strong{font-size:11px;font-weight:900;letter-spacing:.4px;color:#292e36}
+.shipping-results-heading small{font-size:10px;color:#838b96}
+.shipping-results-count{flex:none;padding:6px 10px;border-radius:99px;background:var(--route-soft);color:var(--route-accent);font-size:10px;font-weight:900}
+.shipping-results-card .do-list{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;max-height:250px;overflow:auto;padding:8px 0 0}
+.shipping-result-head,.shipping-result-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) 34px 28px;align-items:center;gap:8px}
+.shipping-result-head{padding:9px 10px 5px}
+.shipping-result-head span{min-width:0;color:#858d98;font-size:9px;font-weight:900;letter-spacing:.35px}
+.shipping-result-head-photo{text-align:center}
+.shipping-result-row{min-width:0;padding:9px 10px;border:1px solid #e6e9ee;border-left:3px solid var(--route-accent);border-radius:11px;background:#fff}
+.shipping-result-do,.shipping-result-awb{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#252b33;font-size:12px;font-weight:800}
+.shipping-result-awb{color:#4f5864;font-size:11px}
+.shipping-result-awb-values{display:flex;min-width:0;gap:4px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;white-space:nowrap}
+.shipping-result-awb-chip{display:inline-flex;align-items:center;gap:3px;flex:none;max-width:100%;padding:3px 4px 3px 7px;border:1px solid #e8dfe0;border-radius:7px;background:#fff8f8;color:#404852;font-size:10px;font-weight:750}
+.shipping-result-awb-chip button{display:grid;place-items:center;width:17px;height:17px;padding:0;border:0;border-radius:5px;background:#fce8e9;color:#c51922;font-size:14px;line-height:1}
+.shipping-result-photo{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#f0f2f5;color:#a1a8b1;font-size:16px;font-weight:900}
+.shipping-result-photo.has-photo{background:#e5f6ec;color:#16834a}
+.shipping-result-remove{width:26px;height:26px;font-size:17px}
+body.page-shipping[data-shipping-method="PCP"].shipping-has-do-results .shipping-awb-list,
+body.page-shipping[data-shipping-method="CKB"].shipping-has-do-results .shipping-awb-list{display:none}
+@media(max-width:680px){
+ .shipping-results-card{padding:12px;margin:12px 0}
+ .shipping-results-heading{padding-bottom:10px}
+ .shipping-results-heading strong{font-size:10px}
+ .shipping-results-heading small{font-size:9px}
+ .shipping-result-head,.shipping-result-row{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr) 27px 24px;gap:5px}
+ .shipping-result-head{padding:8px 7px 4px}
+ .shipping-result-head span{font-size:8px;letter-spacing:.1px;white-space:nowrap}
+ .shipping-results-card .do-list{max-height:230px}
+ .shipping-result-row{padding:7px}
+ .shipping-result-do{font-size:10px}
+ .shipping-result-awb{font-size:9px}
+ .shipping-result-awb-chip{font-size:9px;padding-left:5px}
+ .shipping-result-awb-chip button{width:15px;height:15px}
+ .shipping-result-photo{width:23px;height:23px}
+ .shipping-result-remove{width:23px;height:23px}
+}
+</style>
 </head>
 <body>
 <div class="topbar"></div>
@@ -808,13 +853,18 @@ body.page-shipping[data-shipping-method="CKB"] .do-list{display:grid;grid-templa
    <div class="shipping-record-heading"><span class="shipping-record-icon">DO</span><div><strong>DAFTAR NOMOR SURAT JALAN / DO</strong><small>Data DO yang akan disimpan</small></div><span class="do-counter" id="doCount">0 / 200 DO</span></div>
    <label class="field-label" for="doNumber">Tambah nomor DO secara manual (jika diperlukan)</label>
    <div class="do-entry"><input id="doNumber" type="text" placeholder="Ketik / tempel nomor DO" autocomplete="off"><button class="add-do" type="button" onclick="addManualDO()">TAMBAH DO</button></div>
-   <div id="doList" class="do-list"><div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div></div>
+   <div id="shippingDoListAnchor"><div id="doList" class="do-list"><div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div></div></div>
   </div>
   <div class="shipping-awb-section" id="shippingAwbSection" hidden>
    <div class="shipping-awb-heading"><span class="shipping-awb-icon">AWB</span><div><strong>NOMOR RESI / AIR WAYBILL</strong><small>Scan dengan kamera atau PDA, atau masukkan manual. Satu resi dapat digunakan untuk beberapa DO dalam batch ini.</small></div><span class="shipping-awb-count" id="airWaybillCount">0</span></div>
    <div class="do-entry"><input id="airWaybillInput" type="text" placeholder="Masukkan nomor resi / Air Waybill" autocomplete="off"><button class="add-airwaybill" type="button" onclick="addManualAirWaybill()">TAMBAH RESI</button></div>
    <div id="airWaybillList" class="shipping-awb-list"><div class="batch-empty">Belum ada nomor resi.</div></div>
   </div>
+ </div>
+ <div class="shipping-results-card" id="shippingResultsCard" hidden>
+  <div class="shipping-results-heading"><div><strong>HASIL SCAN PENGIRIMAN</strong><small>Satu baris untuk setiap DO, beserta resi dan status foto.</small></div><span id="shippingResultsCount" class="shipping-results-count">0 DO</span></div>
+  <div class="shipping-result-head"><span>NOMOR DO</span><span>NOMOR RESI / AWB</span><span class="shipping-result-head-photo">FOTO</span><span></span></div>
+  <div id="shippingResultsList"></div>
  </div>
  <div class="batch-actions"><button type="button" onclick="clearDOList()">HAPUS SEMUA DO</button></div>
 
@@ -1044,7 +1094,7 @@ function renderAirWaybillList(){
  const list=$("airWaybillList"),count=$("airWaybillCount");if(!list||!count)return;
  count.textContent=airWaybillNumbers.length;list.innerHTML="";
  const awbSection=$("shippingAwbSection");if(awbSection&&airWaybillNumbers.length)awbSection.classList.remove("is-required");
- if(!airWaybillNumbers.length){list.innerHTML='<div class="batch-empty">Belum ada nomor resi. Scan dengan kamera / PDA atau masukkan manual.</div>';persistDraft();return}
+ if(!airWaybillNumbers.length){list.innerHTML='<div class="batch-empty">Belum ada nomor resi. Scan dengan kamera / PDA atau masukkan manual.</div>';renderDOList();persistDraft();return}
  airWaybillNumbers.forEach((code,index)=>{const chip=document.createElement("span");chip.className="airwaybill-chip";const label=document.createElement("span");label.textContent=code;const remove=document.createElement("button");remove.type="button";remove.textContent="×";remove.title="Hapus nomor resi";remove.setAttribute("aria-label","Hapus nomor resi "+code);remove.onclick=()=>{airWaybillNumbers.splice(index,1);renderAirWaybillList()};chip.append(label,remove);list.appendChild(chip)});
  renderDOList();
  persistDraft();
@@ -1087,26 +1137,41 @@ $("pdaInput").addEventListener("input",()=>{
 });
 $("keterangan").addEventListener("input",persistDraft);
 function renderDOList(){
- const list=$("doList");list.innerHTML="";
+ const list=$("doList");
  $("doCount").textContent=doNumbers.length+" / "+MAX_DOS+" DO";
  const liveCount=$("scanLiveCount");if(liveCount)liveCount.textContent=doNumbers.length;
  const combinedShipping=activeScannerMode==="shipping"&&supportsAirWaybill();
- let head=document.getElementById("shippingResultHead");
- if(head)head.remove();
+ const resultsCard=$("shippingResultsCard"),resultsList=$("shippingResultsList"),anchor=$("shippingDoListAnchor");
+ if(resultsCard)resultsCard.hidden=!combinedShipping||!doNumbers.length;
+ document.body.classList.toggle("shipping-has-do-results",combinedShipping&&doNumbers.length>0);
+ if(combinedShipping&&resultsList&&list.parentElement!==resultsList)resultsList.appendChild(list);
+ else if(!combinedShipping&&anchor&&list.parentElement!==anchor)anchor.appendChild(list);
+ list.innerHTML="";
  if(!doNumbers.length){
   list.innerHTML='<div class="batch-empty">Belum ada DO. Mulai scan barcode atau tambahkan manual.</div>';
+  const resultCount=$("shippingResultsCount");if(resultCount)resultCount.textContent="0 DO";
   persistDraft();return;
  }
  if(combinedShipping){
-  head=document.createElement("div");head.id="shippingResultHead";head.className="shipping-result-head";
-  [["NOMOR DO","do"],["NOMOR RESI / AWB","awb"],["FOTO","photo"],["","remove"]].forEach(([label,kind])=>{const cell=document.createElement("span");cell.className="shipping-result-head-"+kind;cell.textContent=label;head.appendChild(cell)});
-  list.before(head);
+  const resultCount=$("shippingResultsCount");if(resultCount)resultCount.textContent=doNumbers.length+" DO";
  }
  doNumbers.forEach((code,index)=>{
   if(combinedShipping){
    const row=document.createElement("div");row.className="shipping-result-row";
    const doCell=document.createElement("span");doCell.className="shipping-result-do";doCell.textContent=code;doCell.title="Nomor DO "+code;
-   const awbCell=document.createElement("span");awbCell.className="shipping-result-awb";awbCell.textContent=airWaybillNumbers.length?airWaybillNumbers.join(" · "):"Menunggu AWB";awbCell.title=airWaybillNumbers.length?"Nomor Resi / Air Waybill: "+airWaybillNumbers.join(", "):"Nomor Resi / Air Waybill belum ditambahkan";
+   const awbCell=document.createElement("span");awbCell.className="shipping-result-awb";awbCell.title=airWaybillNumbers.length?"Nomor Resi / Air Waybill: "+airWaybillNumbers.join(", "):"Nomor Resi / Air Waybill belum ditambahkan";
+   if(!airWaybillNumbers.length){awbCell.textContent="Menunggu AWB"}
+   else if(index===0){
+    const values=document.createElement("span");values.className="shipping-result-awb-values";
+    airWaybillNumbers.forEach((awb,awbIndex)=>{
+     const chip=document.createElement("span");chip.className="shipping-result-awb-chip";
+     const label=document.createElement("span");label.textContent=awb;chip.appendChild(label);
+     const removeAwb=document.createElement("button");removeAwb.type="button";removeAwb.textContent="×";removeAwb.title="Hapus nomor resi "+awb;removeAwb.setAttribute("aria-label","Hapus nomor resi "+awb);
+     removeAwb.onclick=()=>{airWaybillNumbers.splice(awbIndex,1);renderAirWaybillList()};
+     chip.appendChild(removeAwb);values.appendChild(chip);
+    });
+    awbCell.appendChild(values);
+   }else{awbCell.textContent=airWaybillNumbers.join(" · ")}
    const photoCell=document.createElement("span");photoCell.className="shipping-result-photo"+(photos.length?" has-photo":"");photoCell.textContent=photos.length?"✓":"—";photoCell.title=photos.length?"Foto bukti sudah ditambahkan":"Foto bukti belum ditambahkan";photoCell.setAttribute("aria-label",photoCell.title);
    const remove=document.createElement("button");remove.type="button";remove.className="remove-do shipping-result-remove";remove.textContent="×";remove.title="Hapus DO";remove.setAttribute("aria-label","Hapus DO "+code);remove.onclick=()=>{doNumbers.splice(index,1);renderDOList()};
    row.append(doCell,awbCell,photoCell,remove);list.appendChild(row);return;
