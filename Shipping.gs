@@ -172,6 +172,9 @@ function saveShippingBatch_(request) {
   if (airWaybills.length > SHIPPING_CONFIG.MAX_DOS) {
     throw new Error("Maksimal " + SHIPPING_CONFIG.MAX_DOS + " nomor Resi / Air Waybill.");
   }
+  if (supportsAirWaybill && !airWaybills.length) {
+    throw new Error("Nomor Resi / Air Waybill wajib diisi untuk PCP dan CKB. Satu resi dapat digunakan untuk beberapa DO dalam satu batch.");
+  }
 
   let incoming = Array.isArray(request.dos) ? request.dos : [];
   if (!incoming.length && request.doNumber) incoming = [request.doNumber];
